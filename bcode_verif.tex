@@ -1,0 +1,438 @@
+%% For double-blind review submission, w/o CCS and ACM Reference (max submission space)
+\documentclass[sigplan,10pt,review]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+%% For double-blind review submission, w/ CCS and ACM Reference
+%\documentclass[sigplan,10pt,review,anonymous]{acmart}\settopmatter{printfolios=true}
+%% For single-blind review submission, w/o CCS and ACM Reference (max submission space)
+%\documentclass[sigplan,10pt,review]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
+%% For single-blind review submission, w/ CCS and ACM Reference
+%\documentclass[sigplan,10pt,review]{acmart}\settopmatter{printfolios=true}
+%% For final camera-ready submission, w/ required CCS and ACM Reference
+%\documentclass[sigplan,10pt]{acmart}\settopmatter{}
+
+
+%% Conference information
+%% Supplied to authors by publisher for camera-ready submission;
+%% use defaults for review submission.
+\acmConference[PL'17]{ACM SIGPLAN Conference on Programming Languages}{January 01--03, 2017}{New York, NY, USA}
+\acmYear{2017}
+\acmISBN{} % \acmISBN{978-x-xxxx-xxxx-x/YY/MM}
+\acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
+\startPage{1}
+
+%% Copyright information
+%% Supplied to authors (based on authors' rights management selection;
+%% see authors.acm.org) by publisher for camera-ready submission;
+%% use 'none' for review submission.
+\setcopyright{none}
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+%\setcopyright{rightsretained}
+%\copyrightyear{2017}           %% If different from \acmYear
+
+%% Bibliography style
+\bibliographystyle{ACM-Reference-Format}
+%% Citation style
+%\citestyle{acmauthoryear}  %% For author/year citations
+%\citestyle{acmnumeric}     %% For numeric citations
+%\setcitestyle{nosort}      %% With 'acmnumeric', to disable automatic
+                            %% sorting of references within a single citation;
+                            %% e.g., \cite{Smith99,Carpenter05,Baker12}
+                            %% rendered as [14,5,2] rather than [2,5,14].
+%\setcitesyle{nocompress}   %% With 'acmnumeric', to disable automatic
+                            %% compression of sequential references within a
+                            %% single citation;
+                            %% e.g., \cite{Baker12,Baker14,Baker16}
+                            %% rendered as [2,3,4] rather than [2-4].
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Note: Authors migrating a paper from traditional SIGPLAN
+%% proceedings format to PACMPL format must update the
+%% '\documentclass' and topmatter commands above; see
+%% 'acmart-pacmpl-template.tex'.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% Some recommended packages.
+\usepackage{booktabs}   %% For formal tables:
+                        %% http://ctan.org/pkg/booktabs
+\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
+                        %% http://ctan.org/pkg/subcaption
+
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{amsmath,amssymb}
+\usepackage{isabelle,isabellesym}
+
+\newcommand{\defeq}{\mathrel{\stackrel{\mbox{\tiny \it def}}{=}}}
+\newcommand{\sconj}{\wedge^*}
+\newcommand{\coloncolon}{\mathrel{::}}
+\newcommand{\pvalid}[3]{\models\{#1\}\:#2\:\{#3\}}
+\newcommand{\tvalid}[3]{\models [#1]\:#2\:[#3]}
+\newcommand{\ttrip}[3]{\vdash [#1]\:#2\:[#3]}
+\newcommand{\next}{\mathit{next}}
+\newcommand{\code}[1]{\mathit{code}(#1)}
+\newcommand{\cont}{\mathit{continuing}}
+\newcommand{\ncont}{\mathit{not\_continuing}}
+
+\begin{document}
+
+%% Title information
+\title[Verifying Ethereum Smart Contracts]{Verifying Ethereum Smart Contracts at Bytecode Level in Isabelle/HOL}         %% [Short Title] is optional;
+                                        %% when present, will be used in
+                                        %% header instead of Full Title.
+%\titlenote{with title note}             %% \titlenote is optional;
+                                        %% can be repeated if necessary;
+                                        %% contents suppressed with 'anonymous'
+%\subtitle{Subtitle}                     %% \subtitle is optional
+%\subtitlenote{with subtitle note}       %% \subtitlenote is optional;
+                                        %% can be repeated if necessary;
+                                        %% contents suppressed with 'anonymous'
+
+
+%% Author information
+%% Contents and number of authors suppressed with 'anonymous'.
+%% Each author should be introduced by \author, followed by
+%% \authornote (optional), \orcid (optional), \affiliation, and
+%% \email.
+%% An author may have multiple affiliations and/or emails; repeat the
+%% appropriate command.
+%% Many elements are not rendered, but should be provided for metadata
+%% extraction tools.
+
+%% Authors with single affiliation.
+\author{Sidney Amani}
+%\authornote{with author1 note}          %% \authornote is optional;
+                                        %% can be repeated if necessary
+%\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+%  \position{Position1}
+  \department{Data61}              %% \department is recommended
+  \institution{CSIRO}            %% \institution is required
+%  \streetaddress{Street1 Address1}
+%  \city{City1}
+  \state{NSW}
+%  \postcode{Post-Code1}
+  \country{Australia}                    %% \country is recommended
+}
+\email{Sidney.Amani@data61.csiro.au}          %% \email is recommended
+
+\author{Myriam B\'egel}
+\authornote{work done while at Data61, CSIRO}          %% \authornote is optional;
+                                        %% can be repeated if necessary
+%\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+%  \position{Position1}
+%  \department{Department1}              %% \department is recommended
+  \institution{\'Ecole Normale Sup\'erieure Paris-Saclay}            %% \institution is required
+%  \streetaddress{Street1 Address1}
+%  \city{City1}
+%  \state{State1}
+%  \postcode{Post-Code1}
+  \country{France}                    %% \country is recommended
+}
+\email{Myriam.Begel@ens-paris-saclay.fr}          %% \email is recommended
+
+\author{Maksym Bortin}
+%\authornote{with author1 note}          %% \authornote is optional;
+                                        %% can be repeated if necessary
+%\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+%  \position{Position1}
+  \department{Data61}              %% \department is recommended
+  \institution{CSIRO}            %% \institution is required
+%  \streetaddress{Street1 Address1}
+%  \city{City1}
+  \state{NSW}
+%  \postcode{Post-Code1}
+  \country{Australia}                    %% \country is recommended
+}
+\email{Maksym.Bortin@data61.csiro.au}          %% \email is recommended
+
+\author{Mark Staples}
+%\authornote{with author1 note}          %% \authornote is optional;
+                                        %% can be repeated if necessary
+%\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+%  \position{Position1}
+  \department{Data61}              %% \department is recommended
+  \institution{CSIRO}            %% \institution is required
+%  \streetaddress{Street1 Address1}
+%  \city{City1}
+  \state{NSW}
+%  \postcode{Post-Code1}
+  \country{Australia}                    %% \country is recommended
+}
+\email{Mark.Staples@data61.csiro.au}          %% \email is recommended
+
+%% Abstract
+%% Note: \begin{abstract}...\end{abstract} environment must come
+%% before \maketitle command
+\begin{abstract}
+Due to its versatility, 
+the blockchain technology  
+steadily attracts more attention from research and industries beyond the financial.
+In particular, the Ethereum blockchain offers so-called \emph{smart contracts}
+which are basically programs that run on the Ethereum virtual machine (EVM) and 
+are used to encode certain agreements between e.g.\ caller and callee.
+Needless to emphasise that in most cases such a contract would be either safety- or
+security- or mission-critical, and potentially all of these.
+In this paper we address this problem extending  
+the existing EVM formalisation~\cite{Yoichi} in Isabelle/HOL by a sound program logic at the level of 
+bytecode. This logic allows us to formally verify EVM smart contracts, thus achieving highest level of
+confidence into their actual behaviour.       
+\end{abstract}
+
+
+%% 2012 ACM Computing Classification System (CSS) concepts
+%% Generate at 'http://dl.acm.org/ccs/ccs.cfm'.
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10011007.10011006.10011008</concept_id>
+<concept_desc>Software and its engineering~General programming languages</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10003456.10003457.10003521.10003525</concept_id>
+<concept_desc>Social and professional topics~History of programming languages</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Software and its engineering~General programming languages}
+\ccsdesc[300]{Social and professional topics~History of programming languages}
+%% End of generated code
+
+
+%% Keywords
+%% comma separated list
+\keywords{keyword1, keyword2, keyword3}  %% \keywords are mandatory in final camera-ready submission
+
+
+%% \maketitle
+%% Note: \maketitle command must come after title commands, author
+%% commands, abstract environment, Computing Classification System
+%% environment and commands, and keywords command.
+\maketitle
+
+
+\section{Introduction}
+\label{sec:intro}
+Although initially closely related to the financial sector,
+the blockchain technology steadily becomes more important for various other areas such as legal, medical records, etc.
+In this context, the Ethereum blockchain has gained a particular interest due to \emph{smart contracts}, which are 
+basically programs that run on the Ethereum virtual machine~\cite{wood2014ethereum} (\emph{EVM} for short) and can be used to 
+encode certain agreements between e.g.\ caller and callee. For a simple instance, a smart contract can
+state that if a contract caller calls some method $A$ then it triggers some transaction $B$ which in turn
+makes the caller eligible to trigger other transactions. This concept clearly
+offers new ways and opportunities for blockchain-based applications. At the same time however it raises  
+questions whether a contract implementation does not violate any specified requirement, for instance inconspicuously
+allowing something like double spend of cryptocurrency. This problem of safety- and mission-critical
+software is by no means new, and formal modelling and verification provide a general approach that 
+of course can also be applied in this context to ensure highest levels of trust. 
+%
+To address these questions we need:
+\begin{itemize}
+\item[(i)] a trustworthy logical framework supporting logics capable to express complex safety and security
+   requirements; 
+\item[(ii)] a valid formal model of the EVM within the framework; 
+\item[(iii)] a program logic, 
+defined within the framework and sound with respect to the EVM model
+in order to foster our reasoning about properties of smart contracts. 
+\end{itemize}
+In our setting, the logical framework is
+Isabelle, whereas formal model of the EVM has been done in~\cite{Yoichi} (validity will be
+a subject of the next section). Thus, the remaining task 
+is to provide a sound program logic. As we will show in this paper, 
+we provide such a logic at the very basic level of EVM bytecode. 
+Although it is obviously easier to setup a logic for programs in a structured language,
+our decision to tackle the problem
+at the level of basically unstructured bytecode has some important advantages relevant to our goals.
+Firstly, this way we stay independent of any bytecode compiler (e.g. Solidity), which not only discharges the necessity
+of building and verifying a formal model of such compiler but also removes its actual implementation from tools we have to trust.
+Secondly, bytecode is the actual language of Ethereum as all contracts appear only in this form on the blockchain.
+Although it is common to provide access to source code of a contract in a structured language if available, there is
+no obligation to do so. These arguments gave us the main motivation to do formal verification of
+the EVM bytecode, despite the necessity to restore structures (such as conditionals), that we can take 
+for granted in any high-level language,
+as a part of the verification process described in the remainder of the paper. 
+         
+The paper is structured as follows. Sections~\ref{sec:bg} and \ref{sec:rwork} describe the background
+and the related work. Section~\ref{sec:corr} describes how we define correctness property in pre/post condition
+style for EVM bytecode. Section~\ref{sec:logic} is devoted to our program logic, i.e. rules for generation
+of verification conditions out of a contract, whereas Section~\ref{sec:sound} shows the soundness of the logic
+w.r.t. the correctness property. Section~\ref{sec:auto} outlines how we automate generation of verification
+conditions using Isabelle tactics. Section~\ref{sec:case} presents a case-study deploying our framework in 
+real bytecode verification, and
+Section~\ref{sec:concl} summarises the results and gives an outlook.      
+%
+\section{Background} 
+\label{sec:bg}
+The Ethereum virtual machine has been rigorously described in the so-called `Yellow Paper'~\cite{wood2014ethereum},
+thus providing a solid foundation not only for its implementation in a programming language 
+but also for a formalisation within a formal logic system such as a theorem prover.
+One such formalisation has been done~\cite{Yoichi} using the `meta-tool' \emph{Lem}~\cite{DBLP:conf/icfp/MulliganOGRS14}
+that supports a variety of theorem provers including Isabelle/HOL.
+\emph{Isabelle}~\cite{Nipkow_PW:Isabelle} is a logical framework in form of an interactive generic theorem prover,
+where the encoding of higher-order logic (\emph{Isabelle/HOL} for short)
+is the most important and most developed part of the system. Isabelle's LCF-style architecture,
+based on a small (meta)-logical inference kernel, ensures highest confidence into derived results.
+ 
+However, such a formalisation needs to be validated as we need a confirmation that the formal model
+and the actual EVM implementation coincide. To this end, a validation test suite accompanies
+the model in Lem. That is, the actual EVM and the OCaml code generated by Lem from the EVM model
+are both applied to a large collection of contracts comparing the respective outputs.  
+
+Since we entirely focus on the EVM model in Isabelle/HOL, we additionally adapted the test suite 
+to the OCaml code, now however generated by Isabelle. This our `double-validation' 
+process is outlined in Figure~\ref{fig:valid}.          
+\begin{figure}[htbp]
+\centering
+\includegraphics[height=4.5cm, width=7cm]{images/evm_lem}    
+\caption{Validation of EVM models}
+\label{fig:valid}
+\end{figure}
+The adaption of the test suite from Lem to Isabelle has required certain efforts, mainly because 
+of different representations of machine words. So, OCaml code from Lem uses efficient native modules,
+whereas the Isabelle side invokes formally verified theory of machine words. Because of this, our suite
+needs much more time to pass the tests. Nonetheless, we gain a complementary indication that
+all three models of EVM follow the specification and behave equally.    
+%
+\section{Related Work}
+\label{sec:rwork}
+As a consequence of the fact that smart contracts are critical under many aspects, a notable amount of
+approaches and tools for their analysis has already been proposed 
+(\cite{Bhargavan:2016:FVS:2993600.2993611}, \cite{securify}, \cite{openzeppelin} to name a few).
+ 
+The major trend is to apply various kinds of static analysis not only at the level of structured contract
+languages (e.g. Solidity~\cite{openzeppelin}) but also at the bytecode level~\cite{securify}. 
+%However, most tools do not provide a lot of insight into internal details.
+%
+The obvious advantage of static analysis approaches is that full automation can be achieved for 
+contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify} 
+ 
+Our approach is general as we aim to specify and verify contract properties in pre/postcondition
+style where the conditions can comprise any higher-order logic formula describing an EVM state. 
+For that reason, the degree of automation is basically limited in our case such that the user will need to interact 
+with the proof system in most cases to discharge elaborated claims. 
+
+In~\cite{Bhargavan:2016:FVS:2993600.2993611}, a technique using an intermediate functional language
+called $F^*$, which is more amenable to verification, has been proposed. 
+It provides not only translation of a subset of Solidity programs 
+to $F^*$, but also decompilation of EVM bytecode to $F^*$ as well. This use of decompilation makes
+the approach similar to ours, since our program logic, in fact, resembles decompilation.
+As we will show in the following section, in the first step we split bytecode program into blocks without jumps,  
+whereas the actual jump destinations are determined dynamically `on-the-fly' by application of logic rules.
+By contrast, \cite{Bhargavan:2016:FVS:2993600.2993611} performs static stack analysis to this end.
+However, a more striking difference is that our approach is homogeneous since basically each and every step of our whole verification process 
+is performed and justified within a single, trusted logical framework without any translations to or from other formalisms.
+As already mentioned, such translations must be either assumed to behave correctly in some sense or 
+formally modelled and verified,
+whereas we aimed to avoid both of these options. 
+%   
+\section{Total Correctness of EVM Bytecode Programs}
+\label{sec:corr}
+In his PhD thesis~\cite{DBLP:phd/ethos/Myreen09}, Myreen introduced a general 
+method of formal 
+machine code verification with a particular application to ARM. In this section we show how
+this general method can be adapted to EVM, taking however additional accounts of its specific properties rooted in the 
+gas consumption.
+ 
+In the general model, a state carries all the information needed to execute a program, including
+instructions (with respective reference numbers) constituting the program itself, a program counter that
+refers to the current instruction, a stack and so on. All these elements are treated uniformly 
+as sets of so-called \emph{state elements}
+and separated in a state using separation conjuncts $\sconj$.  
+Then a single machine step can be captured by a function $\next$ that 
+takes the current instruction and transforms the state in accordance with the instructions
+specified behaviour. Of course, $\next$ might not always be able to pick an instruction
+as an execution can have terminated properly or with an exception. This is indicated within a state
+by the $\ncont$ flag, which is just an abbreviation for the state element 
+$\mathit{ContinuingElm}\:False$. If $\ncont$ is present in a state, $\next$
+leaves the state unchanged.   
+   
+An input/output property of a program $c$ is captured by a triple
+$\pvalid{P}{c}{Q}$ which is true iff for any state $s$ and frame $F$ such that
+$(P \sconj \code{c} \sconj F)\: s$ holds, there exists a natural number $k$ such that 
+$(Q \sconj \code{c} \sconj F)\: \next^k(s)$ holds. The frame is used to accomodate
+an invariant part of a state, whereas $\next^k$ as usual denotes the $k$-times iteration of $\next$.
+Such triples $\pvalid{P}{c}{Q}$ are highly generic and we cannot conclude much from many of these, except that
+under given preconditions the program $c$ will pass a state satisying $Q$. This changes immediately in cases when $Q$ is of
+the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating state satisfying $Q'$.
+Hence, showing $\pvalid{P}{c}{\ncont \sconj Q'}$ amounts to showing termination of the program $c$ in
+a $Q'$ state.
+
+This general approach seamlessly applies to the specific case of EVM bytecode. However,
+due to the fact that EVM serves a blockchain, it exhibits a specific property that we have observed and exploit below, simplifying the method. 
+So, by design, execution of each EVM instruction requires some respective positive amount of gas which
+is subtracted after the execution from the overall gas amount assigned to this contract. 
+Otherwise, the contract cannot proceed and exits with an exception.  
+This property gives us a termination order, such that in this context we have the function $\next^*$ which 
+consequently assigns to each state the terminal element from the reflexive-transitive closure of $\next$. 
+The essential property of $\next^*$ is that for any state $s$ there exists $k$ such that
+\begin{itemize}
+\item[(I)] $\next^*(s) = \next^k(s)$
+\item[(II)] $\next^l(s)$ can continue for any $l < k$
+\item[(III)] $\next^l(s)$ cannot continue for any $l \ge k$,
+\end{itemize}
+which establishes $\next^*(s)$ as the least fixed point of $\next^k$ for all $s$ and $k$.
+
+Now, regarding the contract correctness, we strenghten $\pvalid{P}{c}{Q}$ to 
+a total correctness property $\tvalid{P}{c}{Q}$ which is consequently true iff
+for any state $s$ and frame $F$ 
+$(P \sconj \code{c} \sconj F)\: s$ implies $(Q \sconj \code{c} \sconj F)\: \next^*(s)$. 
+To sum up, what we achieved is to factor out the termination property which we have 
+shown \emph{once and for all} contracts, thus removing this obligation from the verification
+process. In the next section we will present the program logic handling EVM bytecode, 
+which (based on soundness presented in Section~\ref{sec:sound}) will give us 
+a device to establish contract properties of the form $\tvalid{P}{c}{Q}$.   
+%       
+\section{Program Logic}
+\label{sec:logic}
+
+
+\section{Soundness}
+\label{sec:sound}
+
+
+\section{Proof Automation}
+\label{sec:auto}
+
+
+\section{Case-study}
+\label{sec:case}
+
+
+\section{Conclusions and Future Work}
+\label{sec:concl}
+
+%% Acknowledgments
+%\begin{acks}                            %% acks environment is optional
+                                        %% contents suppressed with 'anonymous'
+  %% Commands \grantsponsor{<sponsorID>}{<name>}{<url>} and
+  %% \grantnum[<url>]{<sponsorID>}{<number>} should be used to
+  %% acknowledge financial support and will be used by metadata
+  %% extraction tools.
+%  This material is based upon work supported by the
+%  \grantsponsor{GS100000001}{National Science
+%    Foundation}{http://dx.doi.org/10.13039/100000001} under Grant
+%  No.~\grantnum{GS100000001}{nnnnnnn} and Grant
+%  No.~\grantnum{GS100000001}{mmmmmmm}.  Any opinions, findings, and
+%  conclusions or recommendations expressed in this material are those
+%  of the author and do not necessarily reflect the views of the
+%  National Science Foundation.
+%\end{acks}
+
+
+%% Bibliography
+\bibliography{evm}
+
+
+%% Appendix
+%\appendix
+%\section{Appendix}
+%Text of appendix \ldots
+
+\end{document}
