@@ -70,7 +70,7 @@
 \newcommand{\pvalid}[3]{\models\{#1\}\:#2\:\{#3\}}
 \newcommand{\tvalid}[3]{\models [#1]\:#2\:[#3]}
 \newcommand{\ttrip}[3]{\vdash [#1]\:#2\:[#3]}
-\newcommand{\next}{\mathit{next}}
+\newcommand{\xnext}{\mathit{next}}
 \newcommand{\code}[1]{\mathit{code}(#1)}
 \newcommand{\cont}{\mathit{continuing}}
 \newcommand{\ncont}{\mathit{not\_continuing}}
@@ -345,19 +345,19 @@ instructions (with respective reference numbers) constituting the program itself
 refers to the current instruction, a stack and so on. All these elements are treated uniformly 
 as sets of so-called \emph{state elements}
 and separated in a state using separation conjuncts $\sconj$.  
-Then a single machine step can be captured by a function $\next$ that 
+Then a single machine step can be captured by a function $\xnext$ that 
 takes the current instruction and transforms the state in accordance with the instructions
-specified behaviour. Of course, $\next$ might not always be able to pick an instruction
+specified behaviour. Of course, $\xnext$ might not always be able to pick an instruction
 as an execution can have terminated properly or with an exception. This is indicated within a state
 by the $\ncont$ flag, which is just an abbreviation for the state element 
-$\mathit{ContinuingElm}\:False$. If $\ncont$ is present in a state, $\next$
+$\mathit{ContinuingElm}\:False$. If $\ncont$ is present in a state, $\xnext$
 leaves the state unchanged.   
    
 An input/output property of a program $c$ is captured by a triple
 $\pvalid{P}{c}{Q}$ which is true iff for any state $s$ and frame $F$ such that
 $(P \sconj \code{c} \sconj F)\: s$ holds, there exists a natural number $k$ such that 
-$(Q \sconj \code{c} \sconj F)\: \next^k(s)$ holds. The frame is used to accomodate
-an invariant part of a state, whereas $\next^k$ as usual denotes the $k$-times iteration of $\next$.
+$(Q \sconj \code{c} \sconj F)\: \xnext^k(s)$ holds. The frame is used to accomodate
+an invariant part of a state, whereas $\xnext^k$ as usual denotes the $k$-times iteration of $\xnext$.
 Such triples $\pvalid{P}{c}{Q}$ are highly generic and we cannot conclude much from many of these, except that
 under given preconditions the program $c$ will pass a state satisying $Q$. This changes immediately in cases when $Q$ is of
 the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating state satisfying $Q'$.
@@ -369,20 +369,20 @@ due to the fact that EVM serves a blockchain, it exhibits a specific property th
 So, by design, execution of each EVM instruction requires some respective positive amount of gas which
 is subtracted after the execution from the overall gas amount assigned to this contract. 
 Otherwise, the contract cannot proceed and exits with an exception.  
-This property gives us a termination order, such that in this context we have the function $\next^*$ which 
-consequently assigns to each state the terminal element from the reflexive-transitive closure of $\next$. 
-The essential property of $\next^*$ is that for any state $s$ there exists $k$ such that
+This property gives us a termination order, such that in this context we have the function $\xnext^*$ which 
+consequently assigns to each state the terminal element from the reflexive-transitive closure of $\xnext$. 
+The essential property of $\xnext^*$ is that for any state $s$ there exists $k$ such that
 \begin{itemize}
-\item[(I)] $\next^*(s) = \next^k(s)$
-\item[(II)] $\next^l(s)$ can continue for any $l < k$
-\item[(III)] $\next^l(s)$ cannot continue for any $l \ge k$,
+\item[(I)] $\xnext^*(s) = \xnext^k(s)$
+\item[(II)] $\xnext^l(s)$ can continue for any $l < k$
+\item[(III)] $\xnext^l(s)$ cannot continue for any $l \ge k$,
 \end{itemize}
-which establishes $\next^*(s)$ as the least fixed point of $\next^k$ for all $s$ and $k$.
+which establishes $\xnext^*(s)$ as the least fixed point of $\xnext^k$ for all $s$ and $k$.
 
 Now, regarding the contract correctness, we strenghten $\pvalid{P}{c}{Q}$ to 
 a total correctness property $\tvalid{P}{c}{Q}$ which is consequently true iff
 for any state $s$ and frame $F$ 
-$(P \sconj \code{c} \sconj F)\: s$ implies $(Q \sconj \code{c} \sconj F)\: \next^*(s)$. 
+$(P \sconj \code{c} \sconj F)\: s$ implies $(Q \sconj \code{c} \sconj F)\: \xnext^*(s)$. 
 To sum up, what we achieved is to factor out the termination property which we have 
 shown \emph{once and for all} contracts, thus removing this obligation from the verification
 process. In the next section we will present the program logic handling EVM bytecode, 
