@@ -323,7 +323,7 @@ called $F^*$, which is more amenable to verification, has been proposed.
 It provides not only translation of a subset of Solidity programs 
 to $F^*$, but also decompilation of EVM bytecode to $F^*$ as well. This use of decompilation makes
 the approach similar to ours, since our program logic, in fact, resembles decompilation.
-As we will show in the following section, in the first step we split bytecode program into blocks without jumps,  
+As we will show in the following sections, in the first step we split bytecode program into blocks without jumps,  
 whereas the actual jump destinations are determined dynamically `on-the-fly' by application of logic rules.
 By contrast, \cite{Bhargavan:2016:FVS:2993600.2993611} performs static stack analysis to this end.
 However, a more striking difference is that our approach is homogeneous since basically each and every step of our whole verification process 
@@ -359,13 +359,14 @@ $(P \sconj \code{c} \sconj F)\: s$ holds, there exists a natural number $k$ such
 $(Q \sconj \code{c} \sconj F)\: \xnext^k(s)$ holds. The frame is used to accomodate
 an invariant part of a state, whereas $\xnext^k$ as usual denotes the $k$-times iteration of $\xnext$.
 Such triples $\pvalid{P}{c}{Q}$ are highly generic and we cannot conclude much from many of these, except that
-under given preconditions the program $c$ will pass a state satisying $Q$. This changes immediately in cases when $Q$ is of
+under given preconditions the program $c$ will pass a state satisfying $Q$. This changes immediately in cases when $Q$ is of
 the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating state satisfying $Q'$.
 Hence, showing $\pvalid{P}{c}{\ncont \sconj Q'}$ amounts to showing termination of the program $c$ in
 a $Q'$ state.
 
 This general approach seamlessly applies to the specific case of EVM bytecode. However,
-due to the fact that EVM serves a blockchain, it exhibits a specific property that we have observed and exploit below, simplifying the method. 
+due to the fact that EVM serves a blockchain, it exhibits a specific property that we have observed and exploit below, 
+simplifying the method. 
 So, by design, execution of each EVM instruction requires some respective positive amount of gas which
 is subtracted after the execution from the overall gas amount assigned to this contract. 
 Otherwise, the contract cannot proceed and exits with an exception.  
@@ -379,7 +380,7 @@ The essential property of $\xnext^*$ is that for any state $s$ there exists $k$ 
 \end{itemize}
 which establishes $\xnext^*(s)$ as the least fixed point of $\xnext^k$ for all $s$ and $k$.
 
-Now, regarding the contract correctness, we strenghten $\pvalid{P}{c}{Q}$ to 
+Now, regarding the contract correctness, we strengthen $\pvalid{P}{c}{Q}$ to 
 a total correctness property $\tvalid{P}{c}{Q}$ which is consequently true iff
 for any state $s$ and frame $F$ 
 $(P \sconj \code{c} \sconj F)\: s$ implies $(Q \sconj \code{c} \sconj F)\: \xnext^*(s)$. 
