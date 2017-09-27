@@ -348,7 +348,7 @@ In the general model, a state carries all the information needed to execute a pr
 instructions (with respective reference numbers) constituting the program itself, a program counter that
 refers to the current instruction, a stack and so on. All these elements are treated uniformly 
 as sets of so-called \emph{state elements}
-and separated in a state using separation conjuncts $\sconj$.  
+and separated in a state using separation logic conjuncts $\sconj$~\cite{Reynolds_02}.  
 Then a single machine step can be captured by a function $\xnext$ that 
 takes the current instruction and transforms the state in accordance with the instructions
 specified behaviour. Of course, $\xnext$ might not always be able to pick an instruction
