@@ -75,6 +75,7 @@
 \newcommand{\cont}{\mathit{continuing}}
 \newcommand{\ncont}{\mathit{not\_continuing}}
 
+\newcommand{\sid}[1]{\textit{\textbf{#1 [sid]}}}
 \begin{document}
 
 %% Title information
@@ -101,22 +102,6 @@
 %% extraction tools.
 
 %% Authors with single affiliation.
-\author{Sidney Amani}
-%\authornote{with author1 note}          %% \authornote is optional;
-                                        %% can be repeated if necessary
-%\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
-\affiliation{
-%  \position{Position1}
-  \department{Data61}              %% \department is recommended
-  \institution{CSIRO}            %% \institution is required
-%  \streetaddress{Street1 Address1}
-%  \city{City1}
-  \state{NSW}
-%  \postcode{Post-Code1}
-  \country{Australia}                    %% \country is recommended
-}
-\email{Sidney.Amani@data61.csiro.au}          %% \email is recommended
-
 \author{Myriam B\'egel}
 \authornote{work done while at Data61, CSIRO}          %% \authornote is optional;
                                         %% can be repeated if necessary
@@ -132,6 +117,22 @@
   \country{France}                    %% \country is recommended
 }
 \email{Myriam.Begel@ens-paris-saclay.fr}          %% \email is recommended
+
+\author{Sidney Amani}
+%\authornote{with author1 note}          %% \authornote is optional;
+                                        %% can be repeated if necessary
+%\orcid{nnnn-nnnn-nnnn-nnnn}             %% \orcid is optional
+\affiliation{
+%  \position{Position1}
+  \department{Data61}              %% \department is recommended
+  \institution{CSIRO}            %% \institution is required
+%  \streetaddress{Street1 Address1}
+%  \city{City1}
+  \state{NSW}
+%  \postcode{Post-Code1}
+  \country{Australia}                    %% \country is recommended
+}
+\email{Sidney.Amani@data61.csiro.au}          %% \email is recommended
 
 \author{Maksym Bortin}
 %\authornote{with author1 note}          %% \authornote is optional;
@@ -303,7 +304,7 @@ process is outlined in Figure~\ref{fig:valid}.
 \begin{figure}[htbp]
 \centering
 \includegraphics[height=4.5cm, width=7cm]{images/evm_lem}    
-\caption{Validation of EVM models}
+        \caption{Validation of EVM models \sid{highlight isa-to-ocaml translation}}
 \label{fig:valid}
 \end{figure}
 The adaption of the test suite from Lem to Isabelle has required certain efforts, mainly because 
@@ -314,6 +315,8 @@ all three models of EVM follow the specification and behave equally.
 %
 \section{Related Work}
 \label{sec:rwork}
+
+\sid{XCAP, Chlipala's bedrock, KEVM?}
 As a consequence of the fact that smart contracts are critical under many aspects, a notable amount of
 approaches and tools for their analysis has already been proposed 
 (\cite{Bhargavan:2016:FVS:2993600.2993611}, \cite{securify}, \cite{openzeppelin} to name a few).
@@ -356,7 +359,7 @@ In the general model, a state carries all the information needed to execute a pr
 instructions (with respective reference numbers) constituting the program itself, a program counter that
 refers to the current instruction, a stack and so on. All these elements are treated uniformly 
 as sets of so-called \emph{state elements}
-and separated in a state using separation conjuncts $\sconj$ (cf.~\cite{Reynolds:2002}).  
+and separated in a state using separation logic conjuncts $\sconj$~\cite{Reynolds_02}.  
 Then a single machine step can be captured by a function $\xnext$ that 
 takes the current instruction and transforms the state in accordance with the instructions
 specified behaviour. Of course, $\xnext$ might not always be able to pick an instruction
@@ -378,6 +381,8 @@ the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating stat
 Hence, showing $\pvalid{P}{c}{\ncont \sconj Q'}$ amounts to showing termination of the program $c$ in
 a $Q'$ state.
 
+\sid{Clarify purpose of gas comsumption in the Ethereum protocol in general and
+how it works w.r.t. the EVM.}
 This general approach seamlessly applies to the specific case of EVM bytecode. However,
 due to the fact that EVM serves a blockchain, it exhibits a specific property that we have observed and exploit below, 
 simplifying the method. 
