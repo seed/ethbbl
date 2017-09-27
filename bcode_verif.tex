@@ -255,14 +255,26 @@ of building and verifying a formal model of such compiler but also removes its a
 Secondly, bytecode is the actual language of Ethereum as all contracts appear only in this form on the blockchain.
 Although it is common to provide access to source code of a contract in a structured language if available, there is
 no obligation to do so. These arguments gave us the main motivation to do formal verification of
-the EVM bytecode, despite the necessity to restore structures (such as conditionals), that we can take 
+the EVM bytecode, despite the necessity to restore structures (such as conditionals) that we can take 
 for granted in any high-level language,
 as a part of the verification process described in the remainder of the paper. 
+
+The main contributions of the paper are the following
+\begin{itemize}
+\item[(i)] an extension to the EVM formalisation~\cite{Yoichi} in the expressible
+           higher-order logic of the Isabelle theorem prover,
+           by adding contract correctness properties excluding termination, which is shown
+           separately once and for all;
+\item[(ii)] sound program logic to handle contracts at the bytecode level;
+\item[(iii)] Isabelle tactics to support automated generation of verification
+            conditions using the rules of the logic.
+\end{itemize}
          
 The paper is structured as follows. Sections~\ref{sec:bg} and \ref{sec:rwork} describe the background
-and the related work. Section~\ref{sec:corr} describes how we define correctness property in pre/post condition
-style for EVM bytecode. Section~\ref{sec:logic} is devoted to our program logic, i.e. rules for generation
-of verification conditions out of a contract, whereas Section~\ref{sec:sound} shows the soundness of the logic
+and the related work. Section~\ref{sec:corr} describes how we define correctness property in pre/postcondition
+style for EVM bytecode programs. Section~\ref{sec:logic} is devoted to our program logic, 
+%i.e. rules for generation of verification conditions out of a contract, 
+whereas Section~\ref{sec:sound} shows the soundness of the logic
 w.r.t. the correctness property. Section~\ref{sec:auto} outlines how we automate generation of verification
 conditions using Isabelle tactics. Section~\ref{sec:case} presents a case-study deploying our framework in 
 real bytecode verification, and
@@ -344,7 +356,7 @@ In the general model, a state carries all the information needed to execute a pr
 instructions (with respective reference numbers) constituting the program itself, a program counter that
 refers to the current instruction, a stack and so on. All these elements are treated uniformly 
 as sets of so-called \emph{state elements}
-and separated in a state using separation conjuncts $\sconj$.  
+and separated in a state using separation conjuncts $\sconj$ (cf.~\cite{Reynolds:2002}).  
 Then a single machine step can be captured by a function $\xnext$ that 
 takes the current instruction and transforms the state in accordance with the instructions
 specified behaviour. Of course, $\xnext$ might not always be able to pick an instruction
@@ -356,8 +368,10 @@ leaves the state unchanged.
 An input/output property of a program $c$ is captured by a triple
 $\pvalid{P}{c}{Q}$ which is true iff for any state $s$ and frame $F$ such that
 $(P \sconj \code{c} \sconj F)\: s$ holds, there exists a natural number $k$ such that 
-$(Q \sconj \code{c} \sconj F)\: \xnext^k(s)$ holds. The frame is used to accomodate
-an invariant part of a state, whereas $\xnext^k$ as usual denotes the $k$-times iteration of $\xnext$.
+$(Q \sconj \code{c} \sconj F)\: \xnext^k(s)$ holds. 
+%The frame is used to accomodate an invariant part of a state, 
+Keeping frame $F$ will allow us to reason about parts of the state locally using \emph{frame rule}(cf.~\cite{Reynolds:2002}),
+whereas $\xnext^k$ as usual denotes the $k$-times iteration of $\xnext$.
 Such triples $\pvalid{P}{c}{Q}$ are highly generic and we cannot conclude much from many of these, except that
 under given preconditions the program $c$ will pass a state satisfying $Q$. This changes immediately in cases when $Q$ is of
 the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating state satisfying $Q'$.
@@ -374,9 +388,9 @@ This property gives us a termination order, such that in this context we have th
 consequently assigns to each state the terminal element from the reflexive-transitive closure of $\xnext$. 
 The essential property of $\xnext^*$ is that for any state $s$ there exists $k$ such that
 \begin{itemize}
-\item[(I)] $\xnext^*(s) = \xnext^k(s)$
-\item[(II)] $\xnext^l(s)$ can continue for any $l < k$
-\item[(III)] $\xnext^l(s)$ cannot continue for any $l \ge k$.
+\item[(i)] $\xnext^*(s) = \xnext^k(s)$
+\item[(ii)] $\xnext^l(s)$ can continue for any $l < k$
+\item[(iii)] $\xnext^l(s)$ cannot continue for any $l \ge k$.
 \end{itemize}
 In other words, $\xnext^*(s) = \xnext^k(s)$ where $k$ is the least number such that
 $\xnext^k(s)$ reaches a state with $\ncont$. 
@@ -389,11 +403,39 @@ To sum up, what we achieved so far is to factor out the termination part which w
 shown \emph{once and for all} contracts, thus removing this obligation from the verification
 process completely. In the next section we will present the program logic handling EVM bytecode, 
 which (based on soundness presented in Section~\ref{sec:sound}) will give us 
-a sound device to derive contract properties of the form $\tvalid{P}{c}{Q}$.   
+a sound device to derive verification conditions for contract properties of the form $\tvalid{P}{c}{Q}$.   
 %       
 \section{Program Logic}
 \label{sec:logic}
 
+\subsection{Basic Blocks}
+\begin{figure}
+\center
+\begin{tabular}{c r l c}
+                block index & index & instruction & type of block\\
+                        \hline
+                &       0       &       OR&\\
+                &       1       &       ADD&\\
+                {0}&    2       &       SWAP1&  {Next}\\
+                        \hline
+                &       3       &       JUMPDEST&\\
+                &       4       &       MLOAD&\\
+                &       5       &       POP&\\
+                {3}&    \textcolor{gray}{6}     &       {\color{gray}JUMP}&     {Jump}\\
+                        \hline
+                &       7       &       DUP3&\\
+                &       8       &       PUSH 0&\\
+                &       10      &       ISZERO&\\
+                {7}&    \textcolor{gray}{11}    &       {\color{gray}JUMPI}&    {Jumpi}\\
+                        \hline
+                &       12      &       POP&\\
+                {12}&   13      &       RETURN& {Terminal}\\
+                        \hline
+        \end{tabular}
+\caption{Example of bytecode splitted into basic blocks. Grey instructions appears in the original 
+         code but are removed from the list of instructions of their block.}
+\label{fig:basicblocks}
+\end{figure}
 
 \section{Soundness}
 \label{sec:sound}
