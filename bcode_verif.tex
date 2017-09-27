@@ -376,19 +376,20 @@ The essential property of $\xnext^*$ is that for any state $s$ there exists $k$ 
 \begin{itemize}
 \item[(I)] $\xnext^*(s) = \xnext^k(s)$
 \item[(II)] $\xnext^l(s)$ can continue for any $l < k$
-\item[(III)] $\xnext^l(s)$ cannot continue for any $l \ge k$,
+\item[(III)] $\xnext^l(s)$ cannot continue for any $l \ge k$.
 \end{itemize}
-which establishes $\xnext^*(s)$ as the least fixed point of $\xnext^k$ for all $s$ and $k$.
+In other words, $\xnext^*(s) = \xnext^k(s)$ where $k$ is the least number such that
+$\xnext^k(s)$ reaches a state with $\ncont$. 
 
 Now, regarding the contract correctness, we strengthen $\pvalid{P}{c}{Q}$ to 
 a total correctness property $\tvalid{P}{c}{Q}$ which is consequently true iff
 for any state $s$ and frame $F$ 
 $(P \sconj \code{c} \sconj F)\: s$ implies $(Q \sconj \code{c} \sconj F)\: \xnext^*(s)$. 
-To sum up, what we achieved is to factor out the termination property which we have 
+To sum up, what we achieved so far is to factor out the termination part which we have 
 shown \emph{once and for all} contracts, thus removing this obligation from the verification
-process. In the next section we will present the program logic handling EVM bytecode, 
+process completely. In the next section we will present the program logic handling EVM bytecode, 
 which (based on soundness presented in Section~\ref{sec:sound}) will give us 
-a device to establish contract properties of the form $\tvalid{P}{c}{Q}$.   
+a sound device to derive contract properties of the form $\tvalid{P}{c}{Q}$.   
 %       
 \section{Program Logic}
 \label{sec:logic}
