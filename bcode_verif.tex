@@ -75,6 +75,7 @@
 \newcommand{\cont}{\mathit{continuing}}
 \newcommand{\ncont}{\mathit{not\_continuing}}
 
+\newcommand{\sid}[1]{\textit{\textbf{#1 [sid]}}}
 \begin{document}
 
 %% Title information
@@ -258,6 +259,7 @@ no obligation to do so. These arguments gave us the main motivation to do formal
 the EVM bytecode, despite the necessity to restore structures (such as conditionals), that we can take 
 for granted in any high-level language,
 as a part of the verification process described in the remainder of the paper. 
+\sid{list paper contributions here}
          
 The paper is structured as follows. Sections~\ref{sec:bg} and \ref{sec:rwork} describe the background
 and the related work. Section~\ref{sec:corr} describes how we define correctness property in pre/post condition
@@ -291,7 +293,7 @@ process is outlined in Figure~\ref{fig:valid}.
 \begin{figure}[htbp]
 \centering
 \includegraphics[height=4.5cm, width=7cm]{images/evm_lem}    
-\caption{Validation of EVM models}
+        \caption{Validation of EVM models \sid{highlight isa-to-ocaml translation}}
 \label{fig:valid}
 \end{figure}
 The adaption of the test suite from Lem to Isabelle has required certain efforts, mainly because 
@@ -302,6 +304,8 @@ all three models of EVM follow the specification and behave equally.
 %
 \section{Related Work}
 \label{sec:rwork}
+
+\sid{XCAP, Chlipala's bedrock, KEVM?}
 As a consequence of the fact that smart contracts are critical under many aspects, a notable amount of
 approaches and tools for their analysis has already been proposed 
 (\cite{Bhargavan:2016:FVS:2993600.2993611}, \cite{securify}, \cite{openzeppelin} to name a few).
@@ -364,6 +368,8 @@ the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating stat
 Hence, showing $\pvalid{P}{c}{\ncont \sconj Q'}$ amounts to showing termination of the program $c$ in
 a $Q'$ state.
 
+\sid{Clarify purpose of gas comsumption in the Ethereum protocol in general and
+how it works w.r.t. the EVM.}
 This general approach seamlessly applies to the specific case of EVM bytecode. However,
 due to the fact that EVM serves a blockchain, it exhibits a specific property that we have observed and exploit below, 
 simplifying the method. 
