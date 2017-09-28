@@ -61,7 +61,7 @@
 
 \usepackage{graphicx}
 \usepackage{graphics}
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amssymb, amsfonts, mathtools}
 \usepackage{isabelle,isabellesym}
 
 \newcommand{\defeq}{\mathrel{\stackrel{\mbox{\tiny \it def}}{=}}}
@@ -69,13 +69,25 @@
 \newcommand{\coloncolon}{\mathrel{::}}
 \newcommand{\pvalid}[3]{\models\{#1\}\:#2\:\{#3\}}
 \newcommand{\tvalid}[3]{\models [#1]\:#2\:[#3]}
-\newcommand{\ttrip}[3]{\vdash [#1]\:#2\:[#3]}
+\newcommand{\ttrip}[5]{\mathit{#1} \vdash_{\mathrm{#2}} [#3]\:#4\:[#5]}
 \newcommand{\xnext}{\mathit{next}}
 \newcommand{\code}[1]{\mathit{code}(#1)}
 \newcommand{\cont}{\mathit{continuing}}
 \newcommand{\ncont}{\mathit{not\_continuing}}
+\newcommand{\instr}[1]{\mathtt{#1}}
+\newcommand{\Rule}[2]{\begin{array}{c}#1\\\hline\noalign{\smallskip}#2\end{array}}
+%\newcommand{\Rule}[2]{\dfrac{#1}{#2}}
 
+
+%%%%%%%%%%%%%%%%%%
 \newcommand{\sid}[1]{\textit{\textbf{#1 [sid]}}}
+
+
+
+
+
+
+
 \begin{document}
 
 %% Title information
@@ -377,7 +389,7 @@ $\pvalid{P}{c}{Q}$ which is true iff for any state $s$ and frame $F$ such that
 $(P \sconj \code{c} \sconj F)\: s$ holds, there exists a natural number $k$ such that 
 $(Q \sconj \code{c} \sconj F)\: \xnext^k(s)$ holds. 
 %The frame is used to accomodate an invariant part of a state, 
-Keeping frame $F$ will allow us to reason about parts of the state locally using \emph{frame rule}(cf.~\cite{Reynolds:2002}),
+Keeping frame $F$ will allow us to reason about parts of the state locally using \emph{frame rule}(cf.~\cite{Reynolds_02}),
 whereas $\xnext^k$ as usual denotes the $k$-times iteration of $\xnext$.
 Such triples $\pvalid{P}{c}{Q}$ are highly generic and we cannot conclude much from many of these, except that
 under given preconditions the program $c$ will pass a state satisfying $Q$. This changes immediately in cases when $Q$ is of
@@ -410,27 +422,57 @@ for any state $s$ and frame $F$
 $(P \sconj \code{c} \sconj F)\: s$ implies $(Q \sconj \code{c} \sconj F)\: \xnext^*(s)$. 
 To sum up, what we achieved so far is to factor out the termination part which we have 
 shown \emph{once and for all} contracts, thus removing this obligation from the verification
-process completely. In the next section we will present the program logic handling EVM bytecode, 
+process completely. In the next section we will present our program logic handling EVM bytecode, 
 which (based on soundness presented in Section~\ref{sec:sound}) will give us 
 a sound device to derive verification conditions for contract properties of the form $\tvalid{P}{c}{Q}$.   
 %       
 \section{Program Logic}
 \label{sec:logic}
+A Hoare-style program logic comprises a collection of rules that allow us to derive semantic properties 
+of compound programs from properties of its parts. In case of structured languages 
+we usually have, for instance, a rule telling us that a program \textbf{if} $C$ \textbf{then} $p_1$ \textbf{else} $p_2$
+exhibits an input/output behaviour if $p_1$ and $p_2$ do so, however, with additional precondition $C$ in the former
+and $\neg C$ in the latter case. The situation is not that simple when we have to deal with mainly
+unstructured programs like EVM bytecode in our case. For example, such conditional compound constructs as above
+appear merely as instructions to make jumps to other program parts. Since a bytecode program comprises
+a list of instructions, a rule might handle the head instruction and proceed to the tail of 
+the list, but would need to make exceptions when the head instruction is a jump, because then
+we cannot simply proceed with the tail. Although such treatment would be in principle possible,
+there are more sophisticated decompilation techniques available, such as extraction of 
+\emph{Control Flow Graphs} (CFG) out of the Java Virtual Machine (JVM) code~\cite{zhao99}.
+The aim of CFG extraction is to split a program into \emph{basic blocks}, i.e. sequences of
+instructions without jumps, and connect them
+using edges corresponding to jumps. Obviously, the essential property of basic blocks is that
+control flow always enters it at its first instruction and leaves only after the last one
+has been executed.
 
-\subsection{Basic Blocks}
+However, CFG extraction for JVM cannot be easily adapted to our EVM context, because JVM jump
+instructions carry their respective target address statically, whereas in EVM jump targets
+must be obtained from the stack, i.e. dynamically. For that reason, our bytecode preprocess
+comprises basic block extraction only.  
+%       
+\subsection{Extraction of Basic Blocks}
+We divide instructions into three groups:
+\begin{itemize}
+\item[(i)] $\instr{JUMPDEST}$ -- indicates a jump destination and hence beginning of a
+                                 basic block;
+\item[(ii)] 
+\end{itemize} 
+                                  
+
 \begin{figure}
 \center
 \begin{tabular}{c r l c}
                 block index & index & instruction & type of block\\
                         \hline
-                &       0       &       OR&\\
+                &       0       &       $\instr{OR}$&\\
                 &       1       &       ADD&\\
                 {0}&    2       &       SWAP1&  {Next}\\
                         \hline
                 &       3       &       JUMPDEST&\\
                 &       4       &       MLOAD&\\
                 &       5       &       POP&\\
-                {3}&    \textcolor{gray}{6}     &       {\color{gray}JUMP}&     {Jump}\\
+                {3}&    \textcolor{gray}{6}     &       {\color{gray}$\instr{JUMP}$}&     {Jump}\\
                         \hline
                 &       7       &       DUP3&\\
                 &       8       &       PUSH 0&\\
