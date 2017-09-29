@@ -470,8 +470,12 @@ Furthermore, we classify basic blocks by means of the following four types:
                              to the instruction with the successor address.                         
 \end{itemize} 
 Figure~\ref{fig:basicblocks} illustrates how we split EVM bytecode into basic blocks of different
-types, indexing these thereby with the address of the head instruction as well as removing all jump 
-instructions from the actual contents of the blocks. 
+types, indexing the blocks thereby with the address of the head instruction as well as removing all jump 
+instructions from their actual contents. The entire extraction process is captured in Isabelle
+by means of a function $\mathit{build\_blocks}$ which maps a list of instructions to a list of tuples $(i, \mathit{xs}, t)$, 
+where $i$ is the block index, $\mathit{xs}$ -- the list of instructions of the block, and $t$ -- the type of
+the block. 
+%Moreover, we keep the order of blocks such that we can refer to the block where   
 \begin{figure}
 \center
 \begin{tabular}{c r l c}
