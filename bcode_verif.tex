@@ -282,7 +282,7 @@ The main contributions of the paper are the following
            higher-order logic of the Isabelle theorem prover,
            by adding contract correctness properties excluding termination, which is shown
            separately once and for all;
-\item[(ii)] sound program logic to handle contracts at the bytecode level;
+\item[(ii)] sound program logic to verify smart contracts at the bytecode level;
 \item[(iii)] Isabelle tactics to support automated generation of verification
             conditions using the rules of the logic.
 \end{itemize}
@@ -332,13 +332,14 @@ all three models of EVM follow the specification and behave equally.
 \section{Related Work}
 \label{sec:rwork}
 
+
 \sid{XCAP, Chlipala's bedrock, KEVM?}
 As a consequence of the fact that smart contracts are critical under many aspects, a notable amount of
 approaches and tools for their analysis has already been proposed 
 (\cite{Bhargavan:2016:FVS:2993600.2993611}, \cite{securify}, \cite{openzeppelin} to name a few).
  
 The major trend is to apply various kinds of static analysis not only at the level of structured contract
-languages (e.g. Solidity~\cite{openzeppelin}) but also at the bytecode level~\cite{securify}. 
+languages (e.g. Solidity's Why3 backend~\cite{filliatre2013why3}) but also at the bytecode level~\cite{Msuiche_17,securify}. 
 %However, most tools do not provide a lot of insight into internal details.
 %
 The obvious advantage of static analysis approaches is that full automation can be achieved for 
