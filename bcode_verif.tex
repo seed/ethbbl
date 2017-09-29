@@ -447,7 +447,7 @@ control flow always enters it at its first instruction and leaves only after the
 has been executed.
 
 However, CFG extraction for JVM cannot be easily adapted to our EVM context, because JVM jump
-instructions carry their respective target address statically, whereas in EVM jump targets
+instructions carry their respective target address statically, whereas in EVM jump destinations
 must be obtained from the stack, i.e. dynamically. For that reason, our bytecode preprocessing
 addresses basic block extraction only.  
 %       
@@ -456,35 +456,47 @@ We divide instructions into three groups:
 \begin{itemize}
 \item[(i)] $\instr{JUMPDEST}$ -- indicates a jump destination and hence beginning of a
                                  basic block;
-\item[(ii)] 
+\item[(ii)] $\instr{JUMP}$, $\instr{JUMPI}$, $\instr{UNKNOWN}$ and all of so-called 
+            \emph{Misc}-instructions\footnote{RETURN, STOP, SUICIDE, CREATE, CALL, CALLCODE, DELEGATECALL} --
+            indicate the end of a basic block ($\instr{UNKNOWN}$ and Misc-instructions interrupt program execution); 
+\item[(iii)] all remaining instructions that form the contents of basic blocks.
 \end{itemize} 
-                                  
-
+Furthermore, we classify basic blocks by means of the following four types:
+\begin{itemize}
+\item[(i)] \textit{Terminal} -- if the last instruction of the block interrups execution;
+\item[(ii)] \textit{Jump} -- if the last instruction is $\instr{JUMP}$;
+\item[(iii)] \textit{Jumpi} -- if the last instruction is $\instr{JUMPI}$;
+\item[(iv)] \textit{Next} -- otherwise, i.e. if control passes from the last instruction of the block
+                             to the instruction with the successor address.                         
+\end{itemize} 
+Figure~\ref{fig:basicblocks} illustrates how we split EVM bytecode into basic blocks of different
+types, indexing these thereby with the address of the head instruction as well as removing all jump 
+instructions from the actual contents of the blocks. 
 \begin{figure}
 \center
 \begin{tabular}{c r l c}
-                block index & index & instruction & type of block\\
+                block index & index & instruction & block type\\
                         \hline
                 &       0       &       $\instr{OR}$&\\
                 &       1       &       $\instr{ADD}$&\\
-                {0}&    2       &       $\instr{SWAP1}$&  {Next}\\
+                {0}&    2       &       $\instr{SWAP1}$&  \textit{Next}\\
                         \hline
                 &       3       &       $\instr{JUMPDEST}$&\\
                 &       4       &       $\instr{MLOAD}$&\\
                 &       5       &       $\instr{POP}$&\\
-                {3}&    \textcolor{gray}{6}     &       {\color{gray}$\instr{JUMP}$}&     {Jump}\\
+                {3}&    \textcolor{gray}{6}     &       {\color{gray}$\instr{JUMP}$}& \textit{Jump}\\
                         \hline
                 &       7       &       $\instr{DUP3}$&\\
                 &       8       &       $\instr{PUSH 0}$&\\
                 &       10      &       $\instr{ISZERO}$&\\
-                {7}&    \textcolor{gray}{11}    &       {\color{gray}$\instr{JUMPI}$}&    {Jumpi}\\
+                {7}&    \textcolor{gray}{11}    &       {\color{gray}$\instr{JUMPI}$}& \textit{Jumpi}\\
                         \hline
                 &       12      &       $\instr{POP}$&\\
-                {12}&   13      &       $\instr{RETURN}$& {Terminal}\\
+                {12}&   13      &       $\instr{RETURN}$& \textit{Terminal}\\
                         \hline
         \end{tabular}
-\caption{Example of bytecode splitted into basic blocks. Grey instructions appear in the original 
-         code but are removed from the list of instructions of their block}
+\caption{A program splitted into basic blocks, where grey instructions appear in the original 
+         code but are removed from the list of instructions of their block.}
 \label{fig:basicblocks}
 \end{figure}
 
