@@ -431,13 +431,13 @@ a sound device to derive verification conditions for contract properties of the 
 A Hoare-style program logic comprises a collection of rules that allow us to derive semantic properties 
 of compound programs from properties of its parts. In case of structured languages 
 we usually have, for instance, a rule telling us that a program \textbf{if} $C$ \textbf{then} $p_1$ \textbf{else} $p_2$
-exhibits an input/output behaviour if $p_1$ and $p_2$ do so, however, with additional precondition $C$ in the former
-and $\neg C$ in the latter case. The situation is not that simple when we have to deal with mainly
+exhibits a certain input/output behaviour if $p_1$ and $p_2$ do so, however, with the additional precondition $C$ 
+available for $p_1$ and $\neg C$--for $p_2$. The situation is not that simple when we have to deal with mainly
 unstructured programs like EVM bytecode in our case. For example, such conditional compound constructs as above
 appear merely as instructions to make jumps to other program parts. Since a bytecode program comprises
 a list of instructions, a rule might handle the head instruction and proceed to the tail of 
 the list, but would need to make exceptions when the head instruction is a jump, because then
-we cannot simply proceed with the tail. Although such treatment would be in principle possible,
+we cannot simply proceed with the tail. Although such treatment is in principle possible,
 there are more sophisticated decompilation techniques available, such as extraction of 
 \emph{Control Flow Graphs} (CFG) out of the Java Virtual Machine (JVM) code~\cite{zhao99}.
 The aim of CFG extraction is to split a program into \emph{basic blocks}, i.e. sequences of
@@ -448,8 +448,8 @@ has been executed.
 
 However, CFG extraction for JVM cannot be easily adapted to our EVM context, because JVM jump
 instructions carry their respective target address statically, whereas in EVM jump targets
-must be obtained from the stack, i.e. dynamically. For that reason, our bytecode preprocess
-comprises basic block extraction only.  
+must be obtained from the stack, i.e. dynamically. For that reason, our bytecode preprocessing
+addresses basic block extraction only.  
 %       
 \subsection{Extraction of Basic Blocks}
 We divide instructions into three groups:
@@ -466,21 +466,21 @@ We divide instructions into three groups:
                 block index & index & instruction & type of block\\
                         \hline
                 &       0       &       $\instr{OR}$&\\
-                &       1       &       ADD&\\
-                {0}&    2       &       SWAP1&  {Next}\\
+                &       1       &       $\instr{ADD}$&\\
+                {0}&    2       &       $\instr{SWAP1}$&  {Next}\\
                         \hline
-                &       3       &       JUMPDEST&\\
-                &       4       &       MLOAD&\\
-                &       5       &       POP&\\
+                &       3       &       $\instr{JUMPDEST}$&\\
+                &       4       &       $\instr{MLOAD}$&\\
+                &       5       &       $\instr{POP}$&\\
                 {3}&    \textcolor{gray}{6}     &       {\color{gray}$\instr{JUMP}$}&     {Jump}\\
                         \hline
-                &       7       &       DUP3&\\
-                &       8       &       PUSH 0&\\
-                &       10      &       ISZERO&\\
-                {7}&    \textcolor{gray}{11}    &       {\color{gray}JUMPI}&    {Jumpi}\\
+                &       7       &       $\instr{DUP3}$&\\
+                &       8       &       $\instr{PUSH 0}$&\\
+                &       10      &       $\instr{ISZERO}$&\\
+                {7}&    \textcolor{gray}{11}    &       {\color{gray}$\instr{JUMPI}$}&    {Jumpi}\\
                         \hline
-                &       12      &       POP&\\
-                {12}&   13      &       RETURN& {Terminal}\\
+                &       12      &       $\instr{POP}$&\\
+                {12}&   13      &       $\instr{RETURN}$& {Terminal}\\
                         \hline
         \end{tabular}
 \caption{Example of bytecode splitted into basic blocks. Grey instructions appear in the original 
