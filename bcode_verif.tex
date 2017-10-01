@@ -91,7 +91,7 @@
 \begin{document}
 
 %% Title information
-\title[Verifying Ethereum Smart Contracts]{Verifying Ethereum Smart Contracts at Bytecode Level in Isabelle/HOL}         %% [Short Title] is optional;
+\title[Towards Verifying Ethereum Smart Contracts]{Towards Verifying Ethereum Smart Contract Bytecode in Isabelle/HOL}         %% [Short Title] is optional;
                                         %% when present, will be used in
                                         %% header instead of Full Title.
 %\titlenote{with title note}             %% \titlenote is optional;
@@ -186,18 +186,22 @@
 %% Note: \begin{abstract}...\end{abstract} environment must come
 %% before \maketitle command
 \begin{abstract}
-Due to its versatility, 
-the blockchain technology  
-steadily attracts more attention from research and industries beyond the financial.
-In particular, the Ethereum blockchain offers so-called \emph{smart contracts}
-which are basically programs that run on the Ethereum virtual machine (EVM) and 
-are used to encode certain agreements between e.g.\ caller and callee.
-Needless to emphasise that in most cases such a contract would be either safety- or
-security- or mission-critical, and potentially all of these.
-In this paper we address this problem extending  
-the existing EVM formalisation~\cite{Yoichi} in Isabelle/HOL by a sound program logic at the level of 
-bytecode. This logic allows us to formally verify EVM smart contracts, thus achieving highest level of
-confidence into their actual behaviour.       
+Blockchain technology has increasing attention in research and across many industries.
+The Ethereum blockchain offers \emph{smart contracts}, which are small programs defined,
+executed, and recorded as transactions in the blockchain transaction history.
+These smart contracts run on the Ethereum virtual machine (EVM) and can be used to encode
+agreements, transfer assets, and enforce integrity conditions in relationships between parties.
+Smart contracts can carry financial value, and are increasingly
+used for safety-, security-, or mission-critical purposes.
+Errors in smart contracts have and will lead to loss or harm.
+Formal verification can provide the highest level of confidence about the
+correct behaviour of smart contracts.
+In this paper we extend an existing EVM formalisation~\cite{Yoichi} in Isabelle/HOL by a sound
+program logic at the level of bytecode.
+We structure and reason about bytecode sequences into graphs of basic blocks of straight-line
+code.
+This abstraction is a step towards control of the cost and complexity of formal verification
+of EVM smart contracts.
 \end{abstract}
 
 
@@ -237,97 +241,93 @@ confidence into their actual behaviour.
 
 \section{Introduction}
 \label{sec:intro}
-Although initially closely related to the financial sector,
-the blockchain technology steadily becomes more important for various other areas such as legal, medical records, etc.
-In this context, the Ethereum blockchain has gained a particular interest due to \emph{smart contracts}, which are 
-basically programs that run on the Ethereum virtual machine~\cite{wood2014ethereum} (\emph{EVM} for short) and can be used to 
-encode certain agreements between e.g.\ caller and callee. For a simple instance, a smart contract can
-state that if a contract caller calls some method $A$ then it triggers some transaction $B$ which in turn
-makes the caller eligible to trigger other transactions. This concept clearly
-offers new ways and opportunities for blockchain-based applications. At the same time however it raises  
-questions whether a contract implementation does not violate any specified requirement, for instance inconspicuously
-allowing something like double spend of cryptocurrency. This problem of safety- and mission-critical
-software is by no means new, and formal modelling and verification provide a general approach that 
-of course can also be applied in this context to ensure highest levels of trust. 
+Blockchain technology emerged to support financial transactions in the Bitcoin system, but has become
+increasingly important in many industries, with potential use in legal, medical, and
+supply chain industries.
+The Ethereum blockchain provides a general-purpose computational mechanism called \emph{smart contracts}.
+These are programs that run on the Ethereum virtual machine~\cite{wood2014ethereum} (\emph{EVM}), and
+are recorded in the blockchain history.  They can be used to encode or execute agreements between parties.
+For example, a party invoking a smart contract could cause digital currency to be transferred to another
+party, or could record a state change which makes the other party eligible to invoke other transactions.
+Smart contracts provide new ways to implement multi-party relationships within blockchain-based applications.
+In addition to the direct financial value in these applications, blockchains are increasingly being
+used for safety-critical applications such for pharmaceutical supply chains, or for mission-critical
+application such as in electrical power grids.
+We must know that smart contract implementations do not violate critical requirements, and
+formal modelling and verification can be applied in this context.
 %
-To address these questions we need:
+To address these questions we seek:
 \begin{itemize}
-\item[(i)] a trustworthy logical framework supporting logics capable to express complex safety and security
+\item[(i)] a trustworthy logical framework capable of expressing complex safety and security
    requirements; 
 \item[(ii)] a valid formal model of the EVM within the framework; 
-\item[(iii)] a program logic, 
-defined within the framework and sound with respect to the EVM model
-in order to foster our reasoning about properties of smart contracts. 
+\item[(iii)] a sound program logic defined within the framework able to
+reason about properties of smart contracts. 
 \end{itemize}
-In our setting, the logical framework is
-Isabelle, whereas formal model of the EVM has been done in~\cite{Yoichi} (validity will be
-a subject of the next section). Thus, the remaining task 
-is to provide a sound program logic. As we will show in this paper, 
-we provide such a logic at the very basic level of EVM bytecode. 
-Although it is obviously easier to setup a logic for programs in a structured language,
-our decision to tackle the problem
-at the level of basically unstructured bytecode has some important advantages relevant to our goals.
-Firstly, this way we stay independent of any bytecode compiler (e.g. Solidity), which not only discharges the necessity
-of building and verifying a formal model of such compiler but also removes its actual implementation from tools we have to trust.
-Secondly, bytecode is the actual language of Ethereum as all contracts appear only in this form on the blockchain.
-Although it is common to provide access to source code of a contract in a structured language if available, there is
-no obligation to do so. These arguments gave us the main motivation to do formal verification of
-the EVM bytecode, despite the necessity to restore structures (such as conditionals) that we can take 
-for granted in any high-level language,
-as a part of the verification process described in the remainder of the paper. 
+In our setting, we use the logical framework Isabelle/HOL, and an existing EVM formal
+model~\cite{Yoichi}.
+Thus, our remaining goal is a sound program logic.  In this paper we propose such a logic for EVM bytecode. 
+We target unstructured bytecode rather than a high-level programming language for several reasons.
+Firstly, our approach is independent of high-level languages (e.g.\ Solidity) and their compilers, which
+makes our work more general and less reliant on the correctness of higher-level tools.
+Secondly, bytecode is the actual programming language of Ethereum as all smart contracts appear only
+in this form on the blockchain.
+Thus we target EVM bytecode, despite the necessity for us to restore structures (such as conditionals)
+that we might take for granted in higher-level languages.
+We describe our approach for this in the remainder of the paper. 
 
-The main contributions of the paper are the following
+The main contributions of the paper are:
 \begin{itemize}
-\item[(i)] an extension to the EVM formalisation~\cite{Yoichi} in the expressible
-           higher-order logic of the Isabelle theorem prover,
-           by adding contract correctness properties excluding termination, which is shown
-           separately once and for all;
-\item[(ii)] sound program logic to verify smart contracts at the bytecode level;
+\item[(i)] an extension to the EVM formalisation~\cite{Yoichi} in the Isabelle/HOL theorem prover,
+           covering smart contract correctness properties, and which gives a separate universal
+           treatment of termination based on Ethereum's concept of execution `gas';
+\item[(ii)] a sound program logic to verify smart contracts at the bytecode level; and
 \item[(iii)] Isabelle tactics to support automated generation of verification
             conditions using the rules of the logic.
 \end{itemize}
          
-The paper is structured as follows. Sections~\ref{sec:bg} and \ref{sec:rwork} describe the background
-and the related work. Section~\ref{sec:corr} describes how we define correctness property in pre/postcondition
+The paper is structured as follows. Sections~\ref{sec:bg} and \ref{sec:rwork} describe background
+and the related work. Section~\ref{sec:corr} describes correctness properties in a pre/postcondition
 style for EVM bytecode programs. Section~\ref{sec:logic} is devoted to our program logic, 
 %i.e. rules for generation of verification conditions out of a contract, 
-whereas Section~\ref{sec:sound} shows the soundness of the logic
+and Section~\ref{sec:sound} shows the soundness of the logic
 w.r.t. the correctness property. Section~\ref{sec:auto} outlines how we automate generation of verification
 conditions using Isabelle tactics. Section~\ref{sec:case} presents a case-study deploying our framework in 
 real bytecode verification, and
-Section~\ref{sec:concl} summarises the results and gives an outlook.      
+Section~\ref{sec:concl} summarises the results and gives an outlook for future work.
 %
 \section{Background} 
 \label{sec:bg}
-The Ethereum virtual machine has been rigorously described in the so-called `Yellow Paper'~\cite{wood2014ethereum},
-thus providing a solid foundation not only for its implementation in a programming language 
-but also for a formalisation within a formal logic system such as a theorem prover.
-One such formalisation has been done~\cite{Yoichi} using the `meta-tool' \emph{Lem}~\cite{DBLP:conf/icfp/MulliganOGRS14}
-that supports a variety of theorem provers including Isabelle/HOL.
-\emph{Isabelle}~\cite{Nipkow_PW:Isabelle} is a logical framework in form of an interactive generic theorem prover,
-where the encoding of higher-order logic (\emph{Isabelle/HOL} for short)
-is the most important and most developed part of the system. Isabelle's LCF-style architecture,
-based on a small (meta)-logical inference kernel, ensures highest confidence into derived results.
+The Ethereum virtual machine is described in the Ethereum `Yellow Paper'~\cite{wood2014ethereum}.
+This provides a clear foundation not only for its implementation, but also for its formalisation in logic.
+One such formalisation has been provided~\cite{Yoichi} using the `meta-tool' \emph{Lem}~\cite{DBLP:conf/icfp/MulliganOGRS14}.
+Lem supports a variety of theorem provers including Isabelle/HOL.
+\emph{Isabelle}~\cite{Nipkow_PW:Isabelle} is a logical framework and interactive generic theorem prover.
+Isabelle/HOL encodes higher-order logic and is the most important and most developed logic in Isabelle.
+Isabelle's LCF-style architecture,
+based on a small (meta)-logical inference kernel, provides very high confidence about its sound
+implementation as a theorem prover.
  
-However, such a formalisation needs to be validated as we need a confirmation that the formal model
-and the actual EVM implementation coincide. To this end, a validation test suite accompanies
-the model in Lem. That is, the actual EVM and the OCaml code generated by Lem from the EVM model
-are both applied to a large collection of contracts comparing the respective outputs.  
+The EVM formalisation needs to be validated to provide confidence that the formal model
+and EVM implementations coincide. To this end, a validation test suite accompanies
+the model in Lem. Using this, EVM implementations and OCaml code generated by Lem from the EVM
+formal model are both applied to a large collection of contracts, cross-checking their outputs.  
 
-Since we entirely focus on the EVM model in Isabelle/HOL, we additionally adapted the test suite 
-to the OCaml code, now however generated by Isabelle. This our `double-validation' 
-process is outlined in Figure~\ref{fig:valid}.          
+We entirely focus on the EVM model in Isabelle/HOL, so additionally run the test suite 
+on OCaml code generated by Isabelle. This our `double-validation' 
+process as outlined in Figure~\ref{fig:valid}.          
 \begin{figure}[htbp]
 \centering
 \includegraphics[height=4.5cm, width=7cm]{images/evm_lem}    
         \caption{Validation of EVM models \sid{highlight isa-to-ocaml translation}}
 \label{fig:valid}
 \end{figure}
-The adaption of the test suite from Lem to Isabelle has required certain efforts, mainly because 
-of different representations of machine words. So, OCaml code from Lem uses efficient native modules,
-whereas the Isabelle side invokes formally verified theory of machine words. Because of this, our suite
-needs much more time to pass the tests. Nonetheless, we gain a complementary indication that
-all three models of EVM follow the specification and behave equally.    
+The use of the test suite from Isabelle has required certain efforts, mainly because 
+of different representations of machine words. OCaml code from Lem uses efficient native modules,
+whereas the Isabelle side invokes a formally-verified theory of machine words.
+Because of this, our suite needs much more time to pass the tests.
+Nonetheless, we gain a complementary indication that all three models of EVM follow the specification
+and behave equally.    
 %
 \section{Related Work}
 \label{sec:rwork}
