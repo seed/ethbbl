@@ -338,7 +338,6 @@ and behave equally.
 \label{sec:rwork}
 
 
-\sid{XCAP, Chlipala's bedrock, KEVM?}
 As a consequence of the fact that smart contracts are critical under many aspects, a notable amount of
 approaches and tools for their analysis has already been proposed 
 (\cite{Bhargavan:2016:FVS:2993600.2993611}, \cite{securify}, \cite{openzeppelin} to name a few).
@@ -348,7 +347,7 @@ languages (e.g. Solidity's Why3 backend~\cite{filliatre2013why3}) but also at th
 %However, most tools do not provide a lot of insight into internal details.
 %
 The obvious advantage of static analysis approaches is that full automation can be achieved for 
-contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify} 
+contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify}.
  
 Our approach is general as we aim to specify and verify contract properties in pre/postcondition
 style where the conditions can comprise any higher-order logic formula describing an EVM state. 
@@ -368,13 +367,23 @@ is performed and justified within a single, trusted logical framework without an
 As already mentioned, such translations must be either assumed to behave correctly in some sense or 
 formally modelled and verified,
 whereas we aimed to avoid both of these options. 
-%   
+
+KEVM~\cite{Hildenbrandt_SZRDGR_17} is a formal semantics of the EVM written using the K-framework.
+Like the lem semantics we use\cite{Yoichi}, KEVM is executable and therefore can run the validation test-suite.
+Reasoning about KEVM programs involves specifying properties in Reachability Logic and
+verifying them using K's built-in prover, which is not as powerful as Isabelle.
+
+Porosity~\cite{Msuiche_17} is an EVM decompiler with static analysis support that can detect common
+security vulnerabilities, such as reentrancy and callstack bugs.
+
+% XCAP ?
+
 \section{Total Correctness of EVM Bytecode Programs}
 \label{sec:corr}
 In his PhD thesis~\cite{DBLP:phd/ethos/Myreen09}, Myreen introduced a general 
 method of formal 
 machine code verification with a particular application to ARM. In this section we show how
-this general method can be adapted to EVM, taking however additional accounts of its specific properties rooted in the 
+this general method can be adapted to EVM, taking however additional accounts of the EVM specific properties rooted in the 
 gas consumption.
  
 In the general model, a state carries all the information needed to execute a program, including
@@ -391,26 +400,33 @@ $\mathit{ContinuingElm}\:False$. If $\ncont$ is present in a state, $\xnext$
 leaves the state unchanged.   
    
 An input/output property of a program $c$ is captured by a triple
-$\pvalid{P}{c}{Q}$ which is true iff for any state $s$ and frame $F$ such that
-$(P \sconj \code{c} \sconj F)\: s$ holds, there exists a natural number $k$ such that 
-$(Q \sconj \code{c} \sconj F)\: \xnext^k(s)$ holds. 
+$\pvalid{P}{c}{Q}$, where $P$ and $Q$ are separation logic predicates on the state.
+The triple is true iff for any state $s$ and frame $F$ such that
+$(P \sconj \code{c} \sconj F)\:\ s$ holds, there exists a natural number $k$ such that 
+$(Q \sconj \code{c} \sconj F)\:\ \xnext^k(s)$ holds. 
 %The frame is used to accomodate an invariant part of a state, 
 Keeping frame $F$ will allow us to reason about parts of the state locally using \emph{frame rule}(cf.~\cite{Reynolds_02}),
-whereas $\xnext^k$ as usual denotes the $k$-times iteration of $\xnext$.
+whereas $\xnext^k$ denotes $k$-times iteration of $\xnext$.
 Such triples $\pvalid{P}{c}{Q}$ are highly generic and we cannot conclude much from many of these, except that
 under given preconditions the program $c$ will pass a state satisfying $Q$. This changes immediately in cases when $Q$ is of
 the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating state satisfying $Q'$.
 Hence, showing $\pvalid{P}{c}{\ncont \sconj Q'}$ amounts to showing termination of the program $c$ in
 a $Q'$-state.
 
-\sid{Clarify purpose of gas comsumption in the Ethereum protocol in general and
-how it works w.r.t. the EVM.}
-This general approach seamlessly applies to the specific case of EVM bytecode. However,
-due to the fact that EVM serves a blockchain, it exhibits a specific property that we have observed and exploit below, 
-simplifying the method. 
-So, by design, execution of each EVM instruction requires some respective positive amount of gas which
-is subtracted after the execution from the overall gas amount assigned to this contract. 
-Otherwise, the contract cannot proceed and exits with an exception.  
+This general approach works for reasoning about EVM programs.
+However, showing termination is an unnecessary burden because
+Ethereum was designed in such a way that all smart contracts
+are guaranteed to terminate (either successfully or due to an out-of-gas error).
+More specifically, to ensure that miners get compensated for the electricity cost
+incurred by running smart contracts, each EVM instruction
+has a gas fee.
+Thus, when invoking a contract, the initiator provides a gas budget
+proportional to how computationally expensive the execution is expected
+to be and every step of execution is deducted from the budget.
+If the gas consumption exceeds the budget, an out-of-gas exception is
+raised and the state of the contract prior the
+invocation is restored.
+
 This property gives us a termination order, such that in this context we have the function $\xnext^*$ which 
 consequently assigns to each state the terminal element from the reflexive-transitive closure of $\xnext$. 
 The essential property of $\xnext^*$ is that for any state $s$ there exists $k \geq 0$ such that
