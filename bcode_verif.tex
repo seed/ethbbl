@@ -68,8 +68,8 @@
 \newcommand{\sconj}{\wedge^*}
 \newcommand{\coloncolon}{\mathrel{::}}
 \newcommand{\pvalid}[3]{\models\{#1\}\:#2\:\{#3\}}
-\newcommand{\tvalid}[3]{\models [#1]\:#2\:[#3]}
-\newcommand{\ttrip}[5]{\mathit{#1} \vdash_{\mathrm{#2}} [#3]\:#4\:[#5]}
+\newcommand{\tvalid}[3]{\models[#1]\:#2\:[#3]}
+\newcommand{\ttrip}[5]{\mathit{#1} \vdash_{\mathrm{#2}}[#3]\:#4\:[#5]}
 \newcommand{\xnext}{\mathit{next}}
 \newcommand{\code}[1]{\mathit{code}(#1)}
 \newcommand{\cont}{\mathit{continuing}}
@@ -229,7 +229,7 @@ of EVM smart contracts.
 
 %% Keywords
 %% comma separated list
-\keywords{formal verification, blockchain, smart contracts}  %% \keywords are mandatory in final camera-ready submission
+\keywords{formal verification, blockchain, smart contracts, Ethereum, Isabelle/HOL}  %% \keywords are mandatory in final camera-ready submission
 
 
 %% \maketitle
@@ -397,7 +397,7 @@ Such triples $\pvalid{P}{c}{Q}$ are highly generic and we cannot conclude much f
 under given preconditions the program $c$ will pass a state satisfying $Q$. This changes immediately in cases when $Q$ is of
 the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating state satisfying $Q'$.
 Hence, showing $\pvalid{P}{c}{\ncont \sconj Q'}$ amounts to showing termination of the program $c$ in
-a $Q'$ state.
+a $Q'$-state.
 
 \sid{Clarify purpose of gas comsumption in the Ethereum protocol in general and
 how it works w.r.t. the EVM.}
@@ -409,10 +409,10 @@ is subtracted after the execution from the overall gas amount assigned to this c
 Otherwise, the contract cannot proceed and exits with an exception.  
 This property gives us a termination order, such that in this context we have the function $\xnext^*$ which 
 consequently assigns to each state the terminal element from the reflexive-transitive closure of $\xnext$. 
-The essential property of $\xnext^*$ is that for any state $s$ there exists $k$ such that
+The essential property of $\xnext^*$ is that for any state $s$ there exists $k \geq 0$ such that
 \begin{itemize}
 \item[(i)] $\xnext^*(s) = \xnext^k(s)$
-\item[(ii)] $\xnext^l(s)$ can continue for any $l < k$
+\item[(ii)] $\xnext^l(s)$ can continue for any $l$ such that $0 \le l < k$
 \item[(iii)] $\xnext^l(s)$ cannot continue for any $l \ge k$.
 \end{itemize}
 In other words, $\xnext^*(s) = \xnext^k(s)$ where $k$ is the least number such that
@@ -462,17 +462,17 @@ We divide instructions into three groups:
             \emph{Misc}-instructions\footnote{RETURN, STOP, SUICIDE, CREATE, CALL, CALLCODE, DELEGATECALL} --
             indicate the end of a basic block ($\instr{UNKNOWN}$ and Misc-instructions interrupt program execution); 
 \item[(iii)] all remaining instructions that form the contents of basic blocks.
-\end{itemize} 
+\end{itemize}  
 Furthermore, we classify basic blocks by means of the following four types:
 \begin{itemize}
 \item[(i)] \textit{Terminal} -- if the last instruction of the block interrups execution;
 \item[(ii)] \textit{Jump} -- if the last instruction is $\instr{JUMP}$;
 \item[(iii)] \textit{Jumpi} -- if the last instruction is $\instr{JUMPI}$;
-\item[(iv)] \textit{Next} -- otherwise, i.e. if control passes from the last instruction of the block
+\item[(iv)] \textit{Next} -- otherwise, i.e. when control passes from the last instruction of the block
                              to the instruction with the successor address.                         
 \end{itemize} 
 Figure~\ref{fig:basicblocks} illustrates how we split EVM bytecode into basic blocks of different
-types, indexing the blocks thereby with the address of the head instruction as well as removing all jump 
+types, thereby indexing the blocks with addresses of their head instructions as well as removing all jump 
 instructions from their actual contents. The entire extraction process is captured in Isabelle
 by means of a function $\mathit{build\_blocks}$ which maps a list of instructions to a list of tuples $(i, \mathit{xs}, t)$, 
 where $i$ is the block index, $\mathit{xs}$ -- the list of instructions of the block, and $t$ -- the type of
