@@ -485,17 +485,18 @@ We divide instructions into three groups:
 \end{itemize}  
 Furthermore, we classify basic blocks by means of the following four types:
 \begin{itemize}
-\item[(i)] \textit{Terminal} -- if the last instruction of the block interrups execution;
+\item[(i)] \textit{Terminal} -- if the last instruction of the block interrupts execution;
 \item[(ii)] \textit{Jump} -- if the last instruction is $\instr{JUMP}$;
 \item[(iii)] \textit{Jumpi} -- if the last instruction is $\instr{JUMPI}$;
 \item[(iv)] \textit{Next} -- otherwise, i.e. when control passes from the last instruction of the block
                              to the instruction with the successor address.                         
 \end{itemize} 
 Figure~\ref{fig:basicblocks} illustrates how we split EVM bytecode into basic blocks of different
-types, thereby indexing the blocks with addresses of their head instructions as well as removing all jump 
-instructions from their actual contents. The entire extraction process is captured in Isabelle
-by means of a function $\mathit{build\_blocks}$ which maps a list of instructions to a list of tuples $(i, \mathit{xs}, t)$, 
-where $i$ is the block index, $\mathit{xs}$ -- the list of instructions of the block, and $t$ -- the type of
+types, thereby indexing the blocks with addresses of their first instruction
+and removing all the jumps from the list of instructions.
+The entire extraction process is captured in Isabelle
+by the function $\mathit{build\_blocks}$ which maps a list of instructions to a list of tuples $(i, \mathit{xs}, t)$,
+where $i$ is the block index, $\mathit{xs}$ --- the list of instructions of the block, and $t$ --- the type of
 the block. 
 %Moreover, we keep the order of blocks such that we can refer to the block where   
 \begin{figure}
@@ -521,7 +522,7 @@ the block.
                 {12}&   13      &       $\instr{RETURN}$& \textit{Terminal}\\
                         \hline
         \end{tabular}
-\caption{A program splitted into basic blocks, where grey instructions appear in the original 
+\caption{A program split into basic blocks, where grey instructions appear in the original
          code but are removed from the list of instructions of their block.}
 \label{fig:basicblocks}
 \end{figure}
@@ -535,9 +536,9 @@ Based on these preparations, the following predicates
 \ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q}
 \end{array}
 \]
-where $P, Q$ are state predicates, $x$ -- an instruction, $\mathit{xs}$ -- a list of instructions,  
-$\mathit{blocks}$ -- a list of basic blocks, and
-$(n, \mathit{xs}, t)$ -- a basic block, will now be defined inductively.
+where $P, Q$ are state predicates, $x$ --- an instruction, $\mathit{xs}$ --- a list of instructions,
+$\mathit{blocks}$ --- a list of basic blocks, and
+$(n, \mathit{xs}, t)$ --- a basic block, are defined inductively.
 
 We start at the program level, where we have the following rules for
 each case of the block type $t$.
