@@ -334,7 +334,6 @@ and behave equally.
 \label{sec:rwork}
 
 
-\sid{XCAP, Chlipala's bedrock, KEVM?}
 As a consequence of the fact that smart contracts are critical under many aspects, a notable amount of
 approaches and tools for their analysis has already been proposed 
 (\cite{Bhargavan:2016:FVS:2993600.2993611}, \cite{securify}, \cite{openzeppelin} to name a few).
@@ -344,7 +343,7 @@ languages (e.g. Solidity's Why3 backend~\cite{filliatre2013why3}) but also at th
 %However, most tools do not provide a lot of insight into internal details.
 %
 The obvious advantage of static analysis approaches is that full automation can be achieved for 
-contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify} 
+contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify}.
  
 Our approach is general as we aim to specify and verify contract properties in pre/postcondition
 style where the conditions can comprise any higher-order logic formula describing an EVM state. 
@@ -364,7 +363,17 @@ is performed and justified within a single, trusted logical framework without an
 As already mentioned, such translations must be either assumed to behave correctly in some sense or 
 formally modelled and verified,
 whereas we aimed to avoid both of these options. 
-%   
+
+KEVM~\cite{Hildenbrandt_SZRDGR_17} is a formal semantics of the EVM written using the K-framework.
+Like the lem semantics we use\cite{Yoichi}, KEVM is executable and therefore can run the validation test-suite.
+Reasoning about KEVM programs involves specifying properties in Reachability Logic and
+verifying them using K's built-in prover, which is not as powerful as Isabelle.
+
+Porosity~\cite{Msuiche_17} is an EVM decompiler with static analysis support that can detect common
+security vulnerabilities, such as reentrancy and callstack bugs.
+
+% XCAP ?
+
 \section{Total Correctness of EVM Bytecode Programs}
 \label{sec:corr}
 In his PhD thesis~\cite{DBLP:phd/ethos/Myreen09}, Myreen introduced a general 
