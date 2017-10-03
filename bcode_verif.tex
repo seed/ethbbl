@@ -74,6 +74,10 @@
 \newcommand{\code}[1]{\mathit{code}(#1)}
 \newcommand{\cont}{\mathit{continuing}}
 \newcommand{\ncont}{\mathit{not\_continuing}}
+\newcommand{\pc}{\mathit{pc}}
+\newcommand{\gaspred}{\mathit{gas\_pred}}
+\newcommand{\stackh}{\mathit{stack\_height}}
+\newcommand{\stack}{\mathit{stack}}
 \newcommand{\instr}[1]{\mathtt{#1}}
 \newcommand{\Rule}[2]{\begin{array}{c}#1\\\hline\noalign{\smallskip}#2\end{array}}
 %\newcommand{\Rule}[2]{\dfrac{#1}{#2}}
@@ -505,6 +509,50 @@ the block.
          code but are removed from the list of instructions of their block.}
 \label{fig:basicblocks}
 \end{figure}
+%
+\subsection{Instruction, Block and Program Rules}
+Based on these preparations, the following predicates 
+\[
+\begin{array}{l}
+\ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} \\
+\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} \\
+\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q}
+\end{array}
+\]
+where $P, Q$ are state predicates, $x$ -- an instruction, $\mathit{xs}$ -- a list of instructions,  
+$\mathit{blocks}$ -- a list of basic blocks, and
+$(n, \mathit{xs}, t)$ -- a basic block, will now be defined inductively.
+
+We start at the program level, where we have the following rules for
+each case of the block type $t$.
+\[
+\begin{array}{l l}
+\mbox{(i)} & \Rule{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q}}
+     {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(i, \mathit{xs}, \mathit{Terminal})}{Q}}
+\end{array}
+\]
+That is, a $\mathit{Terminal}$-block is simply passed to the level of
+blocks as we do not need to look at any other block after this has been processed.  
+The rule for a $\mathit{Next}$-block is different in this sense:
+\[
+\begin{array}{l l}
+\mbox{(ii)} & \Rule{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{\pc\;m \sconj R} \\
+                   (m, \mathit{ys},t) \in \mathit{blocks} \\
+                    \ttrip{\mathit{blocks}}{\mathtt{prog}}{\pc\;m \sconj R}{(m, \mathit{ys},t)}{Q}}
+     {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(i, \mathit{xs}, \mathit{Next})}{Q}}
+\end{array}
+\]
+The state element $\pc\;m$ fixes the program counter after $\mathit{xs}$ has been
+processed. Then we need to retrieve the block with the index $m$ from the $\mathit{blocks}$-structure,
+which is incorporated by $(m, \mathit{ys},t) \in \mathit{blocks}$, and proceed with 
+$(m, \mathit{ys},t)$
+
+%
+%\subsubsection{\textit{Terminal}}
+%In case of a \textit{Terminal} block we 
+
+
+  
 
 \section{Soundness}
 \label{sec:sound}
