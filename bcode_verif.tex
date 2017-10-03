@@ -413,21 +413,21 @@ the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating stat
 Hence, showing $\pvalid{P}{c}{\ncont \sconj Q'}$ amounts to showing termination of the program $c$ in
 a $Q'$-state.
 
-This general approach works for reasoning about EVM programs.
-However, showing termination is an unnecessary burden because
+This generic technique applies seamlessly to EVM programs.
+However, showing termination of a contract individually is an unnecessary burden because
 Ethereum was designed in such a way that all smart contracts
-are guaranteed to terminate (either successfully or due to an out-of-gas error).
+are guaranteed to terminate (either successfully or due to an `out-of-gas' exception).
 More specifically, to ensure that miners get compensated for the electricity cost
 incurred by running smart contracts, each EVM instruction
 has a gas fee.
 Thus, when invoking a contract, the initiator provides a gas budget
 proportional to how computationally expensive the execution is expected
 to be and every step of execution is deducted from the budget.
-If the gas consumption exceeds the budget, an out-of-gas exception is
+If the gas consumption exceeds the budget, an `out-of-gas' exception is
 raised and the state of the contract prior the
 invocation is restored.
 
-This property gives us a termination order, such that in this context we have the function $\xnext^*$ which 
+This specific blockchain property gives us a termination order such that in this context we have the function $\xnext^*$ which 
 consequently assigns to each state the terminal element from the reflexive-transitive closure of $\xnext$. 
 The essential property of $\xnext^*$ is that for any state $s$ there exists $k \geq 0$ such that
 \begin{itemize}
@@ -505,7 +505,7 @@ the block.
                         \hline
                 &       0       &       $\instr{OR}$&\\
                 &       1       &       $\instr{ADD}$&\\
-                {0}&    2       &       $\instr{SWAP1}$&  \textit{Next}\\
+                {0}&    2       &       $\instr{SWAP}\;1$&  \textit{Next}\\
                         \hline
                 &       3       &       $\instr{JUMPDEST}$&\\
                 &       4       &       $\instr{MLOAD}$&\\
@@ -513,7 +513,7 @@ the block.
                 {3}&    \textcolor{gray}{6}     &       {\color{gray}$\instr{JUMP}$}& \textit{Jump}\\
                         \hline
                 &       7       &       $\instr{DUP3}$&\\
-                &       8       &       $\instr{PUSH 0}$&\\
+                &       8       &       $\instr{PUSH}\;0$&\\
                 &       10      &       $\instr{ISZERO}$&\\
                 {7}&    \textcolor{gray}{11}    &       {\color{gray}$\instr{JUMPI}$}& \textit{Jumpi}\\
                         \hline
@@ -544,7 +544,7 @@ each case of the block type $t$.
 \[
 \begin{array}{l l}
 \mbox{(i)} & \Rule{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q}}
-     {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(i, \mathit{xs}, \mathit{Terminal})}{Q}}
+     {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, \mathit{Terminal})}{Q}}
 \end{array}
 \]
 That is, a $\mathit{Terminal}$-block is simply passed to the level of
@@ -555,13 +555,13 @@ The rule for a $\mathit{Next}$-block is different in this sense:
 \mbox{(ii)} & \Rule{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{\pc\;m \sconj R} \\
                    (m, \mathit{ys},t) \in \mathit{blocks} \\
                     \ttrip{\mathit{blocks}}{\mathtt{prog}}{\pc\;m \sconj R}{(m, \mathit{ys},t)}{Q}}
-     {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(i, \mathit{xs}, \mathit{Next})}{Q}}
+     {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, \mathit{Next})}{Q}}
 \end{array}
 \]
-The state element $\pc\;m$ fixes the program counter after $\mathit{xs}$ has been
-processed. Then we need to retrieve the block with the index $m$ from the $\mathit{blocks}$-structure,
-which is incorporated by $(m, \mathit{ys},t) \in \mathit{blocks}$, and proceed with 
-$(m, \mathit{ys},t)$
+The state element $\pc\;m$ determines the program counter after $\mathit{xs}$ has been
+processed. Then we need to retrieve the next block associated to the index $m$ from the $\mathit{blocks}$-structure,
+which is expressed by $(m, \mathit{ys},t) \in \mathit{blocks}$, and proceed with 
+$(m, \mathit{ys},t)$.
 
 %
 %\subsubsection{\textit{Terminal}}
