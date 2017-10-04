@@ -79,8 +79,11 @@
 \newcommand{\stackh}{\mathit{stack\_height}}
 \newcommand{\stack}{\mathit{stack}}
 \newcommand{\instr}[1]{\mathtt{#1}}
-\newcommand{\Rule}[2]{\begin{array}{c}#1\\\hline\noalign{\smallskip}#2\end{array}}
-%\newcommand{\Rule}[2]{\dfrac{#1}{#2}}
+\newcommand{\pure}[1]{\langle#1\rangle}
+\newcommand{\hd}{\mathit{head}\:}
+\newcommand{\RuleL}[2]{\begin{array}{l}#1\\\hline\noalign{\smallskip}#2\end{array}}
+\newcommand{\RuleC}[2]{\begin{array}{c}#1\\\hline\noalign{\smallskip}#2\end{array}}
+\newcommand{\Rule}[2]{\dfrac{#1}{#2}}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -291,15 +294,15 @@ The main contributions of the paper are:
             conditions using the rules of the logic.
 \end{itemize}
          
-The paper is structured as follows. Sections~\ref{sec:bg} and \ref{sec:rwork} describe background
-and the related work. Section~\ref{sec:corr} describes correctness properties in a pre/postcondition
+The paper is structured as follows. Section~\ref{sec:bg} describes the background
+for the presented work. Section~\ref{sec:corr} describes how we can capture correctness properties in a pre/postcondition
 style for EVM bytecode programs. Section~\ref{sec:logic} is devoted to our program logic, 
 %i.e. rules for generation of verification conditions out of a contract, 
-and Section~\ref{sec:sound} shows the soundness of the logic
-w.r.t. the correctness property. Section~\ref{sec:auto} outlines how we automate generation of verification
-conditions using Isabelle tactics. Section~\ref{sec:case} presents a case-study deploying our framework in 
-real bytecode verification, and
-Section~\ref{sec:concl} summarises the results and gives an outlook for future work.
+whereas Section~\ref{sec:sound} shows the soundness of the logic
+w.r.t. the correctness property. Section~\ref{sec:auto} describes how we automate generation of verification
+conditions using Isabelle tactics. Section~\ref{sec:case} presents a case-study, deploying our framework in 
+real bytecode verification. Finally, Section~\ref{sec:rwork} outlines some related work and
+Section~\ref{sec:concl} summarises the results and gives an outlook.
 %
 \section{Background} 
 \label{sec:bg}
@@ -334,50 +337,6 @@ Because of this, our suite needs much more time to pass the tests.
 Nonetheless, we gain a complementary indication that all three models of EVM follow the specification
 and behave equally.    
 %
-\section{Related Work}
-\label{sec:rwork}
-
-
-As a consequence of the fact that smart contracts are critical under many aspects, a notable amount of
-approaches and tools for their analysis has already been proposed 
-(\cite{Bhargavan:2016:FVS:2993600.2993611}, \cite{securify}, \cite{openzeppelin} to name a few).
- 
-The major trend is to apply various kinds of static analysis not only at the level of structured contract
-languages (e.g. Solidity's Why3 backend~\cite{filliatre2013why3}) but also at the bytecode level~\cite{Msuiche_17,securify}. 
-%However, most tools do not provide a lot of insight into internal details.
-%
-The obvious advantage of static analysis approaches is that full automation can be achieved for 
-contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify}.
- 
-Our approach is general as we aim to specify and verify contract properties in pre/postcondition
-style where the conditions can comprise any higher-order logic formula describing an EVM state. 
-For that reason, the degree of automation is basically limited in our case such that the user will need to interact 
-with the proof system in most cases to discharge elaborated claims. 
-
-In~\cite{Bhargavan:2016:FVS:2993600.2993611}, a technique using an intermediate functional language
-called $F^*$, which is more amenable to verification, has been proposed. 
-It provides not only translation of a subset of Solidity programs 
-to $F^*$, but also decompilation of EVM bytecode to $F^*$ as well. This use of decompilation makes
-the approach similar to ours, since our program logic, in fact, resembles decompilation.
-As we will show in the following sections, in the first step we split bytecode program into blocks without jumps,  
-whereas the actual jump destinations are determined dynamically `on-the-fly' by application of logic rules.
-By contrast, \cite{Bhargavan:2016:FVS:2993600.2993611} performs static stack analysis to this end.
-However, a more striking difference is that our approach is homogeneous since basically each and every step of our whole verification process 
-is performed and justified within a single, trusted logical framework without any translations to or from other formalisms.
-As already mentioned, such translations must be either assumed to behave correctly in some sense or 
-formally modelled and verified,
-whereas we aimed to avoid both of these options. 
-
-KEVM~\cite{Hildenbrandt_SZRDGR_17} is a formal semantics of the EVM written using the K-framework.
-Like the lem semantics we use\cite{Yoichi}, KEVM is executable and therefore can run the validation test-suite.
-Reasoning about KEVM programs involves specifying properties in Reachability Logic and
-verifying them using K's built-in prover, which is not as powerful as Isabelle.
-
-Porosity~\cite{Msuiche_17} is an EVM decompiler with static analysis support that can detect common
-security vulnerabilities, such as reentrancy and callstack bugs.
-
-% XCAP ?
-
 \section{Total Correctness of EVM Bytecode Programs}
 \label{sec:corr}
 In his PhD thesis~\cite{DBLP:phd/ethos/Myreen09}, Myreen introduced a general 
@@ -427,7 +386,7 @@ If the gas consumption exceeds the budget, an `out-of-gas' exception is
 raised and the state of the contract prior the
 invocation is restored.
 
-This specific blockchain property gives us a termination order such that in this context we have the function $\xnext^*$ which 
+These blockchain specifics give us a termination order such that in this context we have the function $\xnext^*$ which 
 consequently assigns to each state the terminal element from the reflexive-transitive closure of $\xnext$. 
 The essential property of $\xnext^*$ is that for any state $s$ there exists $k \geq 0$ such that
 \begin{itemize}
@@ -505,7 +464,7 @@ the block.
                         \hline
                 &       0       &       $\instr{OR}$&\\
                 &       1       &       $\instr{ADD}$&\\
-                {0}&    2       &       $\instr{SWAP}\;1$&  \textit{Next}\\
+                {0}&    2       &       $\instr{SWAP1}$&  \textit{Next}\\
                         \hline
                 &       3       &       $\instr{JUMPDEST}$&\\
                 &       4       &       $\instr{MLOAD}$&\\
@@ -543,16 +502,17 @@ We start at the program level, where we have the following rules for
 each case of the block type $t$.
 \[
 \begin{array}{l l}
-\mbox{(i)} & \Rule{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q}}
+\mbox{(i)} & \RuleC{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q}}
      {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, \mathit{Terminal})}{Q}}
 \end{array}
 \]
 That is, a $\mathit{Terminal}$-block is simply passed to the level of
 blocks as we do not need to look at any other block after this has been processed.  
+
 The rule for a $\mathit{Next}$-block is different in this sense:
 \[
 \begin{array}{l l}
-\mbox{(ii)} & \Rule{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{\pc\;m \sconj R} \\
+\mbox{(ii)} & \RuleL{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{\pc\;m \sconj R} \\
                    (m, \mathit{ys},t) \in \mathit{blocks} \\
                     \ttrip{\mathit{blocks}}{\mathtt{prog}}{\pc\;m \sconj R}{(m, \mathit{ys},t)}{Q}}
      {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, \mathit{Next})}{Q}}
@@ -562,6 +522,18 @@ The state element $\pc\;m$ determines the program counter after $\mathit{xs}$ ha
 processed. Then we need to retrieve the next block associated to the index $m$ from the $\mathit{blocks}$-structure,
 which is expressed by $(m, \mathit{ys},t) \in \mathit{blocks}$, and proceed with 
 $(m, \mathit{ys},t)$.
+
+Further, in case of a $\mathit{Jump}$-block we need to retrieve the address of the jump from the stack 
+after the block has been processed. This yields the following, slightly more involved, rule:
+\[
+\begin{array}{l l}
+\mbox{(iii)} & \RuleL{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{R_1} \\
+                   (j, \mathit{ys},t) \in \mathit{blocks} \\
+                   \hd\mathit{ys} = (j, \instr{JUMPDEST}) \\
+                    \ttrip{\mathit{blocks}}{\mathtt{prog}}{R_2}{(j, \mathit{ys},t)}{Q}}
+     {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, \mathit{Jump})}{Q}}
+\end{array}
+\]
 
 %
 %\subsubsection{\textit{Terminal}}
@@ -581,6 +553,50 @@ $(m, \mathit{ys},t)$.
 \section{Case-study}
 \label{sec:case}
 
+%
+\section{Related Work}
+\label{sec:rwork}
+
+
+As a consequence of the fact that smart contracts are critical under many aspects, a notable amount of
+approaches and tools for their analysis has already been proposed 
+(\cite{Bhargavan:2016:FVS:2993600.2993611}, \cite{securify}, \cite{openzeppelin} to name a few).
+ 
+The major trend is to apply various kinds of static analysis not only at the level of structured contract
+languages (e.g. Solidity's Why3 backend~\cite{filliatre2013why3}) but also at the bytecode level~\cite{Msuiche_17,securify}. 
+%However, most tools do not provide a lot of insight into internal details.
+%
+The obvious advantage of static analysis approaches is that full automation can be achieved for 
+contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify}.
+ 
+Our approach is general as we aim to specify and verify contract properties in pre/postcondition
+style where the conditions can comprise any higher-order logic formula describing an EVM state. 
+For that reason, the degree of automation is basically limited in our case such that the user will need to interact 
+with the proof system in most cases to discharge elaborated claims. 
+
+In~\cite{Bhargavan:2016:FVS:2993600.2993611}, a technique using an intermediate functional language
+called $F^*$, which is more amenable to verification, has been proposed. 
+It provides not only translation of a subset of Solidity programs 
+to $F^*$, but also decompilation of EVM bytecode to $F^*$ as well. This use of decompilation makes
+the approach similar to ours, since our program logic, in fact, resembles decompilation.
+As we will show in the following sections, in the first step we split bytecode program into blocks without jumps,  
+whereas the actual jump destinations are determined dynamically `on-the-fly' by application of logic rules.
+By contrast, \cite{Bhargavan:2016:FVS:2993600.2993611} performs static stack analysis to this end.
+However, a more striking difference is that our approach is homogeneous since basically each and every step of our whole verification process 
+is performed and justified within a single, trusted logical framework without any translations to or from other formalisms.
+As already mentioned, such translations must be either assumed to behave correctly in some sense or 
+formally modelled and verified,
+whereas we aimed to avoid both of these options. 
+
+KEVM~\cite{Hildenbrandt_SZRDGR_17} is a formal semantics of the EVM written using the K-framework.
+Like the lem semantics we use\cite{Yoichi}, KEVM is executable and therefore can run the validation test-suite.
+Reasoning about KEVM programs involves specifying properties in Reachability Logic and
+verifying them using K's built-in prover, which is not as powerful as Isabelle.
+
+Porosity~\cite{Msuiche_17} is an EVM decompiler with static analysis support that can detect common
+security vulnerabilities, such as reentrancy and callstack bugs.
+
+% XCAP ?
 
 \section{Conclusions and Future Work}
 \label{sec:concl}
