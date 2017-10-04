@@ -461,7 +461,7 @@ the block.
 \begin{figure}
 \center
 \begin{tabular}{c r l c}
-                block index & index & instruction & block type\\
+                block index & address & instruction & block type\\
                         \hline
                 &       0       &       $\instr{OR}$&\\
                 &       1       &       $\instr{ADD}$&\\
@@ -513,9 +513,10 @@ blocks as we do not need to look at any other block after this has been processe
 The rule for a $\mathit{Next}$-block is different in this sense:
 \[
 \begin{array}{l l}
-\mbox{(ii)} & \RuleL{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{\pc\;m \sconj R} \\
-                   (m, \mathit{ys},t) \in \mathit{blocks} \\
-                    \ttrip{\mathit{blocks}}{\mathtt{prog}}{\pc\;m \sconj R}{(m, \mathit{ys},t)}{Q}}
+\mbox{(ii)} & \RuleC{\begin{array}{l} \ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{\pc\;m \sconj R} \\
+                                      (m, \mathit{ys},t) \in \mathit{blocks} \\
+                                       \ttrip{\mathit{blocks}}{\mathtt{prog}}{\pc\;m \sconj R}{(m, \mathit{ys},t)}{Q}
+                     \end{array}}
      {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, \mathit{Next})}{Q}}
 \end{array}
 \]
@@ -524,22 +525,44 @@ processed. Then we need to retrieve the next block associated to the index $m$ f
 which is expressed by $(m, \mathit{ys},t) \in \mathit{blocks}$, and proceed with 
 $(m, \mathit{ys},t)$.
 
-Further, in case of a $\mathit{Jump}$-block we need to retrieve the address of the jump from the stack 
+Further, in case of a $\mathit{Jump}$-block we additionally need to retrieve the address of the jump 
+destination from the stack 
 after the block has been processed. This yields the following, slightly more involved, rule:
 \[
 \begin{array}{l l}
-\mbox{(iii)} & \RuleL{\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{R_1} \\
-                   (j, \mathit{ys},t) \in \mathit{blocks} \\
-                   \hd\mathit{ys} = (j, \instr{JUMPDEST}) \\
-                    \ttrip{\mathit{blocks}}{\mathtt{prog}}{R_2}{(j, \mathit{ys},t)}{Q}}
+\mbox{(iii)} & \RuleC{\begin{array}{l}\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{R_1} \\
+                                      (j, \mathit{ys},t) \in \mathit{blocks} \\
+                                      \hd\mathit{ys} = (j, \instr{JUMPDEST}) \\
+                                      \ttrip{\mathit{blocks}}{\mathtt{prog}}{R_2}{(j, \mathit{ys},t)}{Q}
+                      \end{array}}
      {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, \mathit{Jump})}{Q}}
 \end{array}
 \]
-
-%
-%\subsubsection{\textit{Terminal}}
-%In case of a \textit{Terminal} block we 
-
+where $R_1$ and $R_2$ abbreviate the conditions \\
+\\$
+\begin{array}{l}
+\pure{h \le 1023 \wedge g \geq 8} \sconj \cont \sconj \gaspred\:g \; \sconj \\
+\pc\:i \; \sconj \stackh\:(h + 1) \sconj \stack\:h\:j \sconj R 
+\end{array}
+$\\ 
+\\
+and\\
+\\$
+\begin{array}{l}
+\cont \sconj \gaspred\:(g - 8) \; \sconj \\
+\pc\:j \; \sconj \stackh\:h \sconj R 
+\end{array}
+$\\
+\\respectively. 
+Regarding the stack, $\stackh\:(h + 1)$ and $\stack\:h\:j$ specify a state where
+index $h$ refers to the top element containing $j$. Regarding gas, $\gaspred\:g$
+binds the available amount of gas to $g$, whereas 
+the part $\pure{h \le 1023 \wedge g \geq 8}$ is a \emph{pure} condition,
+i.e. not dependent on state, and consequently sets an upper bound for the height of
+the stack and a lower bound for the amount of gas, namely $8$: as much as execution of a jump
+requires and which is deducted by $\gaspred\:(g - 8)$.   
+Although the pure part is quite basic in this case, it generally allows us to express elaborated 
+conditions on state elements by means of higher-order logic formulae.      
 
   
 
