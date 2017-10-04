@@ -63,6 +63,7 @@
 \usepackage{graphics}
 \usepackage{amsmath,amssymb, amsfonts, mathtools}
 \usepackage{isabelle,isabellesym}
+\usepackage{listings}
 
 \newcommand{\defeq}{\mathrel{\stackrel{\mbox{\tiny \it def}}{=}}}
 \newcommand{\sconj}{\wedge^*}
@@ -91,6 +92,52 @@
 
 
 
+% define solidity colorscheme
+
+\lstset{
+  basicstyle=\footnotesize,
+  commentstyle=\rm\it,
+  flexiblecolumns=false,
+  breaklines=true,
+  breakautoindent=false
+}
+
+% possible usage
+%\lstinline!apply(simp)!
+%\begin{lstlisting}[language=Isar]{}
+%datatype type = IntType | BoolType | FunType type type | ErrorType
+%\end{lstlisting}
+%\lstinputlisting[language=Isar]{foo.thy}
+
+% Taken from Lena Herrmann at 
+% http://lenaherrmann.net/2010/05/20/javascript-syntax-highlighting-in-the-latex-listings-package
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+\lstdefinelanguage{Solidity}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, returns, contract, public},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   extendedchars=true,
+   tabsize=2,
+   breaklines=true,
+   captionpos=b
+}
+
+% end define Solidity colorscheme
 
 
 
@@ -577,6 +624,45 @@ conditions on state elements by means of higher-order logic formulae.
 \section{Case-study}
 \label{sec:case}
 
+To demonstrate the practicality of our program logic, we verify a smart contract.
+Ethereum smart contracts are typically implemented in a language called Solidity.
+Solidity provides a high level abstractions to facilitate the development of smart contracts.
+The functionality a smart contract is encapsulated into a "contract interface", which analogously to
+a class in object oriented programming (OOP) has a well-defined interface with public and private elements.
+Creating a contract on the blockchain instantiates the contract interface.
+Just like class instantiations in OOP, contracts on the blockchain are
+stateful objects, where the storage is persistent across function calls.
+
+\begin{figure}[h!]
+\begin{lstlisting}[language=Solidity]{}
+contract MyContract {
+  function dispatch1() public returns (uint) {
+  	return (1);
+  }
+  function dispatch2() public returns (uint) {
+  	return (2);
+  }
+}
+\end{lstlisting}
+\caption{Contract with two functions: \textbf{dispatch1} that returns 1; \textbf{dispatch2} that returns 2.}
+\label{solidity}
+\end{figure}
+
+\autoref{solidity} shows an example of Solidity contract with two public functions.
+Each public function of a contract gets assigned a unique hash and
+the Solidity compiler produces EVM bytecode for MyContract with a single entry point
+starts with a dispatcher that inspects the arguments passed when the contract
+gets invoked and calls the appropriate operation.
+The binary format of smart contract arguments is specified in a standard
+ABI (abstract binary interface) in order to enable interoperability between
+contracts implemented with various EVM languages.
+
+Since the contract abstraction is provided by Solidity, the
+dispatcher code is produced by its compiler.
+This means that the code can only be verified at the bytecode level,
+hence it is a great application for our framework.
+In this case study we show how we specified and verified the
+dispatcher produced for the code in \autoref{solidity}.
 %
 \section{Related Work}
 \label{sec:rwork}
