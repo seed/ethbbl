@@ -650,16 +650,18 @@ contract MyContract {
 
 \autoref{solidity} shows an example of Solidity contract with two public functions.
 Each public function of a contract gets assigned a unique hash and
-the Solidity compiler produces EVM bytecode for MyContract with a single entry point
-starts with a dispatcher that inspects the arguments passed when the contract
-gets invoked and calls the appropriate operation.
-The binary format of smart contract arguments is specified in a standard
-ABI (abstract binary interface) in order to enable interoperability between
-contracts implemented with various EVM languages.
+the Solidity compiler produces EVM bytecode for MyContract with a single entry point.
+At the beginning of the bytecode there is a dispatcher that inspects the first arguments
+passed when the contract gets invoked, compares it with the function hashes and
+calls the appropriate function.
+The binary format for computing function hashes and packing arguments is standardised
+in an ABI (abstract binary interface), enabling interoperability between
+contracts implemented using various EVM languages.
 
-Since the contract abstraction is provided by Solidity, the
-dispatcher code is produced by its compiler.
-This means that the code can only be verified at the bytecode level,
+Since the contract abstraction is provided by the Solidity language, the
+code corresponding to the dispatcher must be produced by the
+compiler.
+This means that the code can only be verified at the level of bytecode,
 hence it is a great application for our framework.
 In this case study we show how we specified and verified the
 dispatcher produced for the code in \autoref{solidity}.
@@ -699,7 +701,7 @@ formally modelled and verified,
 whereas we aimed to avoid both of these options. 
 
 KEVM~\cite{Hildenbrandt_SZRDGR_17} is a formal semantics of the EVM written using the K-framework.
-Like the lem semantics we use\cite{Yoichi}, KEVM is executable and therefore can run the validation test-suite.
+Like the lem semantics we use~\cite{Yoichi}, KEVM is executable and therefore can run the validation test-suite.
 Reasoning about KEVM programs involves specifying properties in Reachability Logic and
 verifying them using K's built-in prover, which is not as powerful as Isabelle.
 
