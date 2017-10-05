@@ -142,7 +142,44 @@
 }
 
 % end define Solidity colorscheme
+% define  Isar
+\lstdefinelanguage{Isar}%
+  {keywords={
+        theory,end,types,datatype,consts,defs,primrec,
+        syntax,translations,apply,definition,fun,function, lemma,theorem,corollary,
+        done,sorry,goal,proof,fixed variables, inductive, where, case,of,if,then,else},
+        sensitive=true,
+        comment=[s]{(*}{*)},
+        commentstyle=\color{purple}\ttfamily,
+        keywordstyle=\color{blue}\bfseries,
+        literate=
+                {\\<not>}{{$¬$}}1 {\\<times>}{{$×$}}1                 
+                {\\<Rightarrow>}{{$\Rightarrow$}}1%
+                {\\<equiv>}{{$\equiv$}}1 {~=}{{$\not=$}}1                         
+                {\\<rightleftharpoons>}
+                        {{$\rightleftharpoons$}}1
+                {\\<exists>}{{$\exists$}}1
+                {\\<parallel>}{{$\parallel$}}1
+                {\\<Longrightarrow>}
+                        {{$\Longrightarrow$}}1
+                 {\\<lbrakk>}{{$\lsemantics$}}1
+                {\\<rbrakk>}{{$\rsemantics$}}1
+                {\\<longrightarrow>}
+                        {{$\longrightarrow$}}1
+                {\\<and>}{{$\land$}}1
+                {\\<or>}{{$\lor$}}1
+                {\\<bigwedge>}{{$\bigwedge$}}1
+                {\\<forall>}{{$\forall$}}1
+                {\\<langle>}{{$\langle$}}1
+                {\\<rangle>}{{$\rangle$}}1
+                {\\<union>}{{$\cup$}}1
+                {ü}{"u}1 {ä}{"a}1 {ö}{"o}1
+                {Ü}{"U}1 {Ä}{"A}1 {Ö}{"O}1 {ß}{{ss}}1
+  }
 
+
+
+% end define Isar
 
 
 
@@ -740,10 +777,12 @@ Apart from these kind of rules we also have the following generic instruction le
 \label{sec:case}
 
 To demonstrate the practicality of our program logic, we verify a smart contract.
-Ethereum smart contracts are typically implemented in a language called Solidity.
-Solidity provides a high level abstractions to facilitate the development of smart contracts.
-The functionality a smart contract is encapsulated into a "contract interface", which analogously to
-a class in object oriented programming (OOP) has a well-defined interface with public and private elements.
+Ethereum smart contracts are typically implemented in a language called Solidity,
+which provides a high level abstractions to facilitate interactions between EVM
+program.
+In Solidity, the functionality of a smart contract is encapsulated into a
+\textit{contract interface}, which, analogously to a class in object oriented programming
+(OOP), has a well-defined interface with public and private elements.
 Creating a contract on the blockchain instantiates the contract interface.
 Just like class instantiations in OOP, contracts on the blockchain are
 stateful objects, where the storage is persistent across function calls.
@@ -765,20 +804,73 @@ contract MyContract {
 
 \autoref{solidity} shows an example of Solidity contract with two public functions.
 Each public function of a contract gets assigned a unique hash and
-the Solidity compiler produces EVM bytecode for MyContract with a single entry point
-starts with a dispatcher that inspects the arguments passed when the contract
-gets invoked and calls the appropriate operation.
-The binary format of smart contract arguments is specified in a standard
-ABI (abstract binary interface) in order to enable interoperability between
-contracts implemented with various EVM languages.
+the Solidity compiler produces EVM bytecode with a single entry point.
+At the beginning of the bytecode there is a \textit{dispatcher} that inspects the first arguments
+passed when the contract gets invoked, compares it with the function hashes and
+calls the appropriate function.
+The binary format for computing function hashes and packing arguments is standardised
+in an ABI (abstract binary interface), enabling interoperability between
+contracts implemented using various EVM languages.
 
-Since the contract abstraction is provided by Solidity, the
-dispatcher code is produced by its compiler.
-This means that the code can only be verified at the bytecode level,
-hence it is a great application for our framework.
+Since the contract abstraction is provided by the Solidity language,
+it is the job of the compiler to implement the dispatcher.
+This means that the code can only be verified at the level of bytecode,
+hence it is a great application to showcase our framework.
 In this case study we show how we specified and verified the
 dispatcher produced for the code in \autoref{solidity}.
 %
+
+\subsection{Specification}
+
+\begin{figure}[h]
+\begin{lstlisting}[language=Isar]{}
+definition 
+  spec_MyContract ::"32 word \<Rightarrow> contract_action"
+where
+  "spec_MyContract z = 
+	(if z = dispatch1_hash 
+	then ContractReturn (word_rsplit (1:: 256 word))
+	else (if z = dispatch2_hash 
+	then ContractReturn (word_rsplit (2:: 256 word))
+	else ContractFail [ShouldNotHappen]))"
+
+theorem verify_dispatcher:
+"\<exists>r. triple (pc 0 \<and>* stack_height 0 \<and>*
+             sent_data (word_rsplit arg) \<and>*
+             sent_value 0 \<and>* memory_usage 0 \<and>*
+             continuing \<and>* gas_pred 3000 \<and>* ...)
+	       (build_basic_blocks bytecode_MyContract)
+	       (action (spec_MyContract arg) \<and>* r)"
+\end{lstlisting}
+\caption{Specification and functional correctness theorem of MyContract.}
+\label{spec}
+\end{figure}
+
+\autoref{spec} shows our handwritten specification of \textit{MyContract} in Isabelle/HOL.
+The Solidity compiler can print a contract ABI description which includes the
+signatures of all public functions as well as their hashes.
+We used this feature to obtain \textit{dispatch1\_hash} and \textit{dispatch2\_hash}.
+The rest of the specification is straightforward.
+The argument passed to \textit{spec\_MyContract} corresponds to the first 32-bit
+machine word passed as argument when the contract get invoked.
+\textit{ContractReturn} and \textit{ContractFail} specify the action
+resulting from the contract execution.
+When none of the function hashes match the first contract argument,
+the dispatcher hits an \textit{INVALID} instruction,
+which corresponds to raising a \textit{ShouldNotHappen} exception
+in our bytecode semantics.
+
+At the bottom of \autoref{spec} is a Hoare triple we proved.
+The precondition initialises the machine state, e.g. program counter is zero,
+stack is empty, etc. Importantly, \textit{arg} is the 32-bit word contract
+argument used by the dispatcher code as well as the specification,
+and \textit{gas\_pred} specifies the gas budget for the contract execution.
+The bytecode (i.e. list of bytes) is converted into list of basic blocks
+with \textit{build\_basic\_blocks}.
+In the postcondition we are only interested in the resulting action
+satisfying \textit{spec\_MyContract}, hence we quantify existentially
+on the rest of the state.
+
 \section{Related Work}
 \label{sec:rwork}
 
@@ -814,7 +906,7 @@ formally modelled and verified,
 whereas we aimed to avoid both of these options. 
 
 KEVM~\cite{Hildenbrandt_SZRDGR_17} is a formal semantics of the EVM written using the K-framework.
-Like the lem semantics we use\cite{Yoichi}, KEVM is executable and therefore can run the validation test-suite.
+Like the lem semantics we use~\cite{Yoichi}, KEVM is executable and therefore can run the validation test-suite.
 Reasoning about KEVM programs involves specifying properties in Reachability Logic and
 verifying them using K's built-in prover, which is not as powerful as Isabelle.
 
