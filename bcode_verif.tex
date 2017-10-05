@@ -870,9 +870,12 @@ At the bottom of \autoref{spec} is a Hoare triple we proved.
 The precondition initialises the machine state, e.g. program counter is zero,
 stack is empty, etc. Importantly, \textit{arg} is the 32-bit word contract
 argument used by the dispatcher code as well as the specification,
-and \textit{gas\_pred} specifies the gas budget for the contract execution.
+%% gas-pred already mentioned above  
+and $\gaspred$ specifies the gas budget for the contract execution.
 The bytecode (i.e. list of bytes) is converted into list of basic blocks
-with \textit{build\_basic\_blocks}.
+with 
+%% the same with blocks; can we use $\bblocks$ instead for the sake of consistency?
+\textit{build\_basic\_blocks}.
 In the postcondition we are only interested in the resulting action
 satisfying \textit{spec\_MyContract}, hence we quantify existentially
 on the rest of the state to leave it unspecified.
