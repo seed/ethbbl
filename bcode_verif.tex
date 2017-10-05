@@ -66,6 +66,8 @@
 \usepackage{listings}
 
 \newcommand{\defeq}{\mathrel{\stackrel{\mbox{\tiny \it def}}{=}}}
+\newcommand{\subpred}{\Rightarrow}
+%\newcommand{\subpred}{\mathrel{\stackrel{\cdot}{\subseteq}}}
 \newcommand{\sconj}{\wedge^*}
 \newcommand{\coloncolon}{\mathrel{::}}
 \newcommand{\pvalid}[3]{\models\{#1\}\:#2\:\{#3\}}
@@ -624,20 +626,108 @@ that we also need to retrieve from the stack the value $c$ to be compared to $0$
 jump only if $c \neq 0$:
 \[
 \begin{array}{l l}
-\mbox{(iv)} & \RuleC{\begin{array}{l}\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{R_1} \\
-                                      (j, \mathit{ys},t) \in \mathit{blocks} \\
-                                      \hd\mathit{ys} = (j, \instr{JUMPDEST}) \\
-                                      \ttrip{\mathit{blocks}}{\mathtt{prog}}{R_2}{(j, \mathit{ys},t)}{Q}
+\mbox{(iv)} & \RuleC{\begin{array}{l l}\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{R_1} & \\
+                                       (j, \mathit{ys},t) \in \mathit{blocks} & \\
+                                       (i, \mathit{zs},t') \in \mathit{blocks} & \\
+                                       \hd\mathit{ys} = (j, \instr{JUMPDEST}) & \\
+  \ttrip{\mathit{blocks}}{\mathtt{prog}}{R_2}{(j, \mathit{ys},t)}{Q} & \bullet\; \mbox{if } c \neq 0 \\
+  \ttrip{\mathit{blocks}}{\mathtt{prog}}{R_3}{(i, \mathit{zs},t')}{Q} & \bullet\; \mbox{if } c = 0 
                       \end{array}}
-     {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, \mathit{Jump})}{Q}}
+     {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, \mathit{Jumpi})}{Q}}
 \end{array}
 \]  
-
+where $R_1, R_2, R_3$ abbreviate the conditions \\
+\\$
+\begin{array}{l}
+\pure{h \le 1022 \wedge g \geq 10} \sconj \cont \sconj \gaspred\:g \; \sconj \\
+\pc\:(i - 1) \; \sconj \stackh\:(h + 2) \; \sconj \stack\:(h+1)\:j\; \sconj \\
+ \stack\:h\:c \;\sconj R 
+\end{array}
+$\\ 
+\\
+and\\
+\\$
+\begin{array}{l}
+\cont \sconj \gaspred\:(g - 10) \; \sconj \\
+\pc\:j \; \sconj \stackh\:h \sconj R 
+\end{array}
+$\\
+\\
+and\\
+\\$
+\begin{array}{l}
+\cont \sconj \gaspred\:(g - 10) \; \sconj \\
+\pc\:i \; \sconj \stackh\:h \sconj R 
+\end{array}
+$\\
+\\respectively. 
+%
 \subsection{Block Rules}
-
+At the level of basic blocks we need only two simple rules
+that handle the cases of non-empty and empty lists of instructions
+to be processed:
+\[
+\begin{array}{l l}
+\mbox{(i)} & \RuleC{\begin{array}{l}\ttrip{}{\mathtt{instr}}{P}{x}{R} \\
+                    \ttrip{}{\mathtt{block}}{R}{\mathit{xs}}{Q}
+                    \end{array}}
+                   {\ttrip{}{\mathtt{block}}{P}{x\mbox{::}\mathit{xs}}{Q}}
+\end{array}
+\]
+and
+\[
+\begin{array}{l l}
+\mbox{(ii)} & \RuleC{P \subpred Q} 
+{\ttrip{}{\mathtt{block}}{P}{\mathit{Nil}}{Q}}
+\end{array}
+\]
+where $P \subpred Q$ means that $P\:s$ implies $Q\:s$ for all states $s$.
+%
 \subsection{Instruction Rules}
- 
+As we need to provide a rule for each of 70 EVM instructions, we will not
+present all of them here. The following rule for $\instr{POP}$ is quite representative
+and shows that in the precondition we specify the necessary conditions for 
+the instruction to be performed by the EVM and in the postcondition -- 
+the effect of the operation on state elements:
+\[
+\ttrip{}{\mathtt{instr}}{P}{(n, \instr{POP})}{Q}
+\]
+where $P$ stands for 
+\\
+\\$
+\begin{array}{l}
+\pure{h \le 1023 \wedge g \geq 2} \sconj \cont \sconj \gaspred\:g \; \sconj \\
+\pc\:n \; \sconj \stackh\:(h + 1) \; \sconj \stack\:h\:x  
+\end{array}
+$\\ 
+\\
+and $Q$ for\\
+\\$
+\begin{array}{l}
+\cont \sconj \gaspred\:(g - 2) \; \sconj \\
+\pc\:(n+1) \; \sconj \stackh\:h 
+\end{array}
+$\\
+\\
+In particular, we have stated that the height of the stack decreases by $1$ as
+an effect of $\instr{POP}$.
 
+Apart from these kind of rules we also have the following generic instruction level rules:
+\[
+\begin{array}{l l}
+\mbox{(i)} & \ttrip{}{\mathtt{instr}}{\pure{False}}{i}{Q} 
+\end{array}
+\]
+\[
+\begin{array}{l l}
+\mbox{(ii)} & \RuleC{\begin{array}{l}
+                     \ttrip{}{\mathtt{instr}}{P'}{i}{Q'} \\
+                     P \subpred P' \\ 
+                     Q' \subpred Q
+                     \end{array}}{\ttrip{}{\mathtt{instr}}{P}{i}{Q}}
+\end{array}
+\]
+ 
 \section{Soundness}
 \label{sec:sound}
 
