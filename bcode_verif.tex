@@ -85,6 +85,8 @@
 \newcommand{\RuleL}[2]{\begin{array}{l}#1\\\hline\noalign{\smallskip}#2\end{array}}
 \newcommand{\RuleC}[2]{\begin{array}{c}#1\\\hline\noalign{\smallskip}#2\end{array}}
 \newcommand{\Rule}[2]{\dfrac{#1}{#2}}
+\newcommand{\bblocks}{\mathit{build\_blocks}}
+\newcommand{\cblocks}{\mathit{connect\_blocks}}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -501,10 +503,14 @@ Figure~\ref{fig:basicblocks} illustrates how we split EVM bytecode into basic bl
 types, thereby indexing the blocks with addresses of their first instruction
 and removing all the jumps from the list of instructions.
 The entire extraction process is captured in Isabelle
-by the function $\mathit{build\_blocks}$ which maps a list of instructions to a list of tuples $(i, \mathit{xs}, t)$,
+by the function $\bblocks$ which maps a list of instructions to a list of tuples $(i, \mathit{xs}, t)$,
 where $i$ is the block index, $\mathit{xs}$ --- the list of instructions of the block, and $t$ --- the type of
 the block. 
-%Moreover, we keep the order of blocks such that we can refer to the block where   
+
+By splitting bytecode into basic blocks no information gets lost since we can connect the produced blocks
+in the right order and insert jumps back in accordance with block types. More precisely, we also have the function
+$\cblocks$ such that for any bytecode program $c$ the identity 
+\[\cblocks(\bblocks\:c) = c\] holds.  
 \begin{figure}
 \center
 \begin{tabular}{c r l c}
@@ -533,7 +539,6 @@ the block.
 \label{fig:basicblocks}
 \end{figure}
 %
-\subsection{Instruction, Block and Program Rules}
 Based on these preparations, the following predicates 
 \[
 \begin{array}{l}
@@ -544,8 +549,10 @@ Based on these preparations, the following predicates
 \]
 where $P, Q$ are state predicates, $x$ --- an instruction, $\mathit{xs}$ --- a list of instructions,
 $\mathit{blocks}$ --- a list of basic blocks, and
-$(n, \mathit{xs}, t)$ --- a basic block, are defined inductively.
-
+$(n, \mathit{xs}, t)$ --- a basic block, are defined inductively in the following three section.
+%
+\subsection{Program Rules}
+%
 We start at the program level, where we have the following rules for
 each case of the block type $t$.
 \[
@@ -602,16 +609,34 @@ and\\
 $\\
 \\respectively. 
 Regarding the stack, $\stackh\:(h + 1)$ and $\stack\:h\:j$ specify a state where
-index $h$ refers to the top element containing $j$. Regarding gas, $\gaspred\:g$
+index $h$ refers to the top of the stack containing $j$ -- the jump destination we are looking for. 
+Regarding gas, $\gaspred\:g$
 binds the available amount of gas to $g$, whereas 
 the part $\pure{h \le 1023 \wedge g \geq 8}$ is a \emph{pure} condition,
-i.e. not dependent on state, and consequently sets an upper bound for the height of
-the stack and a lower bound for the amount of gas, namely $8$: as much as execution of a jump
-requires and which is deducted by $\gaspred\:(g - 8)$.   
-Although the pure part is quite basic in this case, it generally allows us to express elaborated 
-conditions on state elements by means of higher-order logic formulae.      
+i.e. not dependent on state, and sets an upper bound for the height of
+the stack and a lower bound for the amount of gas, namely $8$ units: 
+as much as EVM requires to perform a jump, which is deducted by $\gaspred\:(g - 8)$.   
+%Although the pure part is quite plain in this case, it generally allows us to express elaborated 
+%conditions on state elements by means of higher-order logic formulae.      
 
-  
+The case of a conditional jump. i.e. a $\mathit{Jumpi}$-block, is similar, except
+that we also need to retrieve from the stack the value $c$ to be compared to $0$ and
+jump only if $c \neq 0$:
+\[
+\begin{array}{l l}
+\mbox{(iv)} & \RuleC{\begin{array}{l}\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{R_1} \\
+                                      (j, \mathit{ys},t) \in \mathit{blocks} \\
+                                      \hd\mathit{ys} = (j, \instr{JUMPDEST}) \\
+                                      \ttrip{\mathit{blocks}}{\mathtt{prog}}{R_2}{(j, \mathit{ys},t)}{Q}
+                      \end{array}}
+     {\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, \mathit{Jump})}{Q}}
+\end{array}
+\]  
+
+\subsection{Block Rules}
+
+\subsection{Instruction Rules}
+ 
 
 \section{Soundness}
 \label{sec:sound}
