@@ -76,10 +76,10 @@
 \newcommand{\xnext}{\mathit{next}}
 \newcommand{\code}[1]{\mathit{code}(#1)}
 \newcommand{\cont}{\mathit{continuing}}
-\newcommand{\ncont}{\mathit{not\_continuing}}
+\newcommand{\ncont}{\mathit{not\mbox{-}continuing}}
 \newcommand{\pc}{\mathit{pc}}
-\newcommand{\gaspred}{\mathit{gas\_pred}}
-\newcommand{\stackh}{\mathit{stack\_height}}
+\newcommand{\gaspred}{\mathit{gas\mbox{-}pred}}
+\newcommand{\stackh}{\mathit{stack\mbox{-}height}}
 \newcommand{\stack}{\mathit{stack}}
 \newcommand{\instr}[1]{\mathtt{#1}}
 \newcommand{\pure}[1]{\langle#1\rangle}
@@ -87,8 +87,8 @@
 \newcommand{\RuleL}[2]{\begin{array}{l}#1\\\hline\noalign{\smallskip}#2\end{array}}
 \newcommand{\RuleC}[2]{\begin{array}{c}#1\\\hline\noalign{\smallskip}#2\end{array}}
 \newcommand{\Rule}[2]{\dfrac{#1}{#2}}
-\newcommand{\bblocks}{\mathit{build\_blocks}}
-\newcommand{\cblocks}{\mathit{connect\_blocks}}
+\newcommand{\bblocks}{\mathit{build\mbox{-}blocks}}
+\newcommand{\cblocks}{\mathit{connect\mbox{-}blocks}}
 
 
 %%%%%%%%%%%%%%%%%%
@@ -153,7 +153,7 @@
         commentstyle=\color{purple}\ttfamily,
         keywordstyle=\color{blue}\bfseries,
         literate=
-                {\\<not>}{{$¬$}}1 {\\<times>}{{$×$}}1                 
+                {\\<not>}{{$\<not>$}}1 {\\<times>}{{$\<times>$}}1                 
                 {\\<Rightarrow>}{{$\Rightarrow$}}1%
                 {\\<equiv>}{{$\equiv$}}1 {~=}{{$\not=$}}1                         
                 {\\<rightleftharpoons>}
@@ -588,7 +588,7 @@ Based on these preparations, the following predicates
 \]
 where $P, Q$ are state predicates, $x$ --- an instruction, $\mathit{xs}$ --- a list of instructions,
 $\mathit{blocks}$ --- a list of basic blocks, and
-$(n, \mathit{xs}, t)$ --- a basic block, are defined inductively in the following three section.
+$(n, \mathit{xs}, t)$ --- a basic block, are defined inductively in the following three sections.
 %
 \subsection{Program Rules}
 %
@@ -718,7 +718,7 @@ and
 {\ttrip{}{\mathtt{block}}{P}{\mathit{Nil}}{Q}}
 \end{array}
 \]
-where $P \subpred Q$ means that $P\:s$ implies $Q\:s$ for all states $s$.
+where $P \subpred Q$ means $P\:s$ implies $Q\:s$ for any state $s$.
 %
 \subsection{Instruction Rules}
 As we need to provide a rule for each of 70 EVM instructions, we will not
@@ -749,10 +749,10 @@ $\\
 In particular, we have stated that the height of the stack decreases by $1$ as
 an effect of $\instr{POP}$.
 
-Apart from these kind of rules we also have the following generic instruction level rules:
+Apart from these instruction-specific rules we also have the following generic rules:
 \[
 \begin{array}{l l}
-\mbox{(i)} & \ttrip{}{\mathtt{instr}}{\pure{False}}{i}{Q} 
+\mbox{(i)} & \ttrip{}{\mathtt{instr}}{\pure{\mathit{False}}}{i}{Q} 
 \end{array}
 \]
 \[
@@ -764,7 +764,13 @@ Apart from these kind of rules we also have the following generic instruction le
                      \end{array}}{\ttrip{}{\mathtt{instr}}{P}{i}{Q}}
 \end{array}
 \]
- 
+and
+\[
+\begin{array}{l l}
+\mbox{(iii)} & \RuleC{\ttrip{}{\mathtt{instr}}{P}{i}{Q}}{\ttrip{}{\mathtt{instr}}{P \sconj F}{i}{Q \sconj F}}
+\end{array}
+\] 
+
 \section{Soundness}
 \label{sec:sound}
 
