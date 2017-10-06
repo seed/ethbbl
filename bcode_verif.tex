@@ -836,15 +836,6 @@ we need to follow only one of the emerging branches.
 \section{Case-study}
 \label{sec:case}
 
-% Ideas: show derivation tree of MyContract bytecode, show isabelle tactics,
-% talk about word proofs, add footnote for INVALID inst,
-% explain that the bytecode gets parsed in Isabelle from a string.
-% number of lines of proofs, talk about run-time bytecode vs creation code.
-
-% word proofs ideas: memory linear byte addressable, storage is 256 words and
-% lot of casting back and forth; eth addresses are 160 bit words; showing that 
-% tow256(w32 & 0xffffffff) = tow256 w32 is hard.
-
 To demonstrate the practicality of our program logic, we verify a smart contract.
 Ethereum smart contracts are typically implemented in a language called Solidity,
 which provides a high level abstractions to facilitate interactions between EVM
@@ -924,8 +915,12 @@ The argument passed to \textit{spec\_MyContract} corresponds to the first 32-bit
 machine word passed as argument when the contract get invoked.
 \textit{ContractReturn} and \textit{ContractFail} specify the action
 resulting from the contract execution.
+Upon successful execution, contracts return a byte array,
+hence we use \textit{word\_rsplit} to convert a word into list of bytes
+encoded in big-endian format.
 When none of the function hashes match the first contract argument,
-the dispatcher hits an \textit{INVALID} instruction,
+the dispatcher hits an \textit{INVALID}\footnote{INVALID is the mnemonic
+of an EVM opcode intentionally kept undefined in order to raise an exception.} instruction,
 which corresponds to raising a \textit{ShouldNotHappen} exception
 in our bytecode semantics.
 
@@ -933,17 +928,39 @@ At the bottom of \autoref{spec} is a Hoare triple we proved.
 The precondition initialises the machine state, e.g. program counter is zero,
 stack is empty, etc. Importantly, \textit{arg} is the 32-bit word contract
 argument used by the dispatcher code as well as the specification,
-%% gas-pred already mentioned above  
 and $\gaspred$ specifies the gas budget for the contract execution.
-The bytecode (i.e. list of bytes) is converted into list of basic blocks
-with 
-%% the same with blocks; can we use $\bblocks$ instead for the sake of consistency?
-$\bblocks$.
-In the postcondition we are only interested in the resulting action
+\textit{bytecode\_MyContract} is a list of deeply embedded EVM
+instructions which we convert into a list of basic blocks with $\bblocks$.
+In the postcondition, we are only interested in the resulting action
 satisfying \textit{spec\_MyContract}, hence we quantify existentially
 on the rest of the state to leave it unspecified.
 
-\subsection{Verification \& Automation}
+\subsection{Verification}
+
+
+Smart contract bytecode is divided into two sections: the pre-loader and
+runtime code.
+The pre-loader bootstraps the contract by deploying it on the
+Ethereum network and running its constructor (\autoref{solidity}
+has no constructor).
+The runtime code contains the core functionality of the contract
+that can be invoked by other blockchain agents.
+Our verification only consider the runtime code of MyContract.
+
+We obtain the runtime code as a byte string of opcode from the Solidity
+compiler and convert it into a list of EVM instructions via a
+Isabelle/HOL function we wrote.
+In this sense we work directly on the bytecode output of
+the Solidity compiler.
+
+% focus on runtime binary, 
+% parse_bytecode 
+% derivation tree for bytecode, 
+% word proofs
+
+\subsection{Automation}
+% Ideas: show isabelle tactics,
+% number of lines of proofs
 
 When reasoning about bytecode, even the verification of small smart contracts
 can involve long, tedious and repetitive proofs.
@@ -980,18 +997,6 @@ An issue we encountered is that when $R$ contains unification variables,
 we have to reorder terms in $P$ so that the variables in $R$ get instantiated
 in the correct order.
 When such problem occurs, we resolve to manual reordering of terms.
-
-
-%% However, the separation logic predicates of the rules for $\vdash_\textit{inst}$ are written in some order and they need to be in the exact same order in our statement for the rule to be applied.
-%% As it is unrealistic, we need to use the rule to strengthen the pre-condition, see Section \ref{subsec:instlevel} and to apply it on top of every instruction's rule.
-%% From there, the application of all our rules is automated by pattern matching.
-%% 
-%% After this first step, the remaining goals are of the following form $\forall s. R~s \Longrightarrow P~s$ where $P$ and $R$ are separation conjunctions.
-%% There already exists a method to simplify syntactically the first term of $P$ with the same one if it appears somewhere in $R$.
-%% However, some variables in $R$ are not instantiated and we have to reorder terms of $P$ so that they are instantiated in the correct order.
-%% We developed a tactic to re-order terms as needed.
-%% However, as only a subset of instructions is specified, we do not manipulate all the possible form for the terms and some adjustments might be necessary later on.
-%% 
 
 \section{Related Work}
 \label{sec:rwork}
