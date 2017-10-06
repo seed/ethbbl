@@ -533,31 +533,34 @@ This is because JVM jump instructions
 take their target address as an immediate value argument which can be determined statically,
 whereas in EVM jump destinations
 must be obtained from the stack, i.e. dynamically. For that reason, our bytecode preprocessing
-currently addresses basic block extraction only.
-
+currently addresses basic block extraction only, presented in the next section.
+Then, Sections~\ref{sec:prog-rules}, \ref{sec:block-rules} and \ref{sec:instr-rules} 
+present how our logic handles programs, splitted into blocks, individual blocks, and
+instructions within blocks, respectively. 
+%
 %       
-The basic blocks program logic we present in this section is organised
-in three levels of inductively defined inference rules, of the form:
-\[
-\begin{array}{l}
-\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q} \\
-\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} \\
-\ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} 
-\end{array}
-\]
-where $P, Q$ are state predicates,
-$\mathit{blocks}$ is a list of basic blocks,
-$(n, \mathit{xs}, t)$ is a basic block,
-$\mathit{xs}$ is a list of instructions,
-and $x$ is an instruction.
-
-The program level allows considering one basic block at a time.
-The block level, one instruction at a time.
-And the instruction level provides rules for every instruction defined on the EVM.
-In the rest of this section we first explain in detail how we
-split EVM bytecode into basic blocks, then we dedicate a section to
-each level of the program logic.
-
+%The basic blocks program logic we present in this section is organised
+%in three levels of inductively defined inference rules, of the form:
+%\[
+%\begin{array}{l}
+%\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q} \\
+%\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} \\
+%\ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} 
+%\end{array}
+%\]
+%where $P, Q$ are state predicates,
+%$\mathit{blocks}$ is a list of basic blocks,
+%$(n, \mathit{xs}, t)$ is a basic block,
+%$\mathit{xs}$ is a list of instructions,
+%and $x$ is an instruction.
+%
+%The program level allows considering one basic block at a time.
+%The block level, one instruction at a time.
+%And the instruction level provides rules for every instruction defined on the EVM.
+%In the rest of this section we first explain in detail how we
+%split EVM bytecode into basic blocks, then we dedicate a section to
+%each level of the program logic.
+%
 \subsection{Extraction of Basic Blocks}
 We divide instructions into three groups:
 \begin{itemize}
@@ -615,6 +618,18 @@ $\cblocks$ such that for any bytecode program $c$ the identity
          code but are removed from the list of instructions of their block.}
 \label{fig:basicblocks}
 \end{figure}
+
+Based on these preparations, the following predicates 
+\[
+\begin{array}{l}
+\ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} \\
+\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} \\
+\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q}
+\end{array}
+\]
+where $P, Q$ are state predicates, $x$ --- an instruction, $\mathit{xs}$ --- a list of instructions,
+$\mathit{blocks}$ --- a list of basic blocks, and
+$(n, \mathit{xs}, t)$ --- a basic block, are defined inductively in the following three sections.
 %
 \subsection{Program Rules}
 \label{sec:prog-rules}
@@ -807,7 +822,7 @@ The rule (i) is the usual `consequence' rule, allowing us to adjust pre- and
 postconditions, whereas (ii) is needed to discharge trivial 
 proof obligations having unsatisfiable preconditions. Such obligations 
 arise frequently from conditional jumps (rule (iv), Section~\ref{sec:prog-rules})
-where the condition is fully evaluated before the jump, such that
+where the condition is fully evaluated prior to the actual jump, such that
 we need to follow only one of the emerging branches.
 %
 \section{Soundness}
