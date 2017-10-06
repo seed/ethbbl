@@ -485,6 +485,9 @@ The essential property of $\xnext^*$ is that for any state $s$ there exists $k \
 \end{itemize}
 In other words, $\xnext^*(s) = \xnext^k(s)$ where $k$ is the least number such that
 $\xnext^k(s)$ reaches a state with $\ncont$. 
+% Perhaps say that we proved that every program in EVM bytecode terminates by writing
+% higher-order logic function that executes bytecode (reusing Yoichi's definitions of
+% semantics) and proving termination of that function.
 
 Now, regarding the contract correctness, we strengthen $\pvalid{P}{c}{Q}$ to 
 a total correctness property $\tvalid{P}{c}{Q}$ which is consequently true iff
@@ -811,6 +814,15 @@ Apart from the frame rule we still have two generic rules at the instruction lev
 \section{Case-study}
 \label{sec:case}
 
+% Ideas: show derivation tree of MyContract bytecode, show isabelle tactics,
+% talk about word proofs, add footnote for INVALID inst,
+% explain that the bytecode gets parsed in Isabelle from a string.
+% number of lines of proofs, talk about run-time bytecode vs creation code.
+
+% word proofs ideas: memory linear byte addressable, storage is 256 words and
+% lot of casting back and forth; eth addresses are 160 bit words; showing that 
+% tow256(w32 & 0xffffffff) = tow256 w32 is hard.
+
 To demonstrate the practicality of our program logic, we verify a smart contract.
 Ethereum smart contracts are typically implemented in a language called Solidity,
 which provides a high level abstractions to facilitate interactions between EVM
@@ -1004,6 +1016,9 @@ security vulnerabilities, such as reentrancy and callstack bugs.
 % XCAP ?
 
 \section{Conclusions and Future Work}
+% Ideas: inter-contract communication, recovering loops, more structured
+% programs including notion of contract classes etc, CakeML backend, Jinja backend
+% verification contract creation code, as opposed to run-time code.
 \label{sec:concl}
 
 %% Acknowledgments
