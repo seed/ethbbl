@@ -293,8 +293,8 @@ Formal verification can provide the highest level of confidence about the
 correct behaviour of smart contracts.
 In this paper we extend an existing EVM formalisation~\cite{Yoichi} in Isabelle/HOL by a sound
 program logic at the level of bytecode.
-We structure and reason about bytecode sequences into graphs of basic blocks of straight-line
-code.
+We structure bytecode sequences into graphs of basic blocks of straight-line
+code and create a program logic to reason about these.
 This abstraction is a step towards control of the cost and complexity of formal verification
 of EVM smart contracts.
 \end{abstract}
@@ -452,7 +452,7 @@ The triple is true iff for any state $s$ and frame $F$ such that
 $(P \sconj \code{c} \sconj F)\:\ s$ holds, there exists a natural number $k$ such that 
 $(Q \sconj \code{c} \sconj F)\:\ \xnext^k(s)$ holds. 
 %The frame is used to accomodate an invariant part of a state, 
-Keeping frame $F$ will allow us to reason about parts of the state locally using \emph{frame rule}(cf.~\cite{Reynolds_02}),
+Keeping frame $F$ will allow us to reason about parts of states locally, %using \emph{frame rule}(cf.~\cite{Reynolds_02}),
 whereas $\xnext^k$ denotes $k$-times iteration of $\xnext$.
 Such triples $\pvalid{P}{c}{Q}$ are highly generic and we cannot conclude much from many of these, except that
 under given preconditions the program $c$ will pass a state satisfying $Q$. This changes immediately in cases when $Q$ is of
@@ -591,6 +591,7 @@ $\mathit{blocks}$ --- a list of basic blocks, and
 $(n, \mathit{xs}, t)$ --- a basic block, are defined inductively in the following three sections.
 %
 \subsection{Program Rules}
+\label{sec:prog-rules}
 %
 We start at the program level, where we have the following rules for
 each case of the block type $t$.
@@ -700,6 +701,7 @@ $\\
 \\respectively. 
 %
 \subsection{Block Rules}
+\label{sec:block-rules}
 At the level of basic blocks we need only two simple rules
 that handle the cases of non-empty and empty lists of instructions
 to be processed:
@@ -721,6 +723,7 @@ and
 where $P \subpred Q$ means $P\:s$ implies $Q\:s$ for any state $s$.
 %
 \subsection{Instruction Rules}
+\label{sec:instr-rules}
 As we need to provide a rule for each of 70 EVM instructions, we will not
 present all of them here. The following rule for $\instr{POP}$ is quite representative
 and shows that in the precondition we specify the necessary conditions for 
@@ -734,7 +737,7 @@ where $P$ stands for
 \\$
 \begin{array}{l}
 \pure{h \le 1023 \wedge g \geq 2} \sconj \cont \sconj \gaspred\:g \; \sconj \\
-\pc\:n \; \sconj \stackh\:(h + 1) \; \sconj \stack\:h\:x  
+\pc\:n \; \sconj \stackh\:(h + 1) \; \sconj \stack\:h\:x \sconj F 
 \end{array}
 $\\ 
 \\
@@ -742,14 +745,24 @@ and $Q$ for\\
 \\$
 \begin{array}{l}
 \cont \sconj \gaspred\:(g - 2) \; \sconj \\
-\pc\:(n+1) \; \sconj \stackh\:h 
+\pc\:(n+1) \; \sconj \stackh\:h \sconj F
 \end{array}
 $\\
 \\
 In particular, we have stated that the height of the stack decreases by $1$ as
-an effect of $\instr{POP}$.
+an effect of $\instr{POP}$. It is also worth noting that we incorporate frames
+into such instruction-specific rules by carrying a variable $F$ in pre- and
+postconditions, as shown above. This is in contrast to the more common way
+introducing a generic \emph{frame} rule(cf.~\cite{Reynolds_02}) of the form  
+\[
+\RuleC{\ttrip{}{\mathtt{instr}}{P}{i}{Q}}{\ttrip{}{\mathtt{instr}}{P \sconj F}{i}{Q \sconj F}}
+\] 
+and removing $F$ from all instruction-specific rules. However, this treatment leads to 
+a considerable overhead in the verification process, since we would need to apply
+the frame rule basically each time an instruction-specific rule needs to be applied. 
+%For this practical reason we omit an explicit frame rule. 
 
-Apart from these instruction-specific rules we also have the following generic rules:
+Apart from the frame rule we still have two generic rules at the instruction level:
 \[
 \begin{array}{l l}
 \mbox{(i)} & \ttrip{}{\mathtt{instr}}{\pure{\mathit{False}}}{i}{Q} 
@@ -764,12 +777,7 @@ Apart from these instruction-specific rules we also have the following generic r
                      \end{array}}{\ttrip{}{\mathtt{instr}}{P}{i}{Q}}
 \end{array}
 \]
-and
-\[
-\begin{array}{l l}
-\mbox{(iii)} & \RuleC{\ttrip{}{\mathtt{instr}}{P}{i}{Q}}{\ttrip{}{\mathtt{instr}}{P \sconj F}{i}{Q \sconj F}}
-\end{array}
-\] 
+
 
 \section{Soundness}
 \label{sec:sound}
