@@ -487,6 +487,9 @@ The essential property of $\xnext^*$ is that for any state $s$ there exists $k \
 \end{itemize}
 In other words, $\xnext^*(s) = \xnext^k(s)$ where $k$ is the least number such that
 $\xnext^k(s)$ reaches a state with $\ncont$. 
+% Perhaps say that we proved that every program in EVM bytecode terminates by writing
+% higher-order logic function that executes bytecode (reusing Yoichi's definitions of
+% semantics) and proving termination of that function.
 
 Now, regarding the contract correctness, we strengthen $\pvalid{P}{c}{Q}$ to 
 a total correctness property $\tvalid{P}{c}{Q}$ which is consequently true iff
@@ -504,32 +507,64 @@ A Hoare-style program logic comprises a collection of rules that allow us to der
 of compound programs from properties of its parts. In case of structured languages 
 we usually have, for instance, a rule telling us that a program \textbf{if} $C$ \textbf{then} $p_1$ \textbf{else} $p_2$
 exhibits a certain input/output behaviour if $p_1$ and $p_2$ do so, however, with the additional precondition $C$ 
-available for $p_1$ and $\neg C$ -- for $p_2$. The situation is not that simple when we have to deal with mainly
-unstructured programs like EVM bytecode in our case. For example, such conditional compound constructs as above
-appear merely as instructions to make jumps to other program parts. Since a bytecode program comprises
+available for $p_1$ and $\neg C$ for $p_2$.
+However, the situation is not that simple when we have to deal with
+unstructured programs like EVM bytecode in our case.
+In such setting, the aforementioned conditional compound constructs
+appear merely as jump instructions that transfer the flow of execution
+to another part of the program.
+Since a bytecode program comprises
 a list of instructions, a rule might handle the head instruction and proceed to the tail of 
 the list, but would need to make exceptions when the head instruction is a jump, because then
-we cannot simply proceed with the tail. Although such treatment is in principle possible,
+the tail does not necessarily correspond to the next instructions in the flow of execution.
+Although such treatment is in principle possible,
 there are more sophisticated decompilation techniques available, such as extraction of 
 \emph{Control Flow Graphs} (CFG), in particular applied to the Java Virtual Machine (JVM) code~\cite{zhao99}.
 The aim of CFG extraction is to split a program into \emph{basic blocks}, i.e. sequences of
 instructions without jumps, and connect them
-using edges corresponding to jumps. Obviously, the essential property of basic blocks is that
-control flow always enters it at its first instruction and leaves only after the last one
-has been executed.
+using edges corresponding to jumps.
+The essential property of basic blocks is that
+it comprises straight-line code, i.e. the execution always enters it at its first instruction
+and leaves only after the last one has been executed.
 
-However, CFG extraction for JVM cannot be easily adapted to our EVM context, because JVM jump
-instructions carry their respective target address statically, whereas in EVM jump destinations
+However, the algorithm to compute the edges of a CFG for JVM bytecode
+cannot be easily adapted to our EVM context.
+This is because JVM jump instructions
+take their target address as an immediate value argument which can be determined statically,
+whereas in EVM jump destinations
 must be obtained from the stack, i.e. dynamically. For that reason, our bytecode preprocessing
-currently addresses basic block extraction only.  
+currently addresses basic block extraction only.
+
 %       
+The basic blocks program logic we present in this section is organised
+in three levels of inductively defined inference rules, of the form:
+\[
+\begin{array}{l}
+\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q} \\
+\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} \\
+\ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} 
+\end{array}
+\]
+where $P, Q$ are state predicates,
+$\mathit{blocks}$ is a list of basic blocks,
+$(n, \mathit{xs}, t)$ is a basic block,
+$\mathit{xs}$ is a list of instructions,
+and $x$ is an instruction.
+
+The program level allows considering one basic block at a time.
+The block level, one instruction at a time.
+And the instruction level provides rules for every instruction defined on the EVM.
+In the rest of this section we first explain in detail how we
+split EVM bytecode into basic blocks, then we dedicate a section to
+each level of the program logic.
+
 \subsection{Extraction of Basic Blocks}
 We divide instructions into three groups:
 \begin{itemize}
-\item[(i)] $\instr{JUMPDEST}$ -- indicates a jump destination and hence beginning of a
+\item[(i)] $\instr{JUMPDEST}$ indicates a jump destination and hence beginning of a
                                  basic block;
-\item[(ii)] $\instr{JUMP}$, $\instr{JUMPI}$, $\instr{UNKNOWN}$ and all of so-called 
-            \emph{Misc}-instructions\footnote{RETURN, STOP, SUICIDE, CREATE, CALL, CALLCODE, DELEGATECALL} --
+\item[(ii)] $\instr{JUMP}$, $\instr{JUMPI}$, $\instr{UNKNOWN}$ and all of 
+            \emph{Misc}-instructions\footnote{RETURN, STOP, SUICIDE, CREATE, CALL, CALLCODE, DELEGATECALL}
             indicate the end of a basic block ($\instr{UNKNOWN}$ and Misc-instructions interrupt program execution); 
 \item[(iii)] all remaining instructions that form the contents of basic blocks.
 \end{itemize}  
@@ -580,18 +615,6 @@ $\cblocks$ such that for any bytecode program $c$ the identity
          code but are removed from the list of instructions of their block.}
 \label{fig:basicblocks}
 \end{figure}
-%
-Based on these preparations, the following predicates 
-\[
-\begin{array}{l}
-\ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} \\
-\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} \\
-\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q}
-\end{array}
-\]
-where $P, Q$ are state predicates, $x$ --- an instruction, $\mathit{xs}$ --- a list of instructions,
-$\mathit{blocks}$ --- a list of basic blocks, and
-$(n, \mathit{xs}, t)$ --- a basic block, are defined inductively in the following three sections.
 %
 \subsection{Program Rules}
 \label{sec:prog-rules}
@@ -798,6 +821,15 @@ we need to follow only one of the emerging branches.
 \section{Case-study}
 \label{sec:case}
 
+% Ideas: show derivation tree of MyContract bytecode, show isabelle tactics,
+% talk about word proofs, add footnote for INVALID inst,
+% explain that the bytecode gets parsed in Isabelle from a string.
+% number of lines of proofs, talk about run-time bytecode vs creation code.
+
+% word proofs ideas: memory linear byte addressable, storage is 256 words and
+% lot of casting back and forth; eth addresses are 160 bit words; showing that 
+% tow256(w32 & 0xffffffff) = tow256 w32 is hard.
+
 To demonstrate the practicality of our program logic, we verify a smart contract.
 Ethereum smart contracts are typically implemented in a language called Solidity,
 which provides a high level abstractions to facilitate interactions between EVM
@@ -991,6 +1023,9 @@ security vulnerabilities, such as reentrancy and callstack bugs.
 % XCAP ?
 
 \section{Conclusions and Future Work}
+% Ideas: inter-contract communication, recovering loops, more structured
+% programs including notion of contract classes etc, CakeML backend, Jinja backend
+% verification contract creation code, as opposed to run-time code.
 \label{sec:concl}
 
 %% Acknowledgments
