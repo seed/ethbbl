@@ -461,8 +461,9 @@ the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating stat
 Hence, showing $\pvalid{P}{c}{\ncont \sconj Q'}$ amounts to showing termination of the program $c$ in
 a $Q'$-state.
 
-This generic technique applies seamlessly to EVM programs.
-However, showing termination of a contract individually is an unnecessary burden because
+This generic technique applies seamlessly to EVM programs as
+the formalisation~\cite{Yoichi} shows.
+However, we realised that showing termination of a contract individually is an unnecessary burden because
 Ethereum was designed in such a way that all smart contracts
 are guaranteed to terminate (either successfully or due to an `out-of-gas' exception).
 More specifically, to ensure that miners get compensated for the electricity cost
@@ -475,7 +476,8 @@ If the gas consumption exceeds the budget, an `out-of-gas' exception is
 raised and the state of the contract prior the
 invocation is restored.
 
-These blockchain specifics give us a termination order such that in this context we have the function $\xnext^*$ which 
+These blockchain specifics give us a termination order we need   
+to augment the EVM formalisation~\cite{Yoichi} by the function $\xnext^*$ which 
 consequently assigns to each state the terminal element from the reflexive-transitive closure of $\xnext$. 
 The essential property of $\xnext^*$ is that for any state $s$ there exists $k \geq 0$ such that
 \begin{itemize}
@@ -766,20 +768,25 @@ the frame rule basically each time an instruction-specific rule needs to be appl
 Apart from the frame rule we still have two generic rules at the instruction level:
 \[
 \begin{array}{l l}
-\mbox{(i)} & \ttrip{}{\mathtt{instr}}{\pure{\mathit{False}}}{i}{Q} 
-\end{array}
-\]
-\[
-\begin{array}{l l}
-\mbox{(ii)} & \RuleC{\begin{array}{l}
+\mbox{(i)} & \RuleC{\begin{array}{l}
                      \ttrip{}{\mathtt{instr}}{P'}{i}{Q'} \\
                      P \subpred P' \\ 
                      Q' \subpred Q
                      \end{array}}{\ttrip{}{\mathtt{instr}}{P}{i}{Q}}
 \end{array}
 \]
-
-
+\[
+\begin{array}{l l}
+\mbox{(ii)} & \ttrip{}{\mathtt{instr}}{\pure{\mathit{False}}}{i}{Q} 
+\end{array}
+\]
+The rule (i) is the usual `consequence' rule, allowing us to adjust pre- and
+postconditions, whereas (ii) is needed to discharge trivial 
+proof obligations having unsatisfiable preconditions. Such obligations 
+arise frequently from conditional jumps (rule (iv), Section~\ref{sec:prog-rules})
+where the condition is fully evaluated before the jump, such that
+we need to follow only one of the emerging branches.
+%
 \section{Soundness}
 \label{sec:sound}
 
