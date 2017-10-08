@@ -147,7 +147,7 @@
   {keywords={
         theory,end,types,datatype,consts,defs,primrec,
         syntax,translations,apply,definition,fun,function, lemma,theorem,corollary,
-        done,sorry,goal,proof,fixed variables, inductive, where, case,of,if,then,else},
+        done,sorry,goal,proof,fixed variables, inductive, where, case,of,if,then,else,method},
         sensitive=true,
         comment=[s]{(*}{*)},
         commentstyle=\color{purple}\ttfamily,
@@ -853,7 +853,7 @@ In Solidity, the functionality of a smart contract is encapsulated into a
 (OOP), has a well-defined interface with public and private elements.
 Creating a contract on the blockchain instantiates the contract interface.
 Just like class instantiations in OOP, contracts on the blockchain are
-stateful objects, where the storage is persistent across function calls.
+stateful objects, where the storage is persistent across method function calls.
 
 \begin{figure}[h!]
 \begin{lstlisting}[language=Solidity]{}
@@ -961,6 +961,42 @@ Isabelle/HOL function we wrote.
 In this sense we work directly on the bytecode output of
 the Solidity compiler.
 
+MyContract bytecode has 227 EVM instructions, that get split into 27 basic
+blocks, including 4 of type conditional jump.
+Proving the correctness of the bytecode was fairly straightforward
+once the automation described in the next section reached maturity.
+
+A difficult proof arose when parsing the contract input data
+in order to extract the argument passed to the dispatcher.
+This involved dealing with operations on words of different size,
+which is notoriously hard.
+In particular, the instruction \textit{CALLDATALOAD} reads a
+256-bit machine word from the input data array.
+Since the hash value passed in the input data is only a 32-bit word,
+the dispatcher does the following word arithmetic to convert the value:\\
+$w32\_hash = (w256\_input\_data >> 224)\ \&\ \mathtt{0xffffffff}$.\\
+We had to prove that when the hash is packed in the input data,
+the above bit-wise operations return the same hash value.
+
+%% mole $ wc -l HoareTripleForBasicBlocks.thy SoundnessForBasicBlocks.thy ../example/Dispatcher.thy ../EvmFacts.thy Hoare.thy
+%%    575 HoareTripleForBasicBlocks.thy
+%%   2733 SoundnessForBasicBlocks.thy
+%%    762 ../example/Dispatcher.thy
+%%    300 ../EvmFacts.thy
+%%   1077 Hoare.thy
+%%   5447 total
+
+The total development of our framework is $\approx$5000 lines of Isabelle/HOL,
+excluding the existing EVM bytecode semantics, etc.
+The size of the top-level specification of MyContract is $\approx$15 lines
+and the functional correctness proof of the dispatcher is
+$\approx$50 lines of proof specific to this example, which compares
+favouribly with the $\approx$500 lines of reusable proof
+automation machinery we developed.
+We describe this automation next.
+
+
+
 % focus on runtime binary, 
 % parse_bytecode 
 % derivation tree for bytecode, 
@@ -986,8 +1022,21 @@ condition generator (VCG).
 Shaping the rules in a way that only one of them applies at each point in the
 proof makes it trivial to write a VCG that merely tries applying all the rules
 one after another.
-Such VCG can be implemented with a single line of Eisbach~\cite{Matichuk_MW_16}--
+Such VCG can be implemented with a few lines of Eisbach~\cite{Matichuk_MW_16}---
 an Isabelle/HOL's high-level tactic language.
+We developed a VCG for each level of our program logic.
+For instance, the program-level tactic looks like this:
+\begin{lstlisting}[language=Isar]{}
+method prog_vcg =
+ (prog_jumpi_vcg | prog_jump_vcg
+ | prog_terminal_vcg | prog_next_vcg)+
+\end{lstlisting}
+where e.g., \textit{prog\_jumpi\_vcg} is another tactic applying the \textit{JUMPI}
+rule of Section~\ref{sec:prog-rules} and solving its resulting subgoals by
+invoking more specific tactics we designed.
+\textit{prog\_vcg} tries each of the tactics separated by the $|$ symbol,
+while the $+$ sign at the end means that it will apply repetitively until
+none of the tactic can apply on the goal.
 
 A common source of friction we experienced during the early development
 of our framework was with proving goals of the form:
