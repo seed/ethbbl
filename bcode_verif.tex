@@ -836,7 +836,15 @@ we need to follow only one of the emerging branches.
 \section{Case-study}
 \label{sec:case}
 
-To demonstrate the practicality of our program logic, we verify a smart contract.
+%To demonstrate the practicality of our program logic, we verify a smart contract.
+
+% We provide the ground work to eventually get fully verified
+% smart contracts. They will require reasoning about bytecode.
+% Our framework could be used to have a formal connection
+% between a  more structured language and bytecode.
+
+Our framework provides the ground work for full functional correctness
+of Ethereum smart contracts.
 Ethereum smart contracts are typically implemented in a language called Solidity,
 which provides a high level abstractions to facilitate interactions between EVM
 program.
@@ -957,6 +965,11 @@ the Solidity compiler.
 % parse_bytecode 
 % derivation tree for bytecode, 
 % word proofs
+
+% due to hash_in_w256 being padded with zeros,
+% we need to prove hash_in_w32 = (hash_in_w256 >> 224) & 0xffffffff
+% >> 224 removes the padded zeros
+% Word proofs are notorious to be hard and this was one of them.
 
 \subsection{Automation}
 % Ideas: show isabelle tactics,
