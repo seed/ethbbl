@@ -1077,6 +1077,7 @@ We describe this automation next.
 % Word proofs are notorious to be hard and this was one of them.
 
 \subsection{Automation}
+\label{sec:auto}
 % Ideas: show isabelle tactics,
 % number of lines of proofs
 
@@ -1129,49 +1130,63 @@ An issue we encountered is that when $R$ contains variables,
 we have to re-order terms in $P$ in such way that the variables in $R$ get instantiated
 in the correct order.
 %%%
-When such problem occurs, we resolve to manual reordering of terms. % ?? 
+When such problem occurs, we resort to manual reordering of terms. % ?? 
 
 \section{Related Work}
 \label{sec:rwork}
 
-
-As a consequence of the fact that smart contracts are critical under many aspects, a notable amount of
-approaches and tools for their analysis has already been proposed 
-(\cite{Bhargavan:2016:FVS:2993600.2993611}, \cite{securify}, \cite{openzeppelin} to name a few).
+As a consequence of the series of recent smart contract security flaws exploitations,
+a notable amount of approaches and tools for their
+analysis have already been proposed (e.g.~\cite{Bhargavan:2016:FVS:2993600.2993611,securify,Luu_COSH_16}).
  
 The major trend is to apply various kinds of static analysis not only at the level of structured contract
-languages (e.g. Solidity's Why3 backend~\cite{filliatre2013why3}) but also at the bytecode level~\cite{Msuiche_17,securify}. 
+languages (e.g. Solidity's Why3 backend~\cite{filliatre2013why3,Reitwiessner_16}) but also at the bytecode level~\cite{Msuiche_17,securify,Luu_COSH_16}. 
 %However, most tools do not provide a lot of insight into internal details.
 %
 The obvious advantage of static analysis approaches is that full automation can be achieved for 
 contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify}.
- 
-Our approach is general as we aim to specify and verify contract properties in pre/postcondition
+Oyente~\cite{Luu_COSH_16} and Porosity~\cite{Msuiche_17} decompile
+bytecode into a control-flow-graph and perform control flow analysis in order
+to detect common smart contract security defects such as reentrancy bugs.
+These tools are of great value when added to the development process so
+they catch mistakes early, but they do not guarantee the absence of bugs.
+
+Our approach is more general as we aim to specify and verify contract properties in pre/postcondition
 style where the conditions can comprise any higher-order logic formula describing an EVM state. 
 For that reason, the degree of automation is basically limited in our case such that the user will need to interact 
 with the proof system in most cases to discharge elaborated claims. 
 
-In~\cite{Bhargavan:2016:FVS:2993600.2993611}, a technique using an intermediate functional language
-called $F^*$, which is more amenable to verification, has been proposed. 
+Bhargavan et al.~\cite{Bhargavan:2016:FVS:2993600.2993611} proposed a technique using an
+intermediate functional language called $F^*$,
+which is more amenable to verification. 
 It provides not only translation of a subset of Solidity programs 
-to $F^*$, but also decompilation of EVM bytecode to $F^*$ as well. This use of decompilation makes
+to $F^*$, but also decompilation of EVM bytecode to $F^*$ as well.
+This use of decompilation makes
 the approach similar to ours, since our program logic, in fact, resembles decompilation.
-As we will show in the following sections, in the first step we split bytecode program into blocks without jumps,  
-whereas the actual jump destinations are determined dynamically `on-the-fly' by application of logic rules.
-By contrast, \cite{Bhargavan:2016:FVS:2993600.2993611} performs static stack analysis to this end.
-However, a more striking difference is that our approach is homogeneous since basically each and every step of our whole verification process 
+As explained in \autoref{sec:logic}, we split bytecode program into blocks without jumps
+and determine the actual jump destinations dynamically `on-the-fly', by applying logic rules.
+By contrast, Bhargavan et al. perform static stack analysis to this end.
+However, a more striking difference is that our approach is homogeneous since every step of our whole verification process 
 is performed and justified within a single, trusted logical framework without any translations to or from other formalisms.
-As already mentioned, such translations must be either assumed to behave correctly in some sense or 
-formally modelled and verified,
-whereas we aimed to avoid both of these options. 
+Such translations must be either assumed to behave correctly in some sense or
+formally modelled and verified, whereas we aimed to avoid both of these options.
 
 KEVM~\cite{Hildenbrandt_SZRDGR_17} is a formal semantics of the EVM written using the K-framework.
-Like the lem semantics we use~\cite{Yoichi}, KEVM is executable and therefore can run the validation test-suite.
-Reasoning about KEVM programs involves specifying properties in Reachability Logic and
-verifying them using K's built-in prover, which is not as powerful as Isabelle.
+Like the lem semantics we use~\cite{Yoichi}, KEVM is executable and therefore can run the Ethereum foundation's validation test suite.
+Reasoning about KEVM programs involve specifying properties in Reachability Logic and
+verifying them with a separate analysis tool.
+K supports translation for analysis with tools of varying
+power, including symbolic execution, faster concrete execution, or Isabelle.
+As explained earlier, we preferred the option of working in a single trusted logical framework.
 
-Porosity~\cite{Msuiche_17} is an EVM decompiler with static analysis support that can detect common
-security vulnerabilities, such as reentrancy and callstack bugs.
+Hirai~\cite{Yoichi} developed a Hoare logic for EVM bytecode
+in the line of Myreen's work~\cite{DBLP:phd/ethos/Myreen09}.
+In some sense, our work extends Hirai's by forcing Hoare triples to
+state total correctness and by extracting a more structured representation
+of the bytecode with basic blocks.
+The restored structure of the bytecode facilitated the design of
+a sound program logic and ultimately enabled more proof
+automation as explained in Section~\ref{sec:auto}.
 
 % XCAP ?
 
