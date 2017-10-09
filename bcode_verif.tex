@@ -1134,7 +1134,7 @@ When such problem occurs, we resort to manual reordering of terms. % ??
 
 \section{Related Work}
 \label{sec:rwork}
-
+%
 As a consequence of the series of recent smart contract security flaws exploitations,
 a notable amount of approaches and tools for their
 analysis have already been proposed (e.g.~\cite{Bhargavan:2016:FVS:2993600.2993611,securify,Luu_COSH_16}).
@@ -1146,10 +1146,10 @@ languages (e.g. Solidity's Why3 backend~\cite{filliatre2013why3,Reitwiessner_16}
 The obvious advantage of static analysis approaches is that full automation can be achieved for 
 contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify}.
 Oyente~\cite{Luu_COSH_16} and Porosity~\cite{Msuiche_17} decompile
-bytecode into a control-flow-graph and perform control flow analysis in order
+bytecode into a control flow graph and perform control flow analysis in order
 to detect common smart contract security defects such as reentrancy bugs.
 These tools are of great value when added to the development process so
-they catch mistakes early, but they do not guarantee the absence of bugs.
+they can unveil mistakes in early stages, but they do not guarantee the absence of bugs.
 
 Our approach is more general as we aim to specify and verify contract properties in pre/postcondition
 style where the conditions can comprise any higher-order logic formula describing an EVM state. 
@@ -1163,7 +1163,7 @@ It provides not only translation of a subset of Solidity programs
 to $F^*$, but also decompilation of EVM bytecode to $F^*$ as well.
 This use of decompilation makes
 the approach similar to ours, since our program logic, in fact, resembles decompilation.
-As explained in \autoref{sec:logic}, we split bytecode program into blocks without jumps
+As explained in Section~\ref{sec:logic}, we split bytecode program into blocks without jumps
 and determine the actual jump destinations dynamically `on-the-fly', by applying logic rules.
 By contrast, Bhargavan et al. perform static stack analysis to this end.
 However, a more striking difference is that our approach is homogeneous since every step of our whole verification process 
