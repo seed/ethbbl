@@ -658,7 +658,7 @@ The rule for a $\mathit{Next}$-block is different in this sense:
 \end{array}
 \]
 The state element $\pc\;m$ determines the program counter after $\mathit{xs}$ has been
-processed. Then we need to retrieve the next block associated to the index $m$ from the $\mathit{blocks}$-structure,
+processed. Then we need to retrieve the next block associated to the index $m$ from the structure $\mathit{blocks}$,
 which is expressed by $(m, \mathit{ys},t) \in \mathit{blocks}$, and proceed with 
 $(m, \mathit{ys},t)$.
 
@@ -768,7 +768,10 @@ where $P \subpred Q$ means $P\:s$ implies $Q\:s$ for any state $s$.
 \subsection{Instruction Rules}
 \label{sec:instr-rules}
 As we need to provide a rule for each of 70 EVM instructions, we will not
-present all of them here. The following rule for $\instr{POP}$ is quite representative
+present all of them here\footnote{We presently have
+proved the soundness of 30 commonly used instructions but
+we expect the missing instructions to follow a similar proof structure.}.
+The following rule for $\instr{POP}$ is quite representative
 and shows that in the precondition we specify the necessary conditions for 
 the instruction to be performed by the EVM and in the postcondition -- 
 the effect of the operation on state elements:
@@ -796,7 +799,7 @@ In particular, we have stated that the height of the stack decreases by $1$ as
 an effect of $\instr{POP}$. It is also worth noting that we incorporate frames
 into such instruction-specific rules by carrying a variable $F$ in pre- and
 postconditions, as shown above. This is in contrast to the more common way
-introducing a generic \emph{frame} rule(cf.~\cite{Reynolds_02}) of the form  
+introducing a generic \emph{frame} rule (cf.~\cite{Reynolds_02}) of the form
 \[
 \RuleC{\ttrip{}{\mathtt{instr}}{P}{i}{Q}}{\ttrip{}{\mathtt{instr}}{P \sconj F}{i}{Q \sconj F}}
 \] 
