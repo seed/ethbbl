@@ -238,7 +238,7 @@
 \affiliation{
 %  \position{Position1}
 %  \department{Department1}              %% \department is recommended
-  \institution{\'Ecole Normale Sup\'erieure Paris-Saclay}            %% \institution is required
+  \institution{ENS Paris-Saclay, Universit\'ee Paris-Saclay}            %% \institution is required
 %  \streetaddress{Street1 Address1}
 %  \city{City1}
 %  \state{State1}
@@ -477,7 +477,9 @@ Thus, when invoking a contract, the initiator provides a gas budget
 proportional to how computationally expensive the execution is expected
 to be and every step of execution is deducted from the budget.
 If the gas consumption exceeds the budget, an `out-of-gas' exception is
-raised and the state of the contract prior the
+raised,
+the miner keeps all the gas but
+the state of the contract prior the
 invocation is restored.
 
 These blockchain specifics give us a termination order we need   
@@ -500,7 +502,7 @@ a total correctness property $\tvalid{P}{c}{Q}$ which is consequently true iff
 for any state $s$ and frame $F$ 
 $(P \sconj \code{c} \sconj F)\: s$ implies $(Q \sconj \code{c} \sconj F)\: \xnext^*(s)$. 
 To sum up, what we achieved so far is to factor out the termination part which we have 
-shown \emph{once and for all} contracts, thus removing this obligation from the verification
+shown \emph{once and for all}, thus removing this obligation from the verification
 process completely. In the next section we will present our program logic handling EVM bytecode, 
 which (based on soundness presented in Section~\ref{sec:sound}) will give us 
 a sound device to derive verification conditions for contract properties of the form $\tvalid{P}{c}{Q}$.   
