@@ -89,7 +89,9 @@
 \newcommand{\Rule}[2]{\dfrac{#1}{#2}}
 \newcommand{\bblocks}{\mathit{build\mbox{-}blocks}}
 \newcommand{\cblocks}{\mathit{connect\mbox{-}blocks}}
-
+\newcommand{\fblock}{\mathit{first\mbox{-}block}}
+\newcommand{\len}[1]{|#1|}
+\newcommand{\wfblocks}{\mathit{wf\mbox{-}blocks}}
 
 %%%%%%%%%%%%%%%%%%
 \newcommand{\sid}[1]{\textit{\textbf{#1 [sid]}}}
@@ -697,6 +699,8 @@ the part $\pure{h \le 1023 \wedge g \geq 8}$ is a \emph{pure} condition,
 i.e. not dependent on state, and sets an upper bound for the height of
 the stack and a lower bound for the amount of gas, namely $8$ units: 
 as much as EVM requires to perform a jump, which is deducted by $\gaspred\:(g - 8)$.   
+Notice, that here and in the rules below we need to carry the $\cont$ state element because the EVM model~\cite{Yoichi}
+imposes having either $\cont$ or $\ncont$ in a state to process instructions.
 %Although the pure part is quite plain in this case, it generally allows us to express elaborated 
 %conditions on state elements by means of higher-order logic formulae.      
 
@@ -824,10 +828,26 @@ proof obligations having unsatisfiable preconditions. Such obligations
 arise frequently from conditional jumps (rule (iv), Section~\ref{sec:prog-rules})
 where the condition is fully evaluated prior to the actual jump, such that
 we need to follow only one of the emerging branches.
+
+The following section puts the program logic and the results of Section~\ref{sec:corr}
+together by means of a soundness proof. 
 %
 \section{Soundness}
 \label{sec:sound}
-
+In this context, the ultimate soundness goal comprises the proposition
+\[
+\RuleC{\begin{array}{l}
+       0 < \len{c} < 2^{256} \\
+       \ttrip{\bblocks\: c}{prog}{P}{\fblock}{Q}
+       \end{array}}
+{\tvalid{P}{c}{Q}}
+\]
+where $\fblock$ is a shorthand for the first block in $\bblocks\: c$, and
+the assumption $0 < \len{c} < 2^{256}$ is necessary to avoid dealing with empty programs
+as well as with programs that have more than $2^{256}$ instructions which is imposed by 
+the design of EVM. In other words, to show an input/output property specified by 
+$\tvalid{P}{c}{Q}$, we can transform $c$ into its basic blocks, pick the first one, and
+apply the rules of our program logic to establish the property.
 
 \section{Proof Automation}
 \label{sec:auto}
