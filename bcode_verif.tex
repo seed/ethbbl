@@ -884,12 +884,13 @@ particularly retaining the property
 \RuleC{0 < \len{c} < 2^{256}}
 {\wfblocks(\bblocks \: c)}
 \] 
-for any program $c$. Thus, the proposition (\ref{prop:sound2}) is a generalisation of
-(\ref{prop:sound1}), since we can instantiate $\mathit{bs}$ by $\bblocks \: c$ 
+for any program $c$. 
+Thus, the proposition (\ref{prop:sound2}) is a generalisation of
+(\ref{prop:sound1}), since for any $c$ we can instantiate $\mathit{bs}$ by $\bblocks \: c$ 
 and $b$ by $\fblock$ in (\ref{prop:sound2}), and use (\ref{prop:cblocks}) to obtain
 (\ref{prop:sound1}). 
 
-Notice that, in principle, we even could leave $b$ open in the instantiation above,
+Notice that, in principle, we also could omit the instantiation of $b$ open above
 and hence obtain from (\ref{prop:sound2})
 \[
 \RuleC{\begin{array}{l}
