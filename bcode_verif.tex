@@ -879,11 +879,28 @@ and state the proposition
 {\tvalid{P}{\cblocks \: \mathit{bs}}{Q}}
 \end{equation}
 where $\wfblocks$ is our well-formedness predicate capturing all necessary technical details,
-such that $\wfblocks\:\mathit{bs}$ in particular implies $0 < \len{\cblocks \: \mathit{bs}} < 2^{256}$.
+particularly retaining the property 
+\[
+\RuleC{0 < \len{c} < 2^{256}}
+{\wfblocks(\bblocks \: c)}
+\] 
+for any program $c$. Thus, the proposition (\ref{prop:sound2}) is a generalisation of
+(\ref{prop:sound1}), since we can instantiate $\mathit{bs}$ by $\bblocks \: c$ 
+and $b$ by $\fblock$ in (\ref{prop:sound2}), and use (\ref{prop:cblocks}) to obtain
+(\ref{prop:sound1}). 
+
+Notice that, in principle, we even could leave $b$ open in the instantiation above,
+and hence obtain from (\ref{prop:sound2})
+\[
+\RuleC{\begin{array}{l}
+       \ttrip{\bblocks\: c}{prog}{P}{b}{Q} \\
+       0 < \len{c} < 2^{256} 
+       \end{array}}
+{\tvalid{P}{c}{Q}}
+\]
+for any block $b$. 
 
 
- 
-%(\ref{prop:cblocks})
 \section{Case-study}
 \label{sec:case}
 
@@ -894,11 +911,12 @@ such that $\wfblocks\:\mathit{bs}$ in particular implies $0 < \len{\cblocks \: \
 % Our framework could be used to have a formal connection
 % between a  more structured language and bytecode.
 
-Our framework provides the ground work for full functional correctness
+Our development provides the ground work for full functional correctness
 of Ethereum smart contracts.
 Ethereum smart contracts are typically implemented in a language called Solidity,
-which provides a high level abstractions to facilitate interactions between EVM
-program.
+which provides high level abstractions to facilitate 
+% interactions between EVM program. ?
+structured development.
 In Solidity, the functionality of a smart contract is encapsulated into a
 \textit{contract interface}, which, analogously to a class in object oriented programming
 (OOP), has a well-defined interface with public and private elements.
