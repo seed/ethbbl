@@ -1001,7 +1001,7 @@ Upon successful execution, contracts return a byte array,
 hence we use \textit{word\_rsplit} to convert a word into list of bytes
 encoded in big-endian format.
 When none of the function hashes match the first contract argument,
-the dispatcher hits an \textit{INVALID}\footnote{INVALID is the mnemonic
+the dispatcher hits an $\instr{INVALID}$\footnote{$\instr{INVALID}$ is the mnemonic
 of an EVM opcode intentionally kept undefined in order to raise an exception.} instruction,
 which corresponds to raising a \textit{ShouldNotHappen} exception
 in our bytecode semantics.
@@ -1044,7 +1044,7 @@ A difficult proof arose when parsing the contract input data
 in order to extract the argument passed to the dispatcher.
 This involved dealing with operations on words of different size,
 which is notoriously hard.
-In particular, the instruction \textit{CALLDATALOAD} reads a
+In particular, the instruction $\instr{CALLDATALOAD}$ reads a
 256-bit machine word from the input data array.
 Since the hash value passed in the input data is only a 32-bit word,
 the dispatcher does the following word arithmetic to convert the value:\\
@@ -1065,7 +1065,7 @@ excluding the existing EVM bytecode semantics, etc.
 The size of the top-level specification of MyContract is $\approx$15 lines
 and the functional correctness proof of the dispatcher is
 $\approx$50 lines of proof specific to this example, which compares
-favouribly with the $\approx$500 lines of reusable proof
+favourably with the $\approx$500 lines of reusable proof
 automation machinery we developed.
 We describe this automation next.
 
