@@ -879,6 +879,10 @@ Next, at the level of blocks we show
        \end{array}}
  {(Q \sconj \code{\mathit{xs}} \sconj F)\: \xnext^{\len{\mathit{xs}}}(s)}
 \end{equation}
+where the usage of $\xnext^{\len{\mathit{xs}}}$ is justified, since we consider
+a basic block $\mathit{xs}$ which requires precisely $\len{\mathit{xs}}$ steps
+to be processed completely.   
+%
 By induction on $\ttrip{}{block}{P}{\mathit{xs}}{Q}$ we need to consider the cases
 when $\mathit{xs}$ is non-empty or empty.
 In case $\mathit{xs} = x::\mathit{zs}$ we can assume $\ttrip{}{instr}{P}{x}{R}$
@@ -894,7 +898,7 @@ Furthermore, from (\ref{prop:sound-instr}) and $\ttrip{}{instr}{P}{x}{R}$ we can
       {(R \sconj \code{[x]} \sconj F)\: \xnext(s)}
 \]
 which combined establish (\ref{prop:sound-block}).
-In case when $\mathit{xs}$ is empty, we can assume $P \subpred Q$ which
+In case $\mathit{xs}$ is empty, we can assume $P \subpred Q$ which
 immediately gives us (\ref{prop:sound-block}). 
 
 Now, the ultimate soundness statement is, of course, at the program level and comprises the proposition
@@ -924,6 +928,7 @@ and state the proposition
 \label{prop:sound2}
 \RuleC{\begin{array}{l}
        \ttrip{\mathit{bs}}{prog}{P}{b}{Q} \\
+       b \in \mathit{bs}\\
        \wfblocks\:\mathit{bs}
        \end{array}}
 {\tvalid{P}{\cblocks \: \mathit{bs}}{Q}}
@@ -936,30 +941,57 @@ structure, essentially retaining the property
 \] 
 for any program $c$. 
 
-Recall the identity 
-\begin{equation}
-\label{prop:cblocks}
-\cblocks(\bblocks\:c) = c
-\end{equation} 
-from Section~\ref{sec:extract}.
 Thus, the proposition (\ref{prop:sound2}) is a generalisation of
 (\ref{prop:sound1}), since for any $c$ we can instantiate $\mathit{bs}$ by $\bblocks \: c$ 
-and $b$ by $\fblock$ in (\ref{prop:sound2}), and use (\ref{prop:cblocks}) to obtain
-(\ref{prop:sound1}). 
-
-Notice that, in principle, we also could omit the instantiation of $b$ above
-and hence obtain from (\ref{prop:sound2})
+and $b$ by $\fblock$ in (\ref{prop:sound2}), and use the identity 
 \[
+\cblocks(\bblocks\:c) = c
+\] 
+from Section~\ref{sec:extract}.
+to obtain (\ref{prop:sound1}). 
+
+Unfolding the definition of $\tvalid{P}{\cblocks \: \mathit{bs}}{Q}$ in
+(\ref{prop:sound2}) we further obtain
+\begin{equation}
+\label{prop:sound3}
 \RuleC{\begin{array}{l}
-       \ttrip{\bblocks\: c}{prog}{P}{b}{Q} \\
-       0 < \len{c} < 2^{256} 
+       \ttrip{\mathit{bs}}{prog}{P}{b}{Q} \\
+       b \in \mathit{bs}\\
+       \wfblocks\:\mathit{bs} \\
+      (P \sconj \code{\cblocks \: \mathit{bs}} \sconj F)\: s
        \end{array}}
-{\tvalid{P}{c}{Q}}
+{(Q \sconj \code{\cblocks \: \mathit{bs}} \sconj F)\: \xnext^*(s)}
+\end{equation}
+and can proceed by induction on $\ttrip{\mathit{bs}}{prog}{P}{b}{Q}$.
+By this, we have to consider four cases: one for each type of the block $b$.
+So, for instance, if $b = (n, \mathit{xs}, \mathit{Terminal})$, i.e. a terminal block,
+we have $\ttrip{}{block}{P}{\mathit{xs}}{Q}$. 
+Since $b$ is a part of the block list $\mathit{bs}$ by assumption, we can separate some $\mathit{bs'}$ 
+such that 
+\[
+\begin{array}{l}
+(P \sconj \code{\cblocks \: \mathit{bs}} \sconj F)\: s \quad = \\
+(P \sconj \code{\mathit{xs}} \sconj \code{\cblocks \: \mathit{bs'}} \sconj F)\: s 
+\end{array}
+\] 
+Hence, we can instantiate frame $F$ in (\ref{prop:sound-block}) by
+\[
+\code{\cblocks \: \mathit{bs}'} \sconj F
 \]
-for any block $b$. 
+and consequently obtain 
+\[
+(Q \sconj \code{\cblocks \: \mathit{bs}} \sconj F)\: \xnext^{\len{\mathit{xs}}}(s)
+\]
+As we consider a terminal block, the state 
+$\xnext^{\len{\mathit{xs}}}(s)$ is the first one containing the $\ncont$ element, and thus 
+\[
+\xnext^{\len{\mathit{xs}}}(s) = \xnext^*(s)
+\]
+holds, concluding this case.
 
-
-
+Although slightly more involved, the remaining three cases proceed in a similar manner,
+additionally making use of the induction hypothesis.
+%
 \section{Case-study}
 \label{sec:case}
 
