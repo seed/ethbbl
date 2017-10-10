@@ -625,10 +625,9 @@ the block.
 By splitting bytecode into basic blocks no information gets lost since we can connect the produced blocks
 in the right order and insert jumps back in accordance with block types. More precisely, we also have the function
 $\cblocks$ such that for any bytecode program $c$ the identity 
-\begin{equation}
-\label{prop:cblocks}
+\[
 \cblocks(\bblocks\:c) = c
-\end{equation} 
+\]
 holds.  
 
 Based on these preparations, the following predicates 
@@ -756,7 +755,7 @@ and\\
 \end{array}
 $\\
 \\respectively. 
-%
+% 
 \subsection{Block Rules}
 \label{sec:block-rules}
 At the level of basic blocks we need only two simple rules
@@ -847,10 +846,25 @@ where the condition is fully evaluated prior to the actual jump, such that
 we need to follow only one of the emerging branches.
 
 The following section puts the program logic and the results of Section~\ref{sec:corr}
-together by means of a soundness proof. 
+together by means of a soundness property and outlines its proof. 
 %
 \section{Soundness}
 \label{sec:sound}
+As our program logic is separated in three layers, we establish its soundness in three steps.
+
+At the level of instructions, soundness basically amounts to the property
+\[
+\RuleC{\begin{array}{l}
+         \ttrip{}{instr}{P}{i}{Q} \\
+         P\: s
+       \end{array}}
+ {Q\: \xnext(s)}
+\]
+which we prove by structural induction on $\ttrip{}{instr}{P}{i}{Q}$. 
+By this, we need to show that the pre- and postconditions, as specified in each 
+rule for individual instructions, are indeed covered by the behaviour of 
+the respective instruction.    
+
 In our setting, the ultimate soundness goal comprises the proposition
 \begin{equation}
 \label{prop:sound1}
@@ -883,12 +897,19 @@ and state the proposition
 {\tvalid{P}{\cblocks \: \mathit{bs}}{Q}}
 \end{equation}
 where $\wfblocks$ is our well-formedness predicate capturing all necessary technical details,
-particularly retaining the property 
+essentially retaining the property 
 \[
 \RuleC{0 < \len{c} < 2^{256}}
 {\wfblocks(\bblocks \: c)}
 \] 
 for any program $c$. 
+
+Recall the identity 
+\begin{equation}
+\label{prop:cblocks}
+\cblocks(\bblocks\:c) = c
+\end{equation} 
+from Section~\ref{sec:extract}.
 Thus, the proposition (\ref{prop:sound2}) is a generalisation of
 (\ref{prop:sound1}), since for any $c$ we can instantiate $\mathit{bs}$ by $\bblocks \: c$ 
 and $b$ by $\fblock$ in (\ref{prop:sound2}), and use (\ref{prop:cblocks}) to obtain
