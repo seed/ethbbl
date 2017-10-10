@@ -853,13 +853,14 @@ together by means of a soundness property and outlines its proof.
 As our program logic is separated in three layers, we establish its soundness in three steps.
 
 At the level of instructions, soundness basically amounts to the property
-\[
+\begin{equation}
+\label{prop:sound-instr}
 \RuleC{\begin{array}{l}
          \ttrip{}{instr}{P}{i}{Q} \\
-         P\: s
+         (P \sconj \code{c})\: s
        \end{array}}
- {Q\: \xnext(s)}
-\]
+ {(Q \sconj \code{c})\: \xnext(s)}
+\end{equation}
 which we prove by structural induction on $\ttrip{}{instr}{P}{i}{Q}$. 
 By this, we need to show that the pre- and postconditions, as specified in each 
 rule for individual instructions, are indeed covered by the behaviour of 
