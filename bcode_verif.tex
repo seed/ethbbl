@@ -856,17 +856,48 @@ At the level of instructions, soundness basically amounts to the property
 \begin{equation}
 \label{prop:sound-instr}
 \RuleC{\begin{array}{l}
-         \ttrip{}{instr}{P}{i}{Q} \\
-         (P \sconj \code{c})\: s
+         \ttrip{}{instr}{P}{x}{Q} \\
+         (P \sconj \code{[x]} \sconj F)\: s
        \end{array}}
- {(Q \sconj \code{c})\: \xnext(s)}
+ {(Q \sconj \code{[x]} \sconj F)\: \xnext(s)}
 \end{equation}
-which we prove by structural induction on $\ttrip{}{instr}{P}{i}{Q}$. 
+which we prove by structural induction on $\ttrip{}{instr}{P}{x}{Q}$. 
 By this, we need to show that the pre- and postconditions, as specified in each 
 rule for individual instructions, are indeed covered by the behaviour of 
-the respective instruction.    
+the respective instruction. Note that $\code{[x]}$ ensures that 
+$x = (\mathit{addr}, \mathit{instr})$ is present in the code-element of $s$, such that
+$\xnext$ executes precisely the instruction $\mathit{instr}$, if $\pc\:\mathit{addr}$ is present in $s$ as well.
+This, in turn, is obtained from the preconditions of instruction
+rules, such as $\instr{PUSH1}$-rule from the previous section.
 
-In our setting, the ultimate soundness goal comprises the proposition
+Next, at the level of blocks we show
+\begin{equation}
+\label{prop:sound-block}
+\RuleC{\begin{array}{l}
+         \ttrip{}{block}{P}{\mathit{xs}}{Q} \\
+         (P \sconj \code{\mathit{xs}} \sconj F)\: s
+       \end{array}}
+ {(Q \sconj \code{\mathit{xs}} \sconj F)\: \xnext^{\len{\mathit{xs}}}(s)}
+\end{equation}
+By induction on $\ttrip{}{block}{P}{\mathit{xs}}{Q}$ we need to consider the cases
+when $\mathit{xs}$ is non-empty or empty.
+In case $\mathit{xs} = x::\mathit{zs}$ we can assume $\ttrip{}{instr}{P}{x}{R}$
+and $\ttrip{}{block}{R}{\mathit{zs}}{Q}$ such that 
+\[
+\RuleC{(R \sconj \code{\mathit{zs}} \sconj F)\: s}
+ {(Q \sconj \code{\mathit{zs}} \sconj F)\: \xnext^{\len{\mathit{zs}}}(s)}
+\]
+holds by the induction hypothesis. 
+Furthermore, from (\ref{prop:sound-instr}) and $\ttrip{}{instr}{P}{x}{R}$ we can further conclude 
+\[
+\RuleC{(P \sconj \code{[x]} \sconj F)\: s}
+      {(R \sconj \code{[x]} \sconj F)\: \xnext(s)}
+\]
+which combined establish (\ref{prop:sound-block}).
+In case when $\mathit{xs}$ is empty, we can assume $P \subpred Q$ which
+immediately gives us (\ref{prop:sound-block}). 
+
+Now, the ultimate soundness statement is, of course, at the program level and comprises the proposition
 \begin{equation}
 \label{prop:sound1}
 \RuleC{\begin{array}{l}
@@ -897,8 +928,8 @@ and state the proposition
        \end{array}}
 {\tvalid{P}{\cblocks \: \mathit{bs}}{Q}}
 \end{equation}
-where $\wfblocks$ is our well-formedness predicate capturing all necessary technical details,
-essentially retaining the property 
+where $\wfblocks$ is our well-formedness predicate capturing all necessary technical details about block
+structure, essentially retaining the property 
 \[
 \RuleC{0 < \len{c} < 2^{256}}
 {\wfblocks(\bblocks \: c)}
@@ -926,6 +957,7 @@ and hence obtain from (\ref{prop:sound2})
 {\tvalid{P}{c}{Q}}
 \]
 for any block $b$. 
+
 
 
 \section{Case-study}
