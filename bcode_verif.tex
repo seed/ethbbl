@@ -585,7 +585,7 @@ instructions within blocks, respectively.
                 {3}&    \textcolor{gray}{6}     &       {\color{gray}$\instr{JUMP}$}& \textit{Jump}\\
                         \hline
                 &       7       &       $\instr{DUP3}$&\\
-                &       8       &       $\instr{PUSH}\;0$&\\
+                &       8       &       $\instr{PUSH1}\;0$&\\
                 &       10      &       $\instr{ISZERO}$&\\
                 {7}&    \textcolor{gray}{11}    &       {\color{gray}$\instr{JUMPI}$}& \textit{Jumpi}\\
                         \hline
@@ -785,32 +785,34 @@ As we need to provide a rule for each of 70 EVM instructions, we will not
 present all of them here\footnote{We presently have
 proved the soundness of 30 commonly used instructions but
 we expect the missing instructions to follow a similar proof structure.}.
-The following rule for $\instr{POP}$ is quite representative
-and shows that in the precondition we specify the necessary conditions for 
-the instruction to be performed by the EVM and in the postcondition -- 
-the effect of the operation on state elements:
+The following rule for $\instr{PUSH1}$, the operation pushing one byte on the stack, is quite representative
+as it shows how we specify the necessary conditions for 
+the instruction to be performed by the EVM in the precondition as well as 
+the effect of the operation on state elements in the postcondition:
 \[
-\ttrip{}{\mathtt{instr}}{P}{(n, \instr{POP})}{Q}
+\ttrip{}{\mathtt{instr}}{P}{(n, \instr{PUSH1}\:x)}{Q}
 \]
 where $P$ stands for 
 \\
 \\$
 \begin{array}{l}
 \pure{h \le 1023 \wedge g \geq 2} \sconj \cont \sconj \gaspred\:g \; \sconj \\
-\pc\:n \; \sconj \stackh\:(h + 1) \; \sconj \stack\:h\:x \sconj F 
+\pc\:n \; \sconj \stackh\:h \; \sconj F 
 \end{array}
 $\\ 
 \\
 and $Q$ for\\
 \\$
 \begin{array}{l}
-\cont \sconj \gaspred\:(g - 2) \; \sconj \\
-\pc\:(n+1) \; \sconj \stackh\:h \sconj F
+\cont \sconj \gaspred\:(g - 3) \; \sconj \\
+\pc\:(n+1) \; \sconj \stackh\:(h + 1) \sconj \stack\:h\:x \sconj F
 \end{array}
 $\\
 \\
-In particular, we have stated that the height of the stack decreases by $1$ as
-an effect of $\instr{POP}$. It is also worth noting that we incorporate frames
+In particular, we have stated that the height of the stack increases by $1$ 
+($\stackh\:(h + 1)$)
+and the top index $h$ of the stack points to the value $x$ ($\stack\:h\:x$)
+among the effects of $\instr{PUSH1}$. It is also worth noting that we incorporate frames
 into such instruction-specific rules by carrying a variable $F$ in pre- and
 postconditions, as shown above. This is in contrast to the more common way
 introducing a generic \emph{frame} rule (cf.~\cite{Reynolds_02}) of the form
@@ -892,7 +894,7 @@ Thus, the proposition (\ref{prop:sound2}) is a generalisation of
 and $b$ by $\fblock$ in (\ref{prop:sound2}), and use (\ref{prop:cblocks}) to obtain
 (\ref{prop:sound1}). 
 
-Notice that, in principle, we also could omit the instantiation of $b$ open above
+Notice that, in principle, we also could omit the instantiation of $b$ above
 and hence obtain from (\ref{prop:sound2})
 \[
 \RuleC{\begin{array}{l}
