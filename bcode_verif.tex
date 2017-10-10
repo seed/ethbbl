@@ -384,7 +384,12 @@ The main contributions of the paper are:
 \item[(iii)] Isabelle tactics to support automated generation of verification
             conditions using the rules of the logic.
 \end{itemize}
-         
+
+Our development is entirely formalised in Isabelle/HOL and available online\footnote{\url{https://github.com/seed/eth-isabelle/tree/dispatcher_ex_mbegel}}.
+The termination proof of EVM bytecode and some of our proof
+automation tactics have been accepted in the official EVM
+semantics repository maintained by the Ethereum foundation\footnote{\url{https://github.com/pirapira/eth-isabelle/}}.
+
 The paper is structured as follows. Section~\ref{sec:bg} describes the background
 for the presented work. Section~\ref{sec:corr} describes how we can capture correctness properties in a pre/postcondition
 style for EVM bytecode programs. Section~\ref{sec:logic} is devoted to our program logic, 
@@ -1080,7 +1085,7 @@ signatures of all public functions as well as their hashes.
 We used this feature to obtain \textit{dispatch1\_hash} and \textit{dispatch2\_hash}.
 The rest of the specification is straightforward.
 The argument passed to \textit{spec\_MyContract} corresponds to the first 32-bit
-machine word passed as argument when the contract get invoked.
+machine word passed as argument when the contract gets invoked.
 \textit{ContractReturn} and \textit{ContractFail} specify the action
 resulting from the contract execution.
 Upon successful execution, contracts return a byte array,
