@@ -1000,7 +1000,7 @@ and consequently obtain
 (Q \sconj \code{\cblocks \: \mathit{bs}} \sconj F)\: \xnext^{\len{\mathit{xs}}}(s)
 \]
 As we consider a terminal block, the state 
-$\xnext^{\len{\mathit{xs}}}(s)$ is the first one containing the $\ncont$ element, and thus 
+$\xnext^{\len{\mathit{xs}}}(s)$ is the first one containing the $\ncont$ element, i.e.
 \[
 \xnext^{\len{\mathit{xs}}}(s) = \xnext^*(s)
 \]
@@ -1110,8 +1110,9 @@ of an EVM opcode intentionally kept undefined in order to raise an exception.} i
 which corresponds to raising a \textit{ShouldNotHappen} exception
 in our bytecode semantics.
 
-At the bottom of \autoref{spec} is a Hoare triple we proved.
-The precondition initialises the machine state, e.g. program counter is zero,
+The theorem at the bottom of \autoref{spec} states the input/output 
+property we proved. It has the form of Hoare triples introduced in Section~\ref{sec:corr}.
+The precondition initialises the machine state, e.g. program counter is $0$,
 stack is empty, etc. Importantly, \textit{arg} is the 32-bit word contract
 argument used by the dispatcher code as well as the specification,
 and $\gaspred$ specifies the gas budget for the contract execution.
@@ -1127,11 +1128,11 @@ on the rest of the state to leave it unspecified.
 Smart contract bytecode is divided into two sections: the pre-loader and
 runtime code.
 The pre-loader bootstraps the contract by deploying it on the
-Ethereum network and running its constructor (\autoref{solidity}
+Ethereum network and running its constructor (the contract in \autoref{solidity}
 has no constructor).
 The runtime code contains the core functionality of the contract
 that can be invoked by other blockchain agents.
-Our verification only considers the runtime code of MyContract.
+Our verification considers only the runtime code of MyContract.
 
 We obtain the runtime code as a byte string of opcodes from the Solidity
 compiler and convert it into a list of EVM instructions via an
@@ -1140,9 +1141,9 @@ In this sense we work directly on the bytecode output of
 the Solidity compiler.
 
 MyContract bytecode has 227 EVM instructions, that get split into 27 basic
-blocks, including 4 of type conditional jump.
-Proving the correctness of the bytecode was fairly straightforward
-once the automation described in the next section reached maturity.
+blocks, including 4 of type \textit{Jumpi} (i.e.\ conditional jumps).
+Proving the correctness of the bytecode was not overly complicated %fairly straightforward
+once the automation support described in the next section reached maturity.
 
 A difficult proof arose when parsing the contract input data
 in order to extract the argument passed to the dispatcher.
@@ -1151,8 +1152,10 @@ which is notoriously hard.
 In particular, the instruction $\instr{CALLDATALOAD}$ reads a
 256-bit machine word from the input data array.
 Since the hash value passed in the input data is only a 32-bit word,
-the dispatcher does the following word arithmetic to convert the value:\\
-$w32\_hash = (w256\_input\_data >> 224)\ \&\ \mathtt{0xffffffff}$.\\
+the dispatcher does the following word arithmetic to convert the value:
+\[
+\mathit{w32}\mbox{-}\mathit{hash} = (\mathit{w256}\mbox{-}\mathit{input}\mbox{-}\mathit{data} \gg 224)\ \text{\&}\ \mathtt{0xffffffff}
+\]
 We had to prove that when the hash is packed in the input data,
 the above bit-wise operations return the same hash value.
 
@@ -1164,8 +1167,8 @@ the above bit-wise operations return the same hash value.
 %%   1077 Hoare.thy
 %%   5447 total
 
-The total development of our framework is $\approx$5000 lines of Isabelle/HOL,
-excluding the existing EVM bytecode semantics, etc.
+The total development of our framework is $\approx$5000 lines of Isabelle/HOL theories,
+excluding the existing formalisation of EVM model, etc.
 The size of the top-level specification of MyContract is $\approx$15 lines
 and the functional correctness proof of the dispatcher is
 $\approx$50 lines of proof specific to this example, which compares
@@ -1195,7 +1198,7 @@ can involve long, tedious and repetitive proofs.
 Hence, our program logic was purposefully designed to be
 amenable to proof automation.
 
-The inductively defined inference rules presented in \autoref{sec:logic}
+The inductively defined inference rules presented in Section~\ref{sec:logic}
 are all designed to be used in a syntactically-driven verification
 condition generator (VCG).
 Shaping the rules in a way that only one of them applies at each point in the
@@ -1227,7 +1230,7 @@ Since each $\vdash_\mathtt{instr}$ rule expects a separation logic expression wi
 in a specific order, we routinely have to re-order these to
 match a given precondition.
 
-To ease the pain we are reusing the separation logic algebra framework~\cite{Klein_KB_12},
+To ease the pain, we are reusing the separation logic algebra framework~\cite{Klein_KB_12},
 which provides a set of generic Isabelle tactics to manipulate separation logic terms.
 We instantiated the algebra with the EVM machine state and created Isabelle tactics
 which re-order separation conjuncts such that, e.g. %%% why e.g. ? 
