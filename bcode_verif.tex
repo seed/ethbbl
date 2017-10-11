@@ -440,13 +440,14 @@ and behave equally.
 In his PhD thesis~\cite{DBLP:phd/ethos/Myreen09}, Myreen introduced a general 
 method of formal 
 machine code verification with a particular application to ARM. In this section we show how
-this general method can be adapted to EVM, taking however additional accounts of the EVM specific properties rooted in gas consumption (described below).
+this general method can be adapted to EVM, with additional consideration given to
+EVM specific properties rooted in gas consumption.
  
 In the general model, a state carries all the information needed to execute a program, including
 instructions (with respective reference numbers) constituting the program itself, a program counter that
 refers to the current instruction, a stack and so on. All these elements are treated uniformly 
 as sets of so-called \emph{state elements}
-and separated in a state using separation logic conjuncts $\sconj$~\cite{Reynolds_02}.  
+and separated in a state using separation logic conjunctions $\sconj$~\cite{Reynolds_02}.  
 Then a single machine step can be captured by a function $\xnext$ that 
 takes the current instruction and transforms the state in accordance with the instruction's
 specified behaviour. Of course, $\xnext$ might not always be able to pick an instruction
@@ -467,7 +468,8 @@ holds, there exists a natural number $k$ such that
 \] 
 holds. The predicate $F$ is usually called in this context a \emph{frame}, 
 and keeping it allows us to reason about parts of states locally, %using \emph{frame rule}(cf.~\cite{Reynolds_02}),
-whereas $\xnext^k$ denotes $k$-times iteration of $\xnext$.
+whereas $\xnext^k$ denotes $k$-times iteration of $\xnext$, and $\code{c}$ is another element
+specifying that the program code is present in the state.
 Such triples $\pvalid{P}{c}{Q}$ are highly generic and we cannot conclude much from many of these, except that
 under given preconditions the program $c$ will pass a state satisfying $Q$. This changes immediately in cases when $Q$ is of
 the form $\ncont \sconj Q'$, now stating that $c$ has reached a terminating state satisfying $Q'$.
@@ -487,8 +489,8 @@ proportional to how computationally expensive the execution is expected
 to be and every step of execution is deducted from the budget.
 If the gas consumption exceeds the budget, an `out-of-gas' exception is
 raised,
-the miner keeps all the gas but
-the state of the contract prior the
+the miner keeps all of the gas and
+the state of the contract prior to the
 invocation is restored.
 
 These blockchain specifics give us a termination order. We 
@@ -525,7 +527,7 @@ a sound device to derive verification conditions for contract properties of the 
 \section{Program Logic}
 \label{sec:logic}
 A Hoare-style program logic comprises a collection of rules that allow us to derive semantic properties 
-of compound programs from properties of its parts. In case of structured languages 
+of compound programs from properties of its parts. In the case of structured languages 
 we usually have, for instance, a rule telling us that a program \textbf{if} $C$ \textbf{then} $p_1$ \textbf{else} $p_2$
 exhibits a certain input/output behaviour if $p_1$ and $p_2$ do so, however, with the additional precondition $C$ 
 available for $p_1$ and $\neg C$ for $p_2$.
@@ -535,7 +537,7 @@ In such settings, a conditional compound construct
 appears merely as a jump instruction that transfers the flow of execution
 to another part of the program.
 In this sense, a program logic that treats the entire bytecode program simply as a list of instructions
-would be in priciple a feasible, but also a very intricate approach. 
+would be in principle a feasible, but also a very intricate approach. 
 %cannot solely rely on the structure of the program to
 %guide formal reasoning, because the instruction following
 %a jump is not necessarily next in the flow of execution.
@@ -563,8 +565,7 @@ whereas in EVM jump destinations
 must be obtained from the stack, i.e. dynamically. For that reason, our bytecode preprocessing
 currently addresses basic block extraction only, presented in the next section.
 Then, Sections~\ref{sec:prog-rules}, \ref{sec:block-rules} and \ref{sec:instr-rules} 
-present how our logic handles programs, splitted into blocks, individual blocks, and
-instructions within blocks, respectively. 
+present how our logic handles programs, blocks and instructions, respectively. 
 %
 %       
 %The basic blocks program logic we present in this section is organised
@@ -838,7 +839,7 @@ In particular, we have stated that the height of the stack increases by $1$
 and that the top index $h$ of the stack points to the value $x$ ($\stack\:h\:x$)
 among the effects of $\instr{PUSH1}$. It is also worth noting that we incorporate frames
 into such instruction-specific rules by carrying a variable $F$ in pre- and
-postconditions, as shown above. This is in contrast to the more common way
+postconditions, as shown above. This is in contrast to the more common way, which is
 introducing a generic \emph{frame} rule (cf.~\cite{Reynolds_02}) of the form
 \[
 \RuleC{\ttrip{}{\mathtt{instr}}{P}{i}{Q}}{\ttrip{}{\mathtt{instr}}{P \sconj F}{i}{Q \sconj F}}
@@ -893,7 +894,7 @@ the respective instruction. Note that $\code{[x]}$ ensures that
 $x = (\mathit{addr}, \mathit{instr})$ is present in the code-element of $s$, such that
 $\xnext$ executes precisely the instruction $\mathit{instr}$, if $\pc\:\mathit{addr}$ is present in $s$ as well.
 This, in turn, is obtained from the preconditions of instruction
-rules, such as $\instr{PUSH1}$-rule from the previous section.
+rules, such as the $\instr{PUSH1}$-rule from the previous section.
 
 Next, at the level of blocks we show
 \begin{equation}
@@ -1028,9 +1029,9 @@ making however additional use of the induction hypothesis.
 % Our framework could be used to have a formal connection
 % between a  more structured language and bytecode.
 
-Our development provides ground work for full functional correctness
+Our development provides the ground work for full functional correctness
 of Ethereum smart contracts.
-Ethereum smart contracts are typically implemented in a language called Solidity,
+These contracts are typically implemented in a language called Solidity,
 which provides high level abstractions to facilitate 
 % interactions between EVM program. ?
 structured development.
@@ -1056,7 +1057,7 @@ contract MyContract {
 \label{solidity}
 \end{figure}
 
-\autoref{solidity} shows an example of Solidity contract with two public functions.
+\autoref{solidity} shows an example of a Solidity contract with two public functions.
 Each public function of a contract gets assigned a unique hash and
 the Solidity compiler produces EVM bytecode with a single entry point.
 At the beginning of the bytecode a \textit{dispatcher} is introduced that inspects the first arguments
@@ -1079,22 +1080,22 @@ dispatcher produced for the code in \autoref{solidity}.
 \begin{figure}[h]
 \begin{lstlisting}[language=Isar]{}
 definition 
-  spec_MyContract ::"32 word \<Rightarrow> contract_action"
+  spec_MyContract :: 32 word \<Rightarrow> contract_action
 where
-  "spec_MyContract z = 
+  spec_MyContract z = 
 	(if z = dispatch1_hash 
 	then ContractReturn (word_rsplit 1))
 	else (if z = dispatch2_hash 
 	then ContractReturn (word_rsplit 2))
-	else ContractFail [ShouldNotHappen]))"
+	else ContractFail [ShouldNotHappen]))
 
 theorem verify_dispatcher:
-"\<exists>r. \<models> [pc 0 \<and>* stack_height 0 \<and>*
+ \<exists>r. \<models> [pc 0 \<and>* stack_height 0 \<and>*
              sent_data (word_rsplit arg) \<and>*
              sent_value 0 \<and>* memory_usage 0 \<and>*
              continuing \<and>* gas_pred 3000 \<and>* ...]
         (build_blocks bytecode_MyContract)
-        [action (spec_MyContract arg) \<and>* r]"
+        [action (spec_MyContract arg) \<and>* r]
 \end{lstlisting}
 \caption{Specification and functional correctness theorem of MyContract.}
 \label{spec}
@@ -1106,11 +1107,11 @@ signatures of all public functions as well as their hashes.
 We used this feature to obtain \textit{dispatch1\_hash} and \textit{dispatch2\_hash}.
 The rest of the specification is straightforward.
 The argument passed to \textit{spec\_MyContract} corresponds to the first 32-bit
-machine word passed as argument when the contract gets invoked.
+machine word passed as an argument when the contract gets invoked.
 \textit{ContractReturn} and \textit{ContractFail} specify the action
 resulting from the contract execution.
 Upon successful execution, contracts return a byte array,
-hence we use \textit{word\_rsplit} to convert a word into list of bytes
+hence we use \textit{word\_rsplit} to convert a word into a list of bytes
 encoded in big-endian format.
 When none of the function hashes match the first contract argument,
 the dispatcher hits an $\instr{INVALID}$\footnote{$\instr{INVALID}$ is the mnemonic
@@ -1123,7 +1124,7 @@ property we proved. It has the form of Hoare triples introduced in Section~\ref{
 The precondition initialises the machine state, e.g. program counter is $0$,
 stack is empty, etc. Importantly, \textit{arg} is the 32-bit word contract
 argument used by the dispatcher code as well as the specification,
-and $\gaspred$ specifies the gas budget for the contract execution.
+and $\gaspred$ specifies the gas budget for the execution.
 \textit{bytecode\_MyContract} is a list of deeply embedded EVM
 instructions which we convert into a list of basic blocks with $\bblocks$.
 In the postcondition, we are only interested in the resulting action
@@ -1230,18 +1231,18 @@ none of the tactic can apply on the goal.
 
 A common source of friction we experienced during the early development
 of our framework was with proving goals of the form:
-$\forall s. R~s \Longrightarrow P~s$ where $P$ and $R$ are separation logic predicates
-with conjunctions in different order.
+$\forall s.\: R~s \longrightarrow P~s$ where $P$ and $R$ are separation logic predicates
+comprising the same separation conjunctions but in different orders.
 Such proof obligations arise when we weaken a precondition to be
 able to apply an $\vdash_\mathtt{instr}$ rule.
-Since each $\vdash_\mathtt{instr}$ rule expects a separation logic expression with conjuncts
+Since each $\vdash_\mathtt{instr}$ rule expects a separation logic expression with conjunctions
 in a specific order, we routinely have to re-order these to
 match a given precondition.
 
 To ease the pain, we are reusing the separation logic algebra framework~\cite{Klein_KB_12},
 which provides a set of generic Isabelle tactics to manipulate separation logic terms.
 We instantiated the algebra with the EVM machine state and created Isabelle tactics
-which re-order separation conjuncts such that, e.g. %%% why e.g. ? 
+which re-order separation conjunctions such that, e.g. %%% why e.g. ? 
 the first term in $P$ matches the first one of $R$.
 Once the first elements match, we leverage the tactics of the separation
 algebra framework to remove the first element from both $R$ and $P$.
