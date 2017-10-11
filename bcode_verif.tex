@@ -349,7 +349,7 @@ For example, a party invoking a smart contract could cause digital currency to b
 party, or could record a state change which makes the other party eligible to invoke other transactions.
 Smart contracts provide new ways to implement multi-party relationships within blockchain-based applications.
 In addition to the direct financial value in these applications, blockchains are increasingly being
-used for safety-critical applications such for pharmaceutical supply chains, or for mission-critical
+used for safety-critical applications such as for pharmaceutical supply chains, or for mission-critical
 application such as in electrical power grids.
 We must know that smart contract implementations do not violate critical requirements, and
 formal modelling and verification can be applied in this context.
@@ -359,7 +359,7 @@ To address these questions we seek:
 \item[(i)] a trustworthy logical framework capable of expressing complex safety and security
    requirements; 
 \item[(ii)] a valid formal model of the EVM within the framework; 
-\item[(iii)] a sound program logic defined within the framework able to
+\item[(iii)] a sound program logic defined within the framework and able to
 reason about properties of smart contracts. 
 \end{itemize}
 In our setting, we use the logical framework Isabelle/HOL, and an existing EVM formal
@@ -371,8 +371,9 @@ makes our work more general and significantly less reliant
 on the correctness of higher-level tools.
 Secondly, bytecode is the actual programming language of Ethereum as all smart contracts appear only
 in this form on the blockchain.
-Thus we target EVM bytecode, despite the necessity for us to restore structures (such as conditionals)
-that we might take for granted in higher-level languages.
+Thus we target EVM bytecode, despite the absence of %necessity for us to reconstruct 
+program structures (such as conditionals)
+that we can take for granted in higher-level languages.
 We describe our approach for this in the remainder of the paper. 
 
 The main contributions of the paper are:
@@ -533,18 +534,19 @@ potentially unstructured programs, such as with EVM bytecode.
 In such settings, a conditional compound construct
 appears merely as a jump instruction that transfers the flow of execution
 to another part of the program.
-A program logic that treats the program as a list of instructions
-cannot solely rely on the structure of the program to
-guide formal reasoning because the instruction following
-a jump is not necessarily next in the flow of execution.
-
-Although designing a logic that handles this would be in principle feasible,
+In this sense, a program logic that treats the entire bytecode program simply as a list of instructions
+would be in priciple a feasible, but also a very intricate approach. 
+%cannot solely rely on the structure of the program to
+%guide formal reasoning, because the instruction following
+%a jump is not necessarily next in the flow of execution.
+%
+%Although designing a logic that handles this would be in principle feasible,
 %Since a bytecode program comprises
 %a list of instructions, a rule might handle the head instruction and proceed to the tail of 
 %the list, but would need to make exceptions when the head instruction is a jump, because then
 %the tail does not necessarily correspond to the next instructions in the flow of execution.
 %Although such treatment would be in principle feasible,
-there are more sophisticated decompilation techniques available, such as extraction of 
+To this end, there are more sophisticated decompilation techniques available, such as extraction of 
 \emph{Control Flow Graphs} (CFG), in particular applied to the Java Virtual Machine (JVM) code~\cite{zhao99}.
 The aim of CFG extraction is to split a program into \emph{basic blocks}, i.e. sequences of
 instructions without jumps, and connect them
