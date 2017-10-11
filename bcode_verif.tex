@@ -550,7 +550,7 @@ would be in principle a feasible, but also a very intricate approach.
 %the list, but would need to make exceptions when the head instruction is a jump, because then
 %the tail does not necessarily correspond to the next instructions in the flow of execution.
 %Although such treatment would be in principle feasible,
-To this end, there are more sophisticated decompilation techniques available, such as extraction of 
+To this end, there are significantly more sophisticated techniques available, such as decompilation via extraction of 
 \emph{Control Flow Graphs} (CFG), in particular applied to the Java Virtual Machine (JVM) code~\cite{zhao99}.
 The aim of CFG extraction is to split a program into \emph{basic blocks}, i.e. sequences of
 instructions without jumps, and connect them
@@ -1095,9 +1095,9 @@ theorem verify_dispatcher:
  \<exists>r. \<models> [pc 0 \<and>* stack_height 0 \<and>*
              sent_data (word_rsplit arg) \<and>*
              sent_value 0 \<and>* memory_usage 0 \<and>*
-             continuing \<and>* gas_pred 3000 \<and>* ...]
-        (build_blocks bytecode_MyContract)
-        [action (spec_MyContract arg) \<and>* r]
+             continuing \<and>* gas_pred 3000 \<and>*...]
+             (build_blocks bytecode_MyContract)
+            [action (spec_MyContract arg) \<and>* r]
 \end{lstlisting}
 \caption{Specification and functional correctness theorem of MyContract.}
 \label{spec}
