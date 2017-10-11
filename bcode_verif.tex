@@ -1093,11 +1093,11 @@ where
 
 theorem verify_dispatcher:
  \<exists>r. \<models> [pc 0 \<and>* stack_height 0 \<and>*
-             sent_data (word_rsplit arg) \<and>*
-             sent_value 0 \<and>* memory_usage 0 \<and>*
-             continuing \<and>* gas_pred 3000 \<and>*...]
-             (build_blocks bytecode_MyContract)
-            [action (spec_MyContract arg) \<and>* r]
+        sent_data (word_rsplit arg) \<and>*
+        sent_value 0 \<and>* memory_usage 0 \<and>*
+        continuing \<and>* gas_pred 3000 \<and>* ...]
+         (build_blocks bytecode_MyContract)
+       [action (spec_MyContract arg) \<and>* r]
 \end{lstlisting}
 \caption{Specification and functional correctness theorem of MyContract.}
 \label{spec}
