@@ -296,7 +296,7 @@ Formal verification can provide the highest level of confidence about the
 correct behaviour of smart contracts.
 In this paper we extend an existing EVM formalisation~\cite{Yoichi} in Isabelle/HOL by a sound
 program logic at the level of bytecode.
-We structure bytecode sequences into basic blocks of straight-line
+We structure bytecode sequences into blocks of straight-line
 code and create a program logic to reason about these.
 This abstraction is a step towards control of the cost and complexity of formal verification
 of EVM smart contracts.
@@ -388,7 +388,7 @@ The main contributions of the paper are:
 Our development is entirely formalised in Isabelle/HOL and available online\footnote{\url{https://github.com/seed/eth-isabelle/tree/dispatcher_ex_mbegel}}.
 The termination proof of EVM bytecode and some of our proof
 automation tactics have been accepted in the official EVM
-semantics repository maintained by the Ethereum foundation\footnote{\url{https://github.com/pirapira/eth-isabelle/}}.
+semantics repository\footnote{\url{https://github.com/pirapira/eth-isabelle/}} maintained by the Ethereum foundation.
 
 The paper is structured as follows. Section~\ref{sec:bg} describes the background
 for the presented work. Section~\ref{sec:corr} describes how we can capture correctness properties in a pre/postcondition
@@ -456,11 +456,16 @@ leaves the state unchanged.
    
 An input/output property of a program $c$ is captured by a triple
 $\pvalid{P}{c}{Q}$, where $P$ and $Q$ are separation logic predicates on the state.
-The triple is true iff for any state $s$ and frame $F$ such that
-$(P \sconj \code{c} \sconj F)\:\ s$ holds, there exists a natural number $k$ such that 
-$(Q \sconj \code{c} \sconj F)\:\ \xnext^k(s)$ holds. 
-%The frame is used to accomodate an invariant part of a state, 
-Keeping frame $F$ will allow us to reason about parts of states locally, %using \emph{frame rule}(cf.~\cite{Reynolds_02}),
+The triple is true iff for any state $s$ and predicate $F$ such that
+\[
+(P \sconj \code{c} \sconj F)\:s
+\] 
+holds, there exists a natural number $k$ such that 
+\[
+(Q \sconj \code{c} \sconj F)\:\xnext^k(s)
+\] 
+holds. The predicate $F$ is usually called in this context a \emph{frame}, 
+and keeping it allows us to reason about parts of states locally, %using \emph{frame rule}(cf.~\cite{Reynolds_02}),
 whereas $\xnext^k$ denotes $k$-times iteration of $\xnext$.
 Such triples $\pvalid{P}{c}{Q}$ are highly generic and we cannot conclude much from many of these, except that
 under given preconditions the program $c$ will pass a state satisfying $Q$. This changes immediately in cases when $Q$ is of
@@ -495,17 +500,23 @@ The essential property of $\xnext^*$ is that for any state $s$ there exists $k \
 \item[(iii)] $\xnext^l(s)$ cannot continue for any $l \ge k$.
 \end{itemize}
 In other words, $\xnext^*(s) = \xnext^k(s)$ where $k$ is the least number such that
-$\xnext^k(s)$ reaches a state with $\ncont$. 
+$\xnext^k(s)$ reaches a state with the $\ncont$ element. 
 % Perhaps say that we proved that every program in EVM bytecode terminates by writing
 % higher-order logic function that executes bytecode (reusing Yoichi's definitions of
 % semantics) and proving termination of that function.
 
 Now, regarding the contract correctness, we strengthen $\pvalid{P}{c}{Q}$ to 
-a total correctness property $\tvalid{P}{c}{Q}$ which is consequently true iff
+a total correctness property $\tvalid{P}{c}{Q}$ which is true iff
 for any state $s$ and frame $F$ 
-$(P \sconj \code{c} \sconj F)\: s$ implies $(Q \sconj \code{c} \sconj F)\: \xnext^*(s)$. 
+\[
+(P \sconj \code{c} \sconj F)\: s
+\] 
+implies 
+\[
+(Q \sconj \code{c} \sconj F)\: \xnext^*(s)
+\] 
 To sum up, what we achieved so far is to factor out the termination part which we have 
-shown \emph{once and for all}, thus removing this obligation from the verification
+shown once and for all, thus removing this obligation from the verification
 process completely. In the next section we will present our program logic handling EVM bytecode, 
 which (based on soundness presented in Section~\ref{sec:sound}) will give us 
 a sound device to derive verification conditions for contract properties of the form $\tvalid{P}{c}{Q}$.   
@@ -609,7 +620,7 @@ We divide instructions into three groups:
             indicate the end of a basic block ($\instr{UNKNOWN}$ and Misc-instructions interrupt program execution); 
 \item[(iii)] all remaining instructions. %that form the contents of basic blocks.
 \end{itemize}  
-We classify basic blocks with the following four types:
+Furthermore, we classify basic blocks with the following four types:
 \begin{itemize}
 \item[(i)] \textit{Terminal} -- if the last instruction of the block interrupts execution;
 \item[(ii)] \textit{Jump} -- if the last instruction is $\instr{JUMP}$;
@@ -783,10 +794,13 @@ where $P \subpred Q$ means $P\:s$ implies $Q\:s$ for any state $s$.
 %
 \subsection{Instruction Rules}
 \label{sec:instr-rules}
-As we need to provide a rule for each of 70 EVM instructions, we will not
-present all of them here\footnote{We presently have
-proved the soundness of 30 commonly used instructions but
-we expect the missing instructions to follow a similar proof structure.}.
+To be able to verify any possible EVM bytecode program we need to provide a rule for 
+each of 70 EVM instructions. Presently we have rules for 30 most commonly used instructions,
+and extend this set gradually `on-demand'.  
+%, we will not
+%present all of them here\footnote{We presently have
+%proved the soundness of 30 commonly used instructions but
+%we expect the missing instructions to follow a similar proof structure.}.
 The following rule for $\instr{PUSH1}$, the operation pushing one byte on the stack, is quite representative
 as it shows how we specify the necessary conditions for 
 the instruction to be performed by the EVM in the precondition as well as 
@@ -798,7 +812,7 @@ where $P$ stands for
 \\
 \\$
 \begin{array}{l}
-\pure{h \le 1023 \wedge g \geq 2} \sconj \cont \sconj \gaspred\:g \; \sconj \\
+\pure{h \le 1023 \wedge g \geq 3} \sconj \cont \sconj \gaspred\:g \; \sconj \\
 \pc\:n \; \sconj \stackh\:h \; \sconj F 
 \end{array}
 $\\ 
@@ -813,7 +827,7 @@ $\\
 \\
 In particular, we have stated that the height of the stack increases by $1$ 
 ($\stackh\:(h + 1)$)
-and the top index $h$ of the stack points to the value $x$ ($\stack\:h\:x$)
+and that the top index $h$ of the stack points to the value $x$ ($\stack\:h\:x$)
 among the effects of $\instr{PUSH1}$. It is also worth noting that we incorporate frames
 into such instruction-specific rules by carrying a variable $F$ in pre- and
 postconditions, as shown above. This is in contrast to the more common way
@@ -985,7 +999,7 @@ and consequently obtain
 \[
 (Q \sconj \code{\cblocks \: \mathit{bs}} \sconj F)\: \xnext^{\len{\mathit{xs}}}(s)
 \]
-As we are considering a terminal block, the state 
+As we consider a terminal block, the state 
 $\xnext^{\len{\mathit{xs}}}(s)$ is the first one containing the $\ncont$ element, and thus 
 \[
 \xnext^{\len{\mathit{xs}}}(s) = \xnext^*(s)
