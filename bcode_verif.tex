@@ -287,11 +287,11 @@
 Blockchain technology has increasing attention in research and across many industries.
 The Ethereum block\-chain offers \emph{smart contracts}, which are small programs defined,
 executed, and recorded as transactions in the blockchain transaction history.
-These smart contracts run on the Ethereum virtual machine (EVM) and can be used to encode
+These smart contracts run on the Ethereum Virtual Machine (EVM) and can be used to encode
 agreements, transfer assets, and enforce integrity conditions in relationships between parties.
 Smart contracts can carry financial value, and are increasingly
 used for safety-, security-, or mission-critical purposes.
-Errors in smart contracts have and will lead to loss or harm.
+Errors in smart contracts have led and will lead to loss or harm.
 Formal verification can provide the highest level of confidence about the
 correct behaviour of smart contracts.
 In this paper we extend an existing EVM formalisation~\cite{Yoichi} in Isabelle/HOL by a sound
@@ -343,15 +343,15 @@ Blockchain technology emerged to support financial transactions in the Bitcoin s
 increasingly important in many industries, with potential use in legal, medical, and
 supply chain industries.
 The Ethereum blockchain provides a general-purpose computational mechanism called \emph{smart contracts}.
-These are programs that run on the Ethereum virtual machine~\cite{wood2014ethereum} (EVM), and they and their effects 
+These are programs that run on the Ethereum Virtual Machine (EVM)~\cite{wood2014ethereum}. They and their effects 
 are recorded in the blockchain history.  They can be used to encode or execute agreements between parties.
 For example, a party invoking a smart contract could cause digital currency to be transferred to another
 party, or could record a state change which makes the other party eligible to invoke other transactions.
 Smart contracts provide new ways to implement multi-party relationships within blockchain-based applications.
 In addition to the direct financial value in these applications, blockchains are increasingly being
-used for safety-critical applications such as for pharmaceutical supply chains, or for mission-critical
+used for safety-critical applications such as in pharmaceutical supply chains, or for mission-critical
 application such as in electrical power grids.
-We must know that smart contract implementations do not violate critical requirements, and
+For such reasons, it is highly desirable to know that smart contract implementations do not violate critical requirements, and
 formal modelling and verification can be applied in this context.
 %
 To address these questions we seek:
@@ -365,15 +365,15 @@ reason about properties of smart contracts.
 In our setting, we use the logical framework Isabelle/HOL, and an existing EVM formal
 model~\cite{Yoichi}.
 Thus, our remaining goal is a sound program logic.  In this paper we propose such a logic for EVM bytecode. 
-We target unstructured bytecode rather than a high-level programming language for several reasons.
-Firstly, our approach is independent of high-level languages (e.g.\ Solidity) and their compilers, which
-makes our work more general and significantly less reliant
+We target unstructured bytecode rather than a high-level programming language for the following reasons.
+Firstly, our approach is independent of any high-level language (e.g.\ Solidity) compiler, 
+making our work more general and significantly less reliant
 on the correctness of higher-level tools.
 Secondly, bytecode is the actual programming language of Ethereum as all smart contracts appear only
 in this form on the blockchain.
 Thus we target EVM bytecode, despite the absence of %necessity for us to reconstruct 
 convenient programming constructs like conditionals,
-which we can take for granted in higher-level languages.
+which we can take for granted in structured languages.
 We describe our approach for this in the remainder of the paper. 
 
 The main contributions of the paper are:
@@ -395,9 +395,9 @@ The paper is structured as follows. Section~\ref{sec:bg} describes the backgroun
 for the presented work. Section~\ref{sec:corr} describes how we can capture correctness properties in a pre/postcondition
 style for EVM bytecode programs. Section~\ref{sec:logic} is devoted to our program logic, 
 %i.e. rules for generation of verification conditions out of a contract, 
-whereas Section~\ref{sec:sound} shows the soundness of the logic
+and Section~\ref{sec:sound} shows the soundness of the logic
 w.r.t. the correctness property.
-Section~\ref{sec:case} presents a case-study, where we outline the
+Section~\ref{sec:case} presents a case-study, which outlines the
 specification and verification of real bytecode, as well as how
 we automate generation of verification conditions using Isabelle tactics.
 Finally, Section~\ref{sec:rwork} outlines some related work and
@@ -405,24 +405,26 @@ Section~\ref{sec:concl} summarises the results and gives an outlook.
 %
 \section{Background} 
 \label{sec:bg}
-The EVM is described in the Ethereum `Yellow Paper'~\cite{wood2014ethereum}.
-This provides a clear foundation not only for its implementation, but also for its formalisation in logic.
-One such formalisation has been provided~\cite{Yoichi} using the `meta-tool' \emph{Lem}~\cite{DBLP:conf/icfp/MulliganOGRS14}.
+The EVM is described in the Ethereum `Yellow Paper'~\cite{wood2014ethereum},
+which provides a clear foundation not only for its implementation, but also for its formalisation in logic.
+One such formalisation has been done~\cite{Yoichi} using the `meta-tool' \emph{Lem}~\cite{DBLP:conf/icfp/MulliganOGRS14}.
 Lem supports a variety of theorem provers including Isabelle/HOL.
-\emph{Isabelle}~\cite{Nipkow_PW:Isabelle} is a logical framework and interactive generic theorem prover.
-Isabelle/HOL encodes higher-order logic and is the most important and most developed logic in Isabelle.
-Isabelle's LCF-style architecture,
-based on a small (meta)-logical inference kernel, provides very high confidence about its soundness as a theorem prover.
+\emph{Isabelle}~\cite{Nipkow_PW:Isabelle} is a logical framework in form of a generic interactive theorem prover, whereas
+Isabelle/HOL encodes higher-order logic and is the most important and most developed part of the framework.
+Based on a small (meta)-logical inference kernel, Isabelle's LCF-style architecture
+ensures very high confidence about its soundness as a theorem prover.
  
-The EVM formalisation needs to be validated to provide confidence that the formal model
+However, the EVM model~\cite{Yoichi} needs to be validated to provide confidence that it
 meets the specification~\cite{wood2014ethereum}. 
 %and EVM implementations coincide. 
 To this end, a validation test suite accompanies
 the model in Lem. Using this, the actual EVM, regarded as the reference implementation of~\cite{wood2014ethereum}, 
-and the OCaml code generated by Lem from the EVM
-formal model are both applied to a large collection of contracts, cross-checking their outputs.  
+and the OCaml code generated by Lem %from the EVM model 
+are both applied to a large collection of contracts, cross-checking their outputs.  
 
-We entirely focus on the EVM model in Isabelle/HOL, so additionally run the test suite 
+As we entirely focus on the Lem output in Isabelle/HOL, we wanted to
+have an additional validation of this particular EVM formalisation. 
+To this end, we also invoked Isabelle's code generator and run the test suite 
 on the OCaml code generated by Isabelle.
 Our `double-validation' process is outlined in Figure~\ref{fig:valid}.
 \begin{figure}[!htbp]
@@ -450,7 +452,7 @@ In the general model, a state carries all the information needed to execute a pr
 instructions (with respective reference numbers) constituting the program itself, a program counter that
 refers to the current instruction, a stack and so on. All these elements are treated uniformly 
 as sets of so-called \emph{state elements}
-and separated in a state using separation logic conjunctions $\sconj$~\cite{Reynolds_02}.  
+and separated in a state using separation logic conjunctions $\sconj$ (denoted by $*$ in~\cite{Reynolds_02}).  
 Then a single machine step can be captured by a function $\xnext$ that 
 takes the current instruction and transforms the state in accordance with the instruction's
 specified behaviour. Of course, $\xnext$ might not always be able to pick an instruction
