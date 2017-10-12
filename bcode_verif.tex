@@ -398,7 +398,7 @@ style for EVM bytecode programs. Section~\ref{sec:logic} is devoted to our progr
 and Section~\ref{sec:sound} shows the soundness of the logic
 w.r.t. the correctness property.
 Section~\ref{sec:case} presents a case study, which outlines the 
-specification and verification of bytecode output of Solidity compiler, as well as how
+specification and verification of bytecode output of the Solidity compiler, as well as how
 we automate generation of verification conditions using Isabelle tactics.
 Finally, Section~\ref{sec:rwork} outlines some related work and
 Section~\ref{sec:concl} summarises the results and gives an outlook.
@@ -463,7 +463,7 @@ by the $\ncont$ flag, which is just an abbreviation for the state element
 $\mathit{ContinuingElm}\:\mathit{False}$, 
 as opposed to $\cont$ flag abbreviating $\mathit{ContinuingElm}\:\mathit{True}$. 
 If $\ncont$ is present in a state, $\xnext$ leaves the state unchanged.   
-   
+
 An input/output property of a program $c$ is captured by a triple
 $\pvalid{P}{c}{Q}$, where $P$ and $Q$ are separation logic predicates on the state.
 The triple is true iff for any state $s$ and predicate $F$ such that
