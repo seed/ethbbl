@@ -1249,7 +1249,7 @@ Since each $\vdash_\mathtt{instr}$ rule expects a separation logic expression wi
 in a specific order, we routinely have to re-order these to
 match a given precondition.
 
-To ease the pain, we are reusing the separation logic algebra framework~\cite{Klein_KB_12},
+To ease the pain, we reuse the separation logic algebra framework~\cite{Klein_KB_12},
 which provides a set of generic Isabelle tactics to manipulate separation logic terms.
 We instantiated the algebra with the EVM machine state and created Isabelle tactics
 which re-order separation conjunctions such that, e.g. %%% why e.g. ? 
@@ -1279,7 +1279,7 @@ Oyente~\cite{Luu_COSH_16} and Porosity~\cite{Msuiche_17} decompile
 bytecode into a control flow graph and perform control flow analysis in order
 to detect common smart contract security defects such as reentrancy bugs.
 These tools are of great value when added to the development process so
-they can unveil mistakes in early stages, but they do not guarantee the absence of bugs.
+they can unveil mistakes in early stages, but they do not prove functional correctness.
 
 Our approach is more general as we aim to specify and verify contract properties in pre/postcondition
 style where the conditions can comprise any higher-order logic formula describing an EVM state. 
@@ -1302,7 +1302,7 @@ Such translations must be either assumed to behave correctly in some sense or
 formally modelled and verified, whereas we aimed to avoid both of these options.
 
 KEVM~\cite{Hildenbrandt_SZRDGR_17} is a formal semantics of the EVM written using the K-framework.
-Like the Lem semantics we use~\cite{Yoichi}, KEVM is executable and therefore can run the Ethereum foundation's validation test suite.
+Like the Lem semantics~\cite{Yoichi} we use, KEVM is executable and therefore can run the Ethereum foundation's validation test suite.
 Reasoning about KEVM programs involves specifying properties in Reachability Logic and
 verifying them with a separate analysis tool.
 K supports translation for analysis with tools of varying
@@ -1325,7 +1325,7 @@ As explained earlier, we preferred the option of working in a single trusted log
 % programs including notion of contract classes etc, CakeML backend, Jinja backend
 % verification contract creation code, as opposed to run-time code.
 \label{sec:concl}
-In this paper we have presented our approach to verification of Ethereum smart contracts
+In this paper we have presented our approach to the verification of Ethereum smart contracts
 at the level of EVM bytecode. Building strictly on the thoroughly validated formal EVM model~\cite{Yoichi} in Isabelle/HOL,
 we have augmented it using the fact that EVM gas consumption allows us to state properties of contracts in pre/postcondition style
 with all termination considerations discharged. Further, we have outlined how we split contracts into a
@@ -1363,10 +1363,11 @@ call occurs.
 Another promising avenue for research is certifying compilers.
 We believe, for example, that the Ethereum community
 would greatly benefit from an EVM backend for the CakeML~\cite{Owens_NKMT_17}
-compiler.
-Smart contracts written in CakeML would be much easier to verify
-than EVM bytecode directly.
-Yet the compiler proof would provide the
+verified compiler.
+Since CakeML is a functional programming language, it would
+greatly simplify the verification of high-level properties
+of smart contracts compared to reasoning about bytecode directly.
+Yet the compiler correctness proof would imply the
 same level of guarantee as bytecode verification.
 
 
