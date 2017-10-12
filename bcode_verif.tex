@@ -366,7 +366,7 @@ In our setting, we use the logical framework Isabelle/HOL, and an existing EVM f
 model~\cite{Yoichi}.
 Thus, our remaining goal is a sound program logic.  In this paper we propose such a logic for EVM bytecode. 
 We target unstructured bytecode rather than a high-level programming language for the following reasons.
-Firstly, our approach is independent of any high-level language (e.g.\ Solidity) compiler, 
+Firstly, our approach is independent of any high-level language (e.g.\ Solidity~\cite{solidity}) compiler, 
 making our work more general and significantly less reliant
 on the correctness of higher-level tools.
 Secondly, bytecode is the actual programming language of Ethereum as all smart contracts appear only
@@ -397,7 +397,7 @@ style for EVM bytecode programs. Section~\ref{sec:logic} is devoted to our progr
 %i.e. rules for generation of verification conditions out of a contract, 
 and Section~\ref{sec:sound} shows the soundness of the logic
 w.r.t. the correctness property.
-Section~\ref{sec:case} presents a case-study, which outlines the
+Section~\ref{sec:case} presents a case study, which outlines the
 specification and verification of real bytecode, as well as how
 we automate generation of verification conditions using Isabelle tactics.
 Finally, Section~\ref{sec:rwork} outlines some related work and
@@ -1029,7 +1029,7 @@ Although slightly more involved, the proof of the remaining three cases follows 
 same principles,
 making however additional use of the induction hypothesis.
 %
-\section{Case-study}
+\section{Case study}
 \label{sec:case}
 
 %To demonstrate the practicality of our program logic, we verify a smart contract.
@@ -1225,8 +1225,8 @@ condition generator (VCG).
 Shaping the rules in a way that only one of them applies at each point in the
 proof makes it trivial to write a VCG that merely tries applying all the rules
 one after another.
-Such VCG can be implemented with a few lines of Eisbach~\cite{Matichuk_MW_16}---
-an Isabelle/HOL's high-level tactic language.
+Such a VCG can be implemented with a few lines of Eisbach~\cite{Matichuk_MW_16} ---
+Isabelle/HOL's high-level tactic language.
 We developed a VCG for each level of our program logic.
 For instance, the program-level tactic looks like this:
 \begin{lstlisting}[language=Isar]{}
@@ -1239,7 +1239,7 @@ in Section~\ref{sec:prog-rules} and solving its resulting subgoals by
 invoking more specific tactics we designed.
 \textit{prog\_vcg} tries each of the tactics separated by the $|$ symbol,
 while the $+$ sign at the end means that it will apply repetitively until
-none of the tactic can apply on the goal.
+none of the tactics can apply on the goal.
 
 A common source of friction we experienced during the early development
 of our framework was with proving goals of the form:
@@ -1251,7 +1251,7 @@ Since each $\vdash_\mathtt{instr}$ rule expects a separation logic expression wi
 in a specific order, we routinely have to re-order these to
 match a given precondition.
 
-To ease the pain, we are reusing the separation logic algebra framework~\cite{Klein_KB_12},
+To ease the pain, we reuse the separation logic algebra framework~\cite{Klein_KB_12},
 which provides a set of generic Isabelle tactics to manipulate separation logic terms.
 We instantiated the algebra with the EVM machine state and created Isabelle tactics
 which re-order separation conjunctions such that, e.g. %%% why e.g. ? 
@@ -1268,7 +1268,7 @@ When such problem occurs, we resort to manual reordering of terms. % ??
 \section{Related Work}
 \label{sec:rwork}
 %
-As a consequence of the series of recent smart contract security flaws exploitations,
+As a consequence of the repeated exploitation of security flaws in smart contracts,
 a notable amount of approaches and tools have already been proposed (e.g.~\cite{Bhargavan:2016:FVS:2993600.2993611,securify,Luu_COSH_16}).
  
 The major trend is to apply various kinds of static analysis not only at the level of structured contract
@@ -1281,12 +1281,12 @@ Oyente~\cite{Luu_COSH_16} and Porosity~\cite{Msuiche_17} decompile
 bytecode into a control flow graph and perform control flow analysis in order
 to detect common smart contract security defects such as reentrancy bugs.
 These tools are of great value when added to the development process so
-they can unveil mistakes in early stages, but they do not guarantee the absence of bugs.
+they can unveil mistakes in early stages, but they do not prove functional correctness.
 
 Our approach is more general as we aim to specify and verify contract properties in pre/postcondition
 style where the conditions can comprise any higher-order logic formula describing an EVM state. 
-For that reason, the degree of automation is basically limited in our case such that the user will need to interact 
-with the proof system in most cases to discharge elaborated claims. 
+For that reason, the degree of automation is limited in our case such that the user will need to interact 
+with the proof system to discharge elaborated claims.
 
 Bhargavan et al.~\cite{Bhargavan:2016:FVS:2993600.2993611} proposed a technique using an
 intermediate functional language called $F^*$,
@@ -1298,14 +1298,14 @@ the approach similar to ours, since our program logic, in fact, resembles decomp
 As explained in Section~\ref{sec:logic}, we split bytecode program into blocks without jumps
 and determine the actual jump destinations dynamically `on-the-fly', by applying logic rules.
 By contrast, Bhargavan et al. perform static stack analysis to this end.
-However, a more striking difference is that our approach is homogeneous since every step of our whole verification process 
+However, a more striking difference is that our approach is homogeneous since every step of our verification process 
 is performed and justified within a single, trusted logical framework without any translations to or from other formalisms.
 Such translations must be either assumed to behave correctly in some sense or
 formally modelled and verified, whereas we aimed to avoid both of these options.
 
 KEVM~\cite{Hildenbrandt_SZRDGR_17} is a formal semantics of the EVM written using the K-framework.
-Like the lem semantics we use~\cite{Yoichi}, KEVM is executable and therefore can run the Ethereum foundation's validation test suite.
-Reasoning about KEVM programs involve specifying properties in Reachability Logic and
+Like the Lem semantics~\cite{Yoichi} we use, KEVM is executable and therefore can run the Ethereum foundation's validation test suite.
+Reasoning about KEVM programs involves specifying properties in Reachability Logic and
 verifying them with a separate analysis tool.
 K supports translation for analysis with tools of varying
 power, including symbolic execution, faster concrete execution, or Isabelle.
@@ -1327,24 +1327,24 @@ As explained earlier, we preferred the option of working in a single trusted log
 % programs including notion of contract classes etc, CakeML backend, Jinja backend
 % verification contract creation code, as opposed to run-time code.
 \label{sec:concl}
-In this paper we have presented our approach to verification of Ethereum smart contracts
+In this paper we have presented our approach to the verification of Ethereum smart contracts
 at the level of EVM bytecode. Building strictly on the thoroughly validated formal EVM model~\cite{Yoichi} in Isabelle/HOL,
 we have augmented it using the fact that EVM gas consumption allows us to state properties of contracts in pre/postcondition style
 with all termination considerations discharged. Further, we have outlined how we split contracts into a
 structure of basic blocks as well as how a sound program logic proceeds from such blocks down to the level of instructions. 
-The presented case-study
-demonstrated applicability of our program logic to real smart contracts, verifying dispatching code that exhibits a structure
+The presented case study has demonstrated the applicability of our
+program logic to real smart contracts, verifying dispatch code that exhibits a structure
 that appears in a similar form
 in each Solidity-generated bytecode program. 
-Moreover, the case-study outlined how we use Isabelle tactics to automate
-larger parts of verification condition generation process.
+Moreover, the case study outlined how we use Isabelle tactics to automate
+large parts of verification condition generation process.
 
 To further foster formal verification of Ethereum smart contract, we
 could restore Solidity's control structures and function calls.
 For instance, restoring loops would require using heuristics
 to detect them and the program logic would be proved sound only
 for the subset of EVM bytecode accepted by this heuristic.
-Similarly detecting function calls in EVM bytecode require
+Similarly detecting function calls in EVM bytecode requires
 complex stack analysis because the EVM provides no support to call
 subroutines and for stack unwinding.
 Thus, heuristics must be used to distinguish call sites and
@@ -1365,10 +1365,11 @@ call occurs.
 Another promising avenue for research is certifying compilers.
 We believe, for example, that the Ethereum community
 would greatly benefit from an EVM backend for the CakeML~\cite{Owens_NKMT_17}
-compiler.
-Smart contracts written in CakeML would be much easier to verify
-than EVM bytecode directly.
-Yet the compiler proof would provide the
+verified compiler.
+Since CakeML is a functional programming language, it would
+greatly simplify the verification of high-level properties
+of smart contracts compared to reasoning about bytecode directly.
+Yet the compiler correctness proof would imply the
 same level of guarantee as bytecode verification.
 
 
