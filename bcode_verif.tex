@@ -473,9 +473,9 @@ holds, there exists a natural number $k$ such that
 (Q \sconj \code{c} \sconj F)\:\xnext^k(s)
 \] 
 holds. The predicate $F$ is usually called in this context a \emph{frame}, 
-and keeping it allows us to reason about parts of states locally, %using \emph{frame rule}(cf.~\cite{Reynolds_02}),
-whereas $\xnext^k$ denotes $k$-times iteration of $\xnext$, and $\code{c}$ is another element
-specifying that the program code is present in the state.
+and keeping it allows us to reason about parts of states locally. %using \emph{frame rule}(cf.~\cite{Reynolds_02}),
+$\code{c}$ is another element specifying that the program code is present in the state, and
+$\xnext^k$ denotes $k$-times iteration of $\xnext$.
 Such triples %$\pvalid{P}{c}{Q}$ 
 are highly generic and we cannot conclude much from many of these, except that
 under given preconditions the program $c$ will pass a state satisfying $Q$. This changes immediately in cases where $Q$ is of
@@ -484,7 +484,7 @@ Hence, showing $\pvalid{P}{c}{\ncont \sconj Q'}$ amounts to showing termination 
 a $Q'$-state.
 
 This generic technique applies seamlessly to EVM programs as
-the formalisation~\cite{Yoichi} shows.
+shown by Hirai~\cite{Yoichi}.
 However, we realised that showing termination of a contract individually is an unnecessary burden because
 Ethereum was designed in such a way that all smart contracts
 are guaranteed to terminate (either successfully or due to an `out-of-gas' exception).
