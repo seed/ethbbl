@@ -1,0 +1,150 @@
+---------------------- REVIEW 1 ---------------------
+PAPER: 25
+TITLE: Towards Verifying Ethereum Smart Contract Bytecode in Isabelle/HOL
+AUTHORS: Sidney Amani, Myriam Bégel, Maksym Bortin and Mark Staples
+
+Overall evaluation: 2 (accept)
+
+----------- Overall evaluation -----------
+The paper presents an Lem-Isabelle/HOL framework for asserting
+properties about Ethereum contracts at the level of bytecode
+(EVM). The contributions are:
+
+  - an extension of an already existing EVM formalization in
+    Isabelle/HOL. The extension mainly brings the core material needed
+    for defining the judgments of the presented program logic.
+
+  - a program logic based on Separation/Hoare logic and assuming that
+    some high-level control flow as been recovered from the byte-code.
+
+  - an heuristic for doing the control flow reconstructions.
+
+  - Isabelle (automation) tactics for helping users when writing formal
+    proofs of EVM programs in the aforementioned logic.
+
+Ethereum contract verification is an hot subject and this paper brings
+a new answer by designing a framework allowing the formal verification
+in the Isabelle/HOL prover of Ethereum contracts. The paper is clearly
+written and I only have some questions/concerns that are written
+below.  My biggest concern is about how this solution can be used in
+practice. Only one simple example is presented and it is very hard
+from it to asses the power of the framework.
+
+Here are my comments:
+
+  - l.139 "Yellow Paper" ... "clear foundation". I disagree that the
+    Yellow paper gives a "clear" definition. Some parts are really
+    subject to interpretation.
+
+  - l.185 EVM formalization double validation: aren't you here checking
+    the Isabelle code generator / LEM code generator here, more than
+    the EVM formalization? If these two generators are correct, you
+    must obtain "equivalent" EVM implementations.
+
+- l.270. The def. of next^* seems a bit complicated since next(s) = s
+   if not-continuing \in s (l.222)
+
+- l.287-294. Well, you internalize the termination condition in the
+   semantic of the Hoare triplet [P] c [Q] that is now "termination
+   relevant". But termination of programs is not "shown once and for
+   all". Sound rules for looping structure must then contain exhibit
+   premisses that will enforce termination.
+
+- l.395. Give a high-level description of the 3 judgments. Since thay
+   are mutually defined, this will help the reader understanding before
+   the end of the Section 4. I could infer this from the name, but this
+   is sub-optimal.
+
+- l.430/455. Rule (iii), I don't understand what you need "Continuing"
+   in R1/R2 - isn't this condition implied by the last premise of the
+   rule? Or, if you need it, why you don't need it in Rule (ii)?
+
+- Section 4.3: maybe you can write a generic predicate
+
+     P(h, [v1, ..., vn], i) =
+       exists g,
+            (h < 1024 - n /\ g >= i)
+         /\ gas-pred g
+         /\ stack-height(h + n)
+         /\ ...
+
+   explain it at a high-level and use it in all the rules.
+
+- l.727. Here, we see that low-level contracts (at byte-code level)
+   give quickly barely readable specifications. I think that this
+   problem should be at least stated.
+
+- you say nothing about contracts call / reentrance. This is a subtle
+   construction to manage and some bugs in Ethereum contracts came from
+   reentrance issues.
+
+- Is the presented example is the only one done in your framework?
+   That a bit small for an evaluation section.
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 25
+TITLE: Towards Verifying Ethereum Smart Contract Bytecode in Isabelle/HOL
+AUTHORS: Sidney Amani, Myriam Bégel, Maksym Bortin and Mark Staples
+
+Overall evaluation: 2 (accept)
+
+----------- Overall evaluation -----------
+The paper describes a formalization of many Ethereum Virtual Machine (EVM) instructions. The formalization can be used as the foundation for verifying EVM programs (at the bytecode level). The work contributes not only a useful framework for EVM in Isabelle/HOL, but also proves the soundness of the logic. On the downside, loops and calls are not handled inside the framework. Thus, although tactics that increase automation are provided, one would have expected complete automation in Why3- or Boogie-based tools for EVM without loops and calls. Also, the paper does not mention any non-trivial verification that the framework has been applied to.
+
+The papers is polished and makes a nice read.
+
+DETAILS:
+
+93-107: A drawback with applying verification at the bytecode level is that it's harder to support user annotations (like loop invariants, which could have been useful to the present work).
+
+166: run -> ran
+
+187: certain efforts -> some effort
+
+224: "An input/output property ... is captured by a triple"  Well, since this triple just says that execution passes through the Q, the name "output" is a bit misleading.
+
+313: This is not so different. It means you need invariants between basic blocks, like Floyd logic. It is also possible to handle goto's with weakest preconditions (see "Weakest-Precondition of Unstructured Programs" by Barnett and Leino, which describes the technique applied in Boogie).
+
+381: Replace each of the "---" with "is" (or simply drop the "---" altogether). As it stands, the description of "i" earlier in the sentence does not look like the descriptions of "xs" and "t" later in the sentence.
+
+530: Or, if you are using weakest preconditions instead of Hoare logic, you need not mention F at all in the rule. (E.g., this would be the case in a translation of EVM into Boogie.)
+
+Section 4.4: What about the Misc-instructions like CALL and DELEGATECALL?
+
+574: So code(x::xs) = code([x]) /\* code(xs)?
+
+Section 6.2 and thereabouts: Nothing has been said about loop invariants. Even for terminating programs, loop invariants can reduce the tedium. (E.g., consider a loop that iterates 100 times.) Would a user just choose to inductively prove triples in Isabelle/HOL starting at a loop head? In other words, is the treatment of loop invariants outside the built-in constructs you provide?
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 25
+TITLE: Towards Verifying Ethereum Smart Contract Bytecode in Isabelle/HOL
+AUTHORS: Sidney Amani, Myriam Bégel, Maksym Bortin and Mark Staples
+
+Overall evaluation: 2 (accept)
+
+----------- Overall evaluation -----------
+The paper aims at verification of Ethereum smart contracts and indeed delivers what the title promises: the authors made some research to get closer to a verification of the current EVM bytecode in Isabelle. In my opinion, there is still a lot of work to be done to obtain a practically usable verification framework for Ethereum smart contracts. In my understanding, the current paper documents a partial step towards the ideal.
+
+Verification of smart contracts can be done in many different ways and on many levels of abstraction (as it is also discussed in the paper). The main design decisions of this paper are the following:
+a)      The verification is done on the level of the EVM bytecode
+b)      The whole verification is done in the same tool (Isabelle)
+c)      The authors developed a sound program logic that allows for reasoning about blocks of the EVM bytecode
+
+The problem with Ethereum is that it started as an experiment and I believe that the Ethereum creators didn’t foresee the current popularity. As a consequence, the design of the EVM is poor and by no means it was designed with suitability for formal verification in mind. The authors of this paper noticed that as well and as a part of their approach they try to regain some control flow structure that was lost in the compilation to the EVM and identify that the dynamical jump instructions make the process harder. To impose more structure on the object that I work with is a legitimate approach but to redefine the object (if it’s possible) to something more structured from the very beginning might be even more reasonable.
+
+The Ethereum community is aware of the above-described deficiencies and there are currently two proposals to change the EVM bytecode:
+a)      EVM1.5 deprecates the dynamic jumps and introduces support for subroutines.
+b)      eWASM (sometimes called EVM2.0) is roughly speaking going to introduce more of the high-level programming language concepts into the bytecode and will be based on WebAssembly, which already comes up with formal semantics.
+Are the authors aware of these proposals? Is their work going to become obsolete if these proposals get adopted?
+
+Verification of smart contracts on the level of the bytecode is difficult, especially with the current version of EVM. I could imagine that this work would be used in a verification of a compiler that compiles a more high-level language to EVM, rather than for a direct full functional verification of smart contracts. The example used in the paper doesn’t really help me to dispel my doubts. The example in Figure 3 doesn’t do by far anything interesting. For example, the authors of the paper “Making smart contracts smarter” (which this paper also cites) introduced a toy example (it’s a simple computational puzzle, 29 lines of Solidity) that at least contains some minimal complexity. Would it be possible to verify some properties of such a program? The authors claim that after they introduced the needed automation, the verification of their example was a routine task.
+
+The authors do not support the interaction with other smart contracts. This is the most troublesome part of the EVM specification and to my knowledge this was the source of many hacks of smart contracts (including the infamous TheDAO hack).
+
+Despite the discussion/criticism above, I do support the acceptance of this paper for the following reasons:
+a)      It’s still a well-written paper.
+b)      The program logic developed in the paper still might be of a more general interest.
+c)      We as a community should surely support the research that tries to apply formal methods to new realms and especially to the world of cryptocurrencies.
+As mentioned above, the paper documents a step towards verification of smart contracts, and this per se has scientific value.
