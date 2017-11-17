@@ -843,7 +843,8 @@ where $P \subpred Q$ means $P\:s$ implies $Q\:s$ for any state $s$.
 \label{sec:instr-rules}
 To be able to verify any possible EVM bytecode program we need to provide a rule for 
 each of 70 EVM instructions. Presently we have rules for 30 most commonly used instructions,
-and extend this set gradually `on-demand'.  
+and extend this set gradually `on-demand' if possible:
+instructions such as $\instr{CALL}$ for inter-contract message call remain future work.  
 %, we will not
 %present all of them here\footnote{We presently have
 %proved the soundness of 30 commonly used instructions but
@@ -961,8 +962,11 @@ Furthermore, from (\ref{prop:sound-instr}) and $\ttrip{}{instr}{P}{x}{R}$ we can
 \RuleC{(P \sconj \code{[x]} \sconj F)\: s}
       {(R \sconj \code{[x]} \sconj F)\: \xnext(s)}
 \]
-which combined establish (\ref{prop:sound-block}).
-In case $\mathit{xs}$ is empty, we can assume $P \subpred Q$ which
+which combined establish (\ref{prop:sound-block}), using additionally the property
+\[
+\code{x::\mathit{zs}} = \code{[x]} \sconj \code{\mathit{zs}}
+\] 
+Next, in case $\mathit{xs}$ is empty, we can assume $P \subpred Q$ which
 immediately gives us (\ref{prop:sound-block}). 
 
 The ultimate soundness statement is at the program level:
