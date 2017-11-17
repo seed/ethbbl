@@ -551,9 +551,9 @@ means that we would not need to provide any variants to establish loop propertie
 gas consumption is a variant for any loop. On the other hand, we might then need to augment our triples
 by an exception condition to handle cases when an `out-of-gas' exception is raised during
 a loop iteration, thus not reaching the loop exit condition. Alternatively, we also might augment
-any such condition by a gas amount enquiry, such that any loop would just exit if not enough gas
-is available to perform the next iteration. This technique however would require good approximations
-of gas consumed in each iteration.   
+any such condition by a check of remaining gas amount, such that any loop would just exit if not enough gas
+is available to perform the next iteration. This approach would however require good approximations
+of gas consumed per iteration.   
 %
 %       
 \section{Program Logic}
@@ -674,8 +674,8 @@ Figure~\ref{fig:basicblocks} illustrates how we split EVM bytecode into basic bl
 types, thereby indexing the blocks with addresses of their first instruction
 and removing all the jumps from the block contents. %the list of instructions.
 The entire extraction process is captured in the Isabelle development
-by means of the function $\bblocks$ which maps a list of instructions to a list of tuples $(i, \mathit{xs}, t)$,
-where $i$ is the block index, $\mathit{xs}$ --- the list of instructions of the block, and $t$ --- the type of
+by means of the function $\bblocks$ which maps a list of instructions to a list of tuples $(n, \mathit{xs}, t)$,
+where $n$ is the block index, $\mathit{xs}$ is the list of instructions of the block, and $t$ is the type of
 the block. 
 
 By splitting bytecode into basic blocks no information gets lost since we can connect the produced blocks
@@ -701,8 +701,8 @@ will be defined inductively in the following three sections:
 \mbox{-- at the instruction level} 
 \end{array}
 \]
-where $P, Q$ are state predicates, $x$ --- an instruction, $\mathit{xs}$ --- a list of instructions,
-$\mathit{blocks}$ --- a list of basic blocks, and
+where $P, Q$ are state predicates, $x$ is an instruction, $\mathit{xs}$ is a list of instructions,
+$\mathit{blocks}$ is a list of basic blocks, and
 $(n, \mathit{xs}, t)$ --- a basic block.% are defined inductively in the following three sections.
 %
 \subsection{Program Rules}
