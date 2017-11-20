@@ -646,10 +646,10 @@ We divide EVM instructions into three groups:
 \end{itemize}  
 Furthermore, we classify basic blocks with the following four types:
 \begin{itemize}
-\item[(i)] \textit{Terminal} -- if the last instruction of the block interrupts execution;
-\item[(ii)] \textit{Jump} -- if the last instruction is $\instr{JUMP}$;
-\item[(iii)] \textit{Jumpi} -- if the last instruction is $\instr{JUMPI}$;
-\item[(iv)] \textit{Next} -- otherwise, i.e. when control passes from the last instruction of the block
+\item[(i)] \textit{Terminal} --- if the last instruction of the block interrupts execution;
+\item[(ii)] \textit{Jump} --- if the last instruction is $\instr{JUMP}$;
+\item[(iii)] \textit{Jumpi} --- if the last instruction is $\instr{JUMPI}$;
+\item[(iv)] \textit{Next} --- otherwise, i.e. when control passes from the last instruction of the block
                              to the instruction with the successor address.                         
 \end{itemize} 
 \begin{figure}[ht!]
@@ -701,13 +701,13 @@ will be defined inductively in the following three sections:
 \[
 \begin{array}{l l}
 \ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q} & 
-\mbox{-- at the program level}\\
+\mbox{--- at the program level}\\
 \\
 \ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} &
-\mbox{-- at the block level}\\
+\mbox{--- at the block level}\\
 \\
 \ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} &
-\mbox{-- at the instruction level} 
+\mbox{--- at the instruction level}
 \end{array}
 \]
 where $P, Q$ are state predicates, $x$ is an instruction, $\mathit{xs}$ is a list of instructions,
