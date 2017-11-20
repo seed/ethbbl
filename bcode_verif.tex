@@ -548,7 +548,7 @@ a sound device to derive verification conditions for contract properties of the 
 %
 Although the program logic does not support general loops yet, factoring out the termination part
 means that we would not need to provide any variants to establish loop properties since
-gas consumption is a variant for any loop. On the other hand, we might then need to augment our triples
+gas consumption is a variant for any EVM-loop. On the other hand, we might then need to augment our triples
 by an exception condition to handle cases when an `out-of-gas' exception is raised during
 a loop iteration, thus not reaching the loop exit condition. Alternatively, we also might augment
 any such condition by a check of remaining gas amount, such that any loop would just exit if not enough gas
@@ -962,10 +962,14 @@ Furthermore, from (\ref{prop:sound-instr}) and $\ttrip{}{instr}{P}{x}{R}$ we can
 \RuleC{(P \sconj \code{[x]} \sconj F)\: s}
       {(R \sconj \code{[x]} \sconj F)\: \xnext(s)}
 \]
-which combined establish (\ref{prop:sound-block}), using additionally the property
+which combined establish (\ref{prop:sound-block}).
+Thereby we also make use of the equality
 \[
 \code{x::\mathit{zs}} = \code{[x]} \sconj \code{\mathit{zs}}
 \] 
+which holds since $x= (\mathit{addr}, \mathit{instr})$ does not occur in $\mathit{zs}$ due to
+the unique $\mathit{addr}$.
+ 
 Next, in case $\mathit{xs}$ is empty, we can assume $P \subpred Q$ which
 immediately gives us (\ref{prop:sound-block}). 
 
@@ -1309,7 +1313,7 @@ languages (e.g. Solidity's Why3 backend~\cite{filliatre2013why3,Reitwiessner_16}
 %
 The obvious advantage of static analysis approaches is that full automation can be achieved for 
 contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify}.
-Oyente~\cite{Luu_COSH_16} and Porosity~\cite{Msuiche_17} decompile
+The tools Oyente~\cite{Luu_COSH_16} and Porosity~\cite{Msuiche_17} decompile
 bytecode into a control flow graph and perform control flow analysis in order
 to detect common smart contract security defects such as reentrancy bugs.
 These tools are of great value when added to the development process so
