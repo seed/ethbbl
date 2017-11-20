@@ -594,8 +594,9 @@ The essential property of basic blocks is that
 they comprise straight-line code, i.e. the control flow always enters it at its first instruction
 and leaves only after the last one has been executed.
 Thus, reasoning about bytecode at the CFG-level resembles reasoning about structured programs
-in many aspects. In particular, a CFG can be used to accommodate annotations, such as loop invariants, 
-fostering especially the automation part of verification process.  
+in many aspects.
+In particular, a CFG provides enough structure to add annotations,
+such as loop invariants, enabling complete automation of the verification process.
 
 %However, the algorithm to compute the edges of a CFG for JVM bytecode
 %cannot be easily adapted to our EVM context.
@@ -646,10 +647,10 @@ We divide EVM instructions into three groups:
 \end{itemize}  
 Furthermore, we classify basic blocks with the following four types:
 \begin{itemize}
-\item[(i)] \textit{Terminal} -- if the last instruction of the block interrupts execution;
-\item[(ii)] \textit{Jump} -- if the last instruction is $\instr{JUMP}$;
-\item[(iii)] \textit{Jumpi} -- if the last instruction is $\instr{JUMPI}$;
-\item[(iv)] \textit{Next} -- otherwise, i.e. when control passes from the last instruction of the block
+\item[(i)] \textit{Terminal} --- if the last instruction of the block interrupts execution;
+\item[(ii)] \textit{Jump} --- if the last instruction is $\instr{JUMP}$;
+\item[(iii)] \textit{Jumpi} --- if the last instruction is $\instr{JUMPI}$;
+\item[(iv)] \textit{Next} --- otherwise, i.e. when control passes from the last instruction of the block
                              to the instruction with the successor address.                         
 \end{itemize} 
 \begin{figure}[ht!]
@@ -701,13 +702,13 @@ will be defined inductively in the following three sections:
 \[
 \begin{array}{l l}
 \ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q} & 
-\mbox{-- at the program level}\\
+\mbox{--- at the program level}\\
 \\
 \ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} &
-\mbox{-- at the block level}\\
+\mbox{--- at the block level}\\
 \\
 \ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} &
-\mbox{-- at the instruction level} 
+\mbox{--- at the instruction level}
 \end{array}
 \]
 where $P, Q$ are state predicates, $x$ is an instruction, $\mathit{xs}$ is a list of instructions,
@@ -851,17 +852,27 @@ where $P \subpred Q$ means $P\:s$ implies $Q\:s$ for any state $s$.
 \subsection{Instruction Rules}
 \label{sec:instr-rules}
 To be able to verify any possible EVM bytecode program we need to provide a rule for 
-each of 70 EVM instructions. Presently we have rules for 30 most commonly used instructions,
-and extend this set gradually `on-demand' with the following exception.
-Instructions such as $\instr{CALL}$, for inter-contract message calls, lead
-to an environment action that requires an appropriate model of the Ethereum global state,
-whereas the current EVM formalisation treats the global state merely as an unknown external environment.
+each of 70 EVM instructions.
+Presently we have rules for 30 commonly used instructions,
+and extend this set gradually `on-demand'.
+The behaviour of some instructions, such as $\instr{CALL}$ for
+inter-contract message calls, cannot be fully be captured
+by their effect on the EVM state as they also update the
+Ethereum global state.
+As a result, in our program logic (and the EVM bytecode semantics) these
+instructions lead to an environment action that must be modelled separately.
+Such modelling is however possible and we discuss it further in Section~\ref{sec:concl}.
+
+
+%Instructions such as $\instr{CALL}$, for inter-contract message calls, lead
+%to an environment action that requires an appropriate model of the Ethereum global state,
+%whereas the current EVM formalisation treats the global state merely as an unknown external environment.
 %
 %Our logic only allows reasoning about the EVM machine state,
 %the rest of the Ethereum global state is treated as an external environment.
 %Instructions such as $\instr{CALL}$, for inter-contract message calls, lead
 %to an environment action that must be modelled separately.
-Such modelling is however possible and we discuss it further in Section~\ref{sec:concl}.
+%Such modelling is however possible and we discuss it further in Section~\ref{sec:concl}.
 
 %, we will not
 %present all of them here\footnote{We presently have
@@ -1442,7 +1453,7 @@ complex stack analysis because the EVM provides no support to call
 subroutines and for stack unwinding.
 Thus, heuristics must be used to distinguish call sites and
 stack unwinding from other stack-manipulating instructions.
-However, the proposal~\cite{subroutines} (EVM1.5) is currently being discussed and would replace
+However, a proposal~\cite{subroutines} currently being discussed would replace
 dynamic jumps with static ones and add instructions to call and
 return from sub-routines (internal functions).
 If implemented, it would greatly facilitate
@@ -1452,7 +1463,7 @@ issues would go away.
 The current framework leaves inter-contract message call
 reasoning outside the program logic.
 When a contract $A$ makes a message call to contract $B$,
-the execution of $A$ terminates in our formal model with an \textit{InstructionToEnvironment} action.
+the execution of $A$ terminates in our formal model with a \textit{ContractCall} action.
 Hence, within our program logic we can only prove properties
 about the state of $A$ right before it calls $B$.
 To reason further about such interactions, the Ethereum global state %environment
