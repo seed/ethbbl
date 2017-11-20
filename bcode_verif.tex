@@ -594,8 +594,9 @@ The essential property of basic blocks is that
 they comprise straight-line code, i.e. the control flow always enters it at its first instruction
 and leaves only after the last one has been executed.
 Thus, reasoning about bytecode at the CFG-level resembles reasoning about structured programs
-in many aspects. In particular, a CFG can be used to accommodate annotations, such as loop invariants, 
-fostering especially the automation part of verification process.  
+in many aspects.
+In particular, a CFG provides enough structure to add annotations,
+such as loop invariants, enabling complete automation of the verification process.
 
 %However, the algorithm to compute the edges of a CFG for JVM bytecode
 %cannot be easily adapted to our EVM context.
