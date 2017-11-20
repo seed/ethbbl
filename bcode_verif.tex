@@ -843,15 +843,20 @@ where $P \subpred Q$ means $P\:s$ implies $Q\:s$ for any state $s$.
 \label{sec:instr-rules}
 To be able to verify any possible EVM bytecode program we need to provide a rule for 
 each of 70 EVM instructions. Presently we have rules for 30 most commonly used instructions,
-and extend this set gradually `on-demand' if possible:
-instructions such as $\instr{CALL}$ for inter-contract message call remain future work.  
+and extend this set gradually `on-demand'.
+Our logic only allows reasoning about the EVM machine state,
+the rest of the Ethereum global state is treated as an external environment.
+Instructions such as $\instr{CALL}$, for inter-contract message calls, lead
+to an environment action that must be modelled separately.
+We discuss this further in Section~\ref{sec:concl}.
+
 %, we will not
 %present all of them here\footnote{We presently have
 %proved the soundness of 30 commonly used instructions but
 %we expect the missing instructions to follow a similar proof structure.}.
 The following rule for $\instr{PUSH1}$, the operation pushing one byte on the stack, is quite representative
 as it shows how we specify the necessary conditions for 
-the instruction to be performed by the EVM in the precondition as well as 
+the instruction to be performed by the EVM in the precondition, as well as
 the effect of the operation on state elements in the postcondition:
 \[
 \ttrip{}{\mathtt{instr}}{P}{(n, \instr{PUSH1}\:x)}{Q}
@@ -1387,18 +1392,28 @@ complex stack analysis because the EVM provides no support to call
 subroutines and for stack unwinding.
 Thus, heuristics must be used to distinguish call sites and
 stack unwinding from other stack-manipulating instructions.
+A proposal~\cite{subroutines} is being discussed which would replace
+dynamic jumps with static ones and add instructions to call and
+return from sub-routines (internal functions).
+If implemented, this proposal would greatly facilitate
+decompilation of EVM bytecode, as most of the aforementioned
+issues would go away.
 
-The current framework leaves inter-contract
+The current framework leaves inter-contract message call
 reasoning outside the program logic.
-When a contract A makes an external call to contract B,
+When a contract A makes a message call to contract B,
 the semantics terminates with an \textit{InstructionToEnvironment} action.
 Hence, within our program logic, we can only prove properties
 about the state of A right before it calls B.
 To reason further about such interactions, the environment
 must be modelled at a meta-level to capture the behaviour of B.
-We could imagine a framework where the program logic is parametrised
-by a contract environment which gets invoked when an external
-call occurs.
+For example, Hirai~\cite{Yoichi} has used his framework,
+on which ours is based, to formally verity that a smart contract
+throws an exception if it is subject to a reentrant invocation
+(B attempts to call A).
+As future work, we could imagine a EVM semantics parametrised by
+a contract environment which directly invokes the target contract
+when a message call occurs.
 
 Another promising avenue for research is certifying compilers.
 We believe, for example, that the Ethereum community
@@ -1430,8 +1445,8 @@ same level of guarantee as bytecode verification.
 %  National Science Foundation.
 
 
-We also would like to thank Yoichi Hirai, Corey Lewis and Peter H\"ofner
-for all comments and suggestions.
+We also would like to thank Yoichi Hirai, Corey Lewis, Peter H\"ofner
+and Paul Rimba for all comments and suggestions.
 \end{acks}
 
 
