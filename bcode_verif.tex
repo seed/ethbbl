@@ -1152,7 +1152,9 @@ theorem verify_dispatcher:
 The Solidity compiler can print a contract ABI description which includes the
 signatures of all public functions as well as their hashes.
 We used this feature to obtain \textit{dispatch1\_hash} and \textit{dispatch2\_hash}.
-The rest of the specification is straightforward.
+Once one gets used to the fact that to verify low-level bytecode one also needs to specify  
+many small low-level technical details,  
+the rest of the specification becomes straightforward.
 The argument passed to \textit{spec\_MyContract} corresponds to the first 32-bit
 machine word passed as an argument when the contract gets invoked.
 \textit{ContractReturn} and \textit{ContractFail} specify the action
