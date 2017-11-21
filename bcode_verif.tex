@@ -1342,12 +1342,12 @@ is unrelated to the value stored in the \textit{amount} storage variable
 when the contract is destroyed.
 
 In addition to specifying the return action of the contract, we want
-to guarantee that \textit{addfund} can only be called once 
+to guarantee that \textit{addfund} can only be called once.
 This is done with the \textit{spec\_amount} definition which
 is used in the main theorem to specify the value of the
 \textit{amount} storage variable.
 It says that when the precondition for \textit{addfund} to
-return success is met, \textit{amount} is set to zero,
+return successfully is met, \textit{amount} is set to zero,
 thus protecting against further invocations of \textit{addfund}.
 
 
@@ -1362,13 +1362,14 @@ We obtain it by converting the byte string of input data into a word
 using \textit{word\_rsplit}.
 $\gaspred$ specifies the gas budget for the execution and $\storage$
 binds storage entries to the free variables \textit{buyer}, \textit{seller},
-\textit{arbiter}, \textit{amount}.
+\textit{arbiter} and \textit{amount}.
 \textit{bytecode\_Escrow} is a list of deeply embedded EVM
 instructions which we convert into a list of basic blocks with $\bblocks$.
 In the postcondition, we are only interested in the resulting action
 satisfying \textit{spec\_Escrow}, storage variables being unchanged
 and \textit{amount} corresponding to \textit{spec\_amount},
-hence we quantify existentially on the rest of the state to leave it unspecified.
+hence we quantify existentially on the rest of the state \textit{r}
+to leave it unspecified.
 
 \subsection{Verification}
 
@@ -1377,11 +1378,11 @@ hence we quantify existentially on the rest of the state to leave it unspecified
 Smart contract bytecode is divided into two sections: the pre-loader and
 runtime code.
 The pre-loader bootstraps the contract by deploying it on the
-Ethereum network and running its constructor (the contract in \autoref{solidity}
-has no constructor).
-The runtime code contains the core functionality of the contract
+Ethereum network and running its constructor.
+The runtime code only contains the core functionality of the contract
 that can be invoked by other blockchain agents.
-Our verification considers only the runtime code of MyContract.
+Our verification considers only the runtime code of \textit{Escrow},
+thus excluding its constructor.
 
 We obtain the runtime code as a byte string of opcodes from the Solidity
 compiler and convert it into a list of EVM instructions via an
@@ -1389,8 +1390,9 @@ Isabelle/HOL function.
 In this sense we work directly on the bytecode output of
 the Solidity compiler.
 
-MyContract bytecode has 227 EVM instructions, that get split into 27 basic
-blocks, including 4 of type \textit{Jumpi} (i.e.\ conditional jumps).
+\textit{Escrow} bytecode has 191 EVM instructions, that get split into 45 basic
+blocks, including 12 of type \textit{Jumpi} (i.e.\ conditional jumps),
+23 \textit{Terminal}, 6 \textit{Next} and 4 \textit{Jump}.
 Once the automation support, described in the next section reached maturity,
 proving correctness of the bytecode was rather a routine task. %fairly straightforward
 
@@ -1406,7 +1408,8 @@ the dispatcher does the following word arithmetic to convert the value:
 \[
 \mathit{w32}\mbox{-}\mathit{hash} = (\mathit{w256}\mbox{-}\mathit{input}\mbox{-}\mathit{data} \gg 224)\ \text{\&}\ \mathtt{0xffffffff}
 \]
-With the help of Isabelle's machine word library~\cite{Word_Lib-AFP}, we proved that when the hash is packed in the input data,
+With the help of Isabelle's machine word library~\cite{Word_Lib-AFP},
+we proved that when the hash is packed in the input data,
 the above bit-wise operations return the same hash value.
 
 %% mole $ wc -l HoareTripleForBasicBlocks.thy SoundnessForBasicBlocks.thy ../example/Dispatcher.thy ../EvmFacts.thy Hoare.thy
@@ -1417,11 +1420,11 @@ the above bit-wise operations return the same hash value.
 %%   1077 Hoare.thy
 %%   5447 total
 
-The total development of our framework is $\approx$5000 lines of Isabelle/HOL theories,
+The total development of our framework is $\approx$6000 lines of Isabelle/HOL theories,
 excluding the existing formalisation of EVM model, etc.
-The size of the top-level specification of MyContract is $\approx$15 lines
-and the functional correctness proof of the dispatcher is
-$\approx$50 lines of proof specific to this example, which compares
+The size of the top-level specification of \textit{Escrow} is $\approx$30 lines
+and the functional correctness proof of the contract is
+$\approx$40 lines of proof specific to this example, which compares
 favourably with the $\approx$500 lines of reusable proof
 automation machinery we developed.
 We describe this automation next.
