@@ -853,17 +853,16 @@ where $P \subpred Q$ means $P\:s$ implies $Q\:s$ for any state $s$.
 \label{sec:instr-rules}
 To be able to verify any possible EVM bytecode program we need to provide a rule for 
 each of 70 EVM instructions.
-Presently we have rules for 30 commonly used instructions,
+Presently we provide rules for 30 commonly used instructions,
 and extend this set gradually `on-demand'.
-The behaviour of some instructions, such as $\instr{CALL}$ for
-inter-contract message calls, cannot be fully be captured
-by their effect on the EVM state as they also update the
-Ethereum global state.
-As a result, in our program logic (and the EVM bytecode semantics) these
+However, the behaviour of instructions referring to the Ethereum global state, 
+such as $\instr{CALL}$ for inter-contract calls, cannot be fully captured
+by the EVM state alone.
+As a result, in the EVM semantics (and accordingly in our logic) these
 instructions lead to an environment action that must be modelled separately.
 Such modelling is however possible and we discuss it further in Section~\ref{sec:concl}.
 
-
+%
 %Instructions such as $\instr{CALL}$, for inter-contract message calls, lead
 %to an environment action that requires an appropriate model of the Ethereum global state,
 %whereas the current EVM formalisation treats the global state merely as an unknown external environment.
@@ -873,7 +872,7 @@ Such modelling is however possible and we discuss it further in Section~\ref{sec
 %Instructions such as $\instr{CALL}$, for inter-contract message calls, lead
 %to an environment action that must be modelled separately.
 %Such modelling is however possible and we discuss it further in Section~\ref{sec:concl}.
-
+%
 %, we will not
 %present all of them here\footnote{We presently have
 %proved the soundness of 30 commonly used instructions but
@@ -1477,14 +1476,15 @@ a contract environment which directly invokes the target contract
 when a message call occurs.
 
 Another promising avenue for research is certifying compilers.
-We believe, for example, that the Ethereum community
+We believe that the Ethereum community
 would greatly benefit from an EVM backend for the CakeML~\cite{Owens_NKMT_17}
 verified compiler.
 Since CakeML is a functional programming language, it would
-greatly simplify the verification of high-level properties
-of smart contracts compared to reasoning about bytecode directly.
-Yet the compiler correctness proof would imply the
-same level of guarantee as bytecode verification.
+provide a different approach to specification and verification of high-level properties
+of smart contracts.
+% compared to reasoning about bytecode directly.
+%Yet the compiler correctness proof would imply the
+%same level of guarantee as bytecode verification.
 
 
 %% Acknowledgments
@@ -1506,7 +1506,7 @@ same level of guarantee as bytecode verification.
 %  National Science Foundation.
 
 
-We also would like to thank Yoichi Hirai, Corey Lewis, Peter H\"ofner
+We would like to thank Yoichi Hirai, Corey Lewis, Peter H\"ofner
 and Paul Rimba for all comments and suggestions.
 \end{acks}
 
