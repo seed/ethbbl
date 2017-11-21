@@ -1209,8 +1209,8 @@ On line \ref{lst:constbeg}, we use \textit{require} to ensure that the arbiter c
 an escrow agreement with an amount greater than zero.
 
 This condition is critical because, on line \autoref{lst:addfundend},
-\textit{addfund} also expects \textit{amount} to be strictly positive
-and before resetting it to zero.
+\textit{addfund} also expects \textit{amount} to be strictly positive,
+before resetting it to zero.
 This way, we guarantee that the buyer can only add the
 funds expected to the contract once.
 \textit{addfund} is annotated with the \textit{payable} keyword,
@@ -1233,11 +1233,11 @@ along with the call.
 \textit{refund} on lines \autoref{lst:refundbeg}--\autoref{lst:refundend}
 and \textit{pay} on lines \autoref{lst:paybeg}--\autoref{lst:payend}
 are both protected such that they must be called by the arbiter,
-after the buyer has placed the funds in the contract.
+and so, after the buyer has placed the funds in the contract.
 The latter is enforced by checking that \textit{amount} is zero.
 They both invoke the \textit{selfdestruct} built-in function
 which transfers the totality of the funds held by the contract
-to the addressed passed as argument and destroys the smart
+to the address passed as argument and destroys the smart
 contract.
 
 
@@ -1251,11 +1251,11 @@ available for a user of the contract.
 The first argument passed to bytecode is the hash corresponding
 to the signature of the function to call.
 The piece of bytecode which compares the first argument
-and function hashes is called the \textit{dispatcher}.
+to function hashes is called the \textit{dispatcher}.
 The dispatcher is also responsible for unpacking function
 arguments.
 The binary format for computing function hashes and
-packing arguments is standardised so that contract
+packing arguments is standardised so that contracts
 written in various EVM languages
 can interoperate without trouble.
 Since the dispatcher is produced by the compiler, it is
