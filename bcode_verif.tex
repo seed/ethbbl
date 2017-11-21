@@ -1197,6 +1197,8 @@ the amount of the purchase and enforces the order
 in which the contract operations must be invoked.
 It is stored in a 256-bit machine word, which is the
 native word size of the EVM.
+For this reason, Ethereum addresses which are 160-bit long
+are in practice also stored in 256-bit machine words.
 
 The constructor on lines \autoref{lst:constbeg}--\autoref{lst:constend}
 is run by the Ethereum platform to initialise the contract when it gets deployed.
@@ -1208,9 +1210,9 @@ Solidity's built-in function \textit{require} throws an exception
 if the specified condition evaluates to false.
 When an exception is thrown, the EVM state is rolled back completely,
 with the exception of the gas consumption.
+
 On line \ref{lst:constbeg}, we use \textit{require} to ensure that the arbiter creates
 an escrow agreement with an amount greater than zero.
-
 This condition is critical because, on line \autoref{lst:addfundend},
 \textit{addfund} also expects \textit{amount} to be strictly positive,
 before resetting it to zero.
@@ -1218,10 +1220,11 @@ This way, we guarantee that the buyer can only add the
 funds expected to the contract once.
 Note that \textit{msg.value} is an environment variable
 storing the amount of Ether transfered as part of the transaction.
+
 \textit{addfund} is annotated with the \textit{payable} keyword,
 which indicates that this function is allowed to be invoked
 by an Ethereum transaction along with a non-zero amount of
-crypto-currency transfer.
+Ether.
 To prevent accidental loss of crypto-currency, by default
 contract functions are not payable.
 The \textit{public} qualifier indicates that
