@@ -1117,14 +1117,14 @@ Just like class instantiations in OOP, contracts on the blockchain are
 stateful objects, where the storage is persistent across contract function calls.
 
 \begin{figure}[h!]
-\begin{lstlisting}[language=Solidity,escapeinside={@}{@}]{}
+\begin{lstlisting}[language=Solidity,escapeinside={@}{@},numbers=right]{}
 contract Escrow {
 @\label{lst:storevarbeg}@    address buyer;
     address seller;
     address arbiter;
 @\label{lst:storevarend}@    uint256 amount;
 
-    function Escrow(address _buyer,
+@\label{lst:constbeg}@    function Escrow(address _buyer,
                     address _seller,
                     uint256 _amount) public {
             require (amount > 0);
@@ -1132,7 +1132,7 @@ contract Escrow {
             seller = _seller;
             arbiter = msg.sender;
             amount = _amount;
-    }
+@\label{lst:constend}@     }
 
     function addfund() payable public  {
         require (amount > 0 &&
