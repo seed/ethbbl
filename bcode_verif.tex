@@ -135,6 +135,8 @@
   keywords=[4]{address,uint256},
   ndkeywords={class, export, boolean, throw, implements, import, this},
   ndkeywordstyle=\color{black}\bfseries,
+  numbers=left,
+  numbersep=5pt,
   identifierstyle=\color{black},
   sensitive=false,
   comment=[l]{//},
@@ -1105,10 +1107,8 @@ making however additional use of the induction hypothesis.
 
 Our development provides the ground work for full functional correctness
 of Ethereum smart contracts.
-These contracts are typically implemented in a language called Solidity,
-which provides high level abstractions to facilitate 
-% interactions between EVM program. ?
-structured development.
+These contracts are typically implemented in a high-level
+language called Solidity.
 In Solidity, the functionality of a smart contract is encapsulated into a
 \textit{contract interface}, which, analogously to a class in object oriented programming
 (OOP), has a well-defined interface with public and private elements.
@@ -1117,12 +1117,12 @@ Just like class instantiations in OOP, contracts on the blockchain are
 stateful objects, where the storage is persistent across contract function calls.
 
 \begin{figure}[h!]
-\begin{lstlisting}[language=Solidity]{}
+\begin{lstlisting}[language=Solidity,escapeinside={@}{@}]{}
 contract Escrow {
-    address buyer;
+@\label{lst:storevarbeg}@    address buyer;
     address seller;
     address arbiter;
-    uint256 amount;
+@\label{lst:storevarend}@    uint256 amount;
 
     function Escrow(address _buyer,
                     address _seller,
@@ -1142,21 +1142,52 @@ contract Escrow {
     }
 
     function refund() public {
-        require (msg.sender == arbiter);
+        require (amount == 0 &&
+                 msg.sender == arbiter);
         selfdestruct(buyer);
     }
 
     function pay() public {
-        require (msg.sender == arbiter);
+        require (amount == 0 &&
+                 msg.sender == arbiter);
         selfdestruct(seller);
     }
 }
 \end{lstlisting}
-\caption{Contract with two functions: \textit{dispatch1} that returns 1; \textit{dispatch2} that returns 2.}
+\caption{Escrow smart contract allowing an arbiter to clear a
+ transaction between two mutually distrusting parties.}
 \label{solidity}
 \end{figure}
 
-\autoref{solidity} shows an example of a Solidity contract with two public functions.
+\autoref{solidity} shows an example of a Solidity smart contract that
+implements an escrow agreement on the Ethereum blockchain.
+In this agreement, a \textit{buyer} wants to purchase a good from a \textit{seller}.
+Since the buyer and the seller do not trust each other, they rely on an
+escrow agent --- an \textit{arbiter} they both trust --- to achieve
+a safe transaction despite their mutual distrust.
+In this scenario, the arbiter creates the contract specifying the
+expected amount, waits for the buyer to transfer the money to
+the contract and decides whether to pay the seller or refund the buyer.
+Apart from the arbiter's decision to pay or refund, the whole process
+is automated by the smart contract.
+
+Every variables declared as a member of a contract interface is
+a storage variables.
+Lines \autoref{lst:storevarbeg}--\autoref{lst:storevarend} of \autoref{solidity}
+declare variables to store the addresses of the three parties
+involved in the agreement, as well as the amount of the purchase.
+The amount is stored in a 256-bit machine word, which is the
+word size of the EVM.
+The constructor on \autoref{lst:constbeg}--\autoref{lst:constend}
+initialises the contract and is run by the Ethereum platform when
+the contract is deployed.
+Solidity's built-in function \textit{require} throws an exception
+if the condition passed as argument evaluate to false.
+When an exception is thrown, the complete EVM state is rolled back,
+with the exception of the gas consumption.
+We use \textit{require} to ensure that the arbiter creates
+a escrow agreement with an amount greater than zero.
+
 Each public function of a contract gets assigned a unique hash and
 the Solidity compiler produces EVM bytecode with a single entry point.
 At the beginning of the bytecode a \textit{dispatcher} is introduced that inspects the first arguments
