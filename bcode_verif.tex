@@ -1133,17 +1133,8 @@ the contract and decides whether to pay the seller or refund the buyer.
 Apart from the arbiter's decision to pay or to refund, the whole purchase process
 is governed by the smart contract.
 
-\autoref{solidity} shows a contract that
-implements the escrow agreement on the Ethereum blockchain.
-In Solidity, the functionality of a contract is encapsulated by a
-\textit{contract interface} which, similarly to a class in object-oriented programming
-(OOP), has a well-defined interface with public and private elements.
-Creating a contract on the blockchain instantiates the contract interface.
-Just like class instantiations in OOP, contracts on the blockchain are
-stateful objects, where the storage is persistent across contract function calls.
-
 \begin{figure}[h!]
-\begin{lstlisting}[language=Solidity,escapeinside={@}{@},numbers=right]{}
+\begin{lstlisting}[language=Solidity,escapeinside={@}{@},numbers=left]{}
 contract Escrow {
 @\label{lst:storevarbeg}@    address buyer;
     address seller;
@@ -1185,52 +1176,79 @@ contract Escrow {
 \label{solidity}
 \end{figure}
 
-Every variable declared as a member of a contract interface is
-a \emph{storage} variable. %% explaining storage variables here?
+\autoref{solidity} shows the Solidity implementation of the contract.
+In Solidity, the functionality of a smart contract is encapsulated into a
+\textit{contract interface}, which, analogously to a class in object oriented programming
+(OOP), has a well-defined interface with public and private elements.
+Creating a contract on the blockchain instantiates the contract interface.
+Just like class instantiations in OOP, contracts on the blockchain are
+stateful objects, where the storage is persistent across contract function calls.
+
+Every variables declared as a member of a contract interface is
+a storage variables.
 Lines \autoref{lst:storevarbeg}--\autoref{lst:storevarend} of \autoref{solidity}
 declare variables to store the addresses of the three parties
-involved in the agreement, as well as the amount of the purchase.
-The amount is stored in a 256-bit machine word, which is the
-word size of the EVM.
+involved in the agreement, as well as \textit{amount}.
+\textit{amount} serves two purposes, it stores
+the amount of the purchase and enforces the order
+which the contract operations must be invoked.
+It is stored in a 256-bit machine word, which is the
+native word size of the EVM.
 
 The constructor on lines \autoref{lst:constbeg}--\autoref{lst:constend}
 is run by the Ethereum platform to initialise the contract when it gets deployed.
 \textit{msg} is an environment variable carrying information
-about the Ethereum transaction that led to the contract invocation, including the address of the account that
+about the Ethereum transaction that led to the execution 
+of the contract, including the address of the account that
 sent the transaction \textit{msg.sender}.
 Solidity's built-in function \textit{require} throws an exception
 if the specified condition evaluates to false.
 When an exception is thrown, the EVM state is rolled back completely,
-with a single exception of the consumed gas.
-Here we use \textit{require} to ensure that the arbiter creates
-a escrow agreement with an amount greater than zero.
-%
-This condition is critical because \textit{addfund} (line \autoref{lst:addfundend})
-also expects \textit{amount} to be strictly positive before setting it to zero.
-This way it is guaranteed that the buyer can add
-a fund to the contract at most once.
-%funds expected to the contract once.
-Moreover, \textit{addfund} is annotated with the keyword \textit{payable} 
-indicating that this function is allowed to be invoked
+with the exception of the gas consumption.
+On line \ref{lst:constbeg}, we use \textit{require} to ensure that the arbiter creates
+an escrow agreement with an amount greater than zero.
+
+This condition is critical because, on line \autoref{lst:addfundend},
+\textit{addfund} also expects \textit{amount} to be strictly positive
+and before resetting it to zero.
+This way, we guarantee that the buyer can only add the
+funds expected to the contract once.
+\textit{addfund} is annotated with the \textit{payable} keyword,
+which indicates that this function is allowed to be invoked
 by an Ethereum transaction along with a non-zero amount of
 crypto-currency transfer.
-By default, all contract functions are not payable
-in order to prevent accidental loss of crypto-currency.
-%To prevent accidental loss of crypto-currency, by default
-%contract functions are not payable.
-Furthermore, the keyword \textit{public} indicates that
-the function shall be exported in the contract interface.
-%for contract users to call.
-%This involves adding the function to the abstract binary
-%interface (ABI) and implementing \emph{dispatch} code to jump
-%to this function.
-%
-%We describe the dispatcher for our contract in more detail at the end of this section.
+To prevent accidental loss of crypto-currency, by default
+contract functions are not payable.
+The \textit{public} qualifier indicates that
+the function must be exported in the contract interface
+for contract users to call.
+This involves adding the function to the abstract binary
+interface (ABI) and implementing some dispatch code to jump
+to the appropriate function.
+We describe the dispatcher further at the end of this section.
+Only the buyer can successfully invoke \textit{addfund} and
+the exact amount specified by the arbiter must be transferred
+along with the call.
 
-Generally, each public function in a contract gets assigned a unique hash.
-The Solidity compiler generates bytecode with a single entry point.
-However, at the beginning of the bytecode the compiler also attaches \textit{dispatcher} code 
-that inspects the first arguments
+\textit{refund} on lines \autoref{lst:refundbeg}--\autoref{lst:refundend}
+and \textit{pay} on lines \autoref{lst:paybeg}--\autoref{lst:payend}
+are both protected such that they must be called by the arbiter,
+after the buyer has placed the funds in the contract.
+The latter is enforced by checking that \textit{amount} is zero.
+They both invoke the \textit{selfdestruct} built-in function
+which transfers the totality of the funds held by the contract
+to the addressed passed as argument and destroys the smart
+contract.
+
+
+\paragraph{Dispatcher}
+
+When we compile a Solidity smart contract to EVM bytecode,
+the it is the compiler's job to implement the contract interface
+complying with the ABI.
+Each public function of a contract gets assigned a unique hash and
+the Solidity compiler produces EVM bytecode with a single entry point.
+At the beginning of the bytecode a \textit{dispatcher} is introduced that inspects the first arguments
 passed when the contract gets invoked, compares it with the function hashes and
 calls the appropriate function.
 The binary format for computing function hashes and packing arguments is standardised
@@ -1241,7 +1259,8 @@ contracts implemented using various EVM languages.
 %% This paragraph seems outdated 
 Since the contract abstraction is provided by the Solidity language,
 it is the job of the compiler to implement the dispatcher.
-This means that the code can only be verified at the level of bytecode,
+Hence the code is invisible to a Solidity developer and
+can only be verified at the level of bytecode,
 hence it is a great application to showcase our framework.
 In this case study we show how we specified and verified the
 dispatcher produced for the code in \autoref{solidity}.
