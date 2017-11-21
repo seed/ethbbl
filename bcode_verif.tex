@@ -1184,14 +1184,14 @@ Creating a contract on the blockchain instantiates the contract interface.
 Just like class instantiations in OOP, contracts on the blockchain are
 stateful objects, where the storage is persistent across contract function calls.
 
-Every variables declared as a member of a contract interface is
-a storage variables.
+Every variable declared as a member of a contract interface is
+a storage variable.
 Lines \autoref{lst:storevarbeg}--\autoref{lst:storevarend} of \autoref{solidity}
 declare variables to store the addresses of the three parties
 involved in the agreement, as well as \textit{amount}.
 \textit{amount} serves two purposes, it stores
 the amount of the purchase and enforces the order
-which the contract operations must be invoked.
+in which the contract operations must be invoked.
 It is stored in a 256-bit machine word, which is the
 native word size of the EVM.
 
@@ -1244,28 +1244,23 @@ contract.
 \paragraph{Dispatcher}
 
 When we compile a Solidity smart contract to EVM bytecode,
-the it is the compiler's job to implement the contract interface
-complying with the ABI.
-Each public function of a contract gets assigned a unique hash and
-the Solidity compiler produces EVM bytecode with a single entry point.
-At the beginning of the bytecode a \textit{dispatcher} is introduced that inspects the first arguments
-passed when the contract gets invoked, compares it with the function hashes and
-calls the appropriate function.
-The binary format for computing function hashes and packing arguments is standardised
-in an ABI (abstract binary interface), 
-enabling inter-operability between
-contracts implemented using various EVM languages.
+the compiler is expected to implement the contract interface
+such that it adheres to the ABI specification.
+The ABI specifies the signature of all the functions
+available for a user of the contract.
+The first argument passed to bytecode is the hash corresponding
+to the signature of the function to call.
+The piece of bytecode which compares the first argument
+and function hashes is called the \textit{dispatcher}.
+The dispatcher is also responsible for unpacking function
+arguments.
+The binary format for computing function hashes and
+packing arguments is standardised so that contract
+written in various EVM languages
+can interoperate without trouble.
+Since the dispatcher is produced by the compiler, it is
+invisible to a Solidity developer and must be verified at bytecode level.
 
-%% This paragraph seems outdated 
-Since the contract abstraction is provided by the Solidity language,
-it is the job of the compiler to implement the dispatcher.
-Hence the code is invisible to a Solidity developer and
-can only be verified at the level of bytecode,
-hence it is a great application to showcase our framework.
-In this case study we show how we specified and verified the
-dispatcher produced for the code in \autoref{solidity}.
-%
-%
 \subsection{Specification}
 \label{sec:spec}
 
