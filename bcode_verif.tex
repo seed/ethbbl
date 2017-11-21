@@ -84,6 +84,7 @@
 \newcommand{\gaspred}{\mathit{gas\mbox{-}pred}}
 \newcommand{\stackh}{\mathit{stack\mbox{-}height}}
 \newcommand{\stack}{\mathit{stack}}
+\newcommand{\storage}{\mathit{storage}}
 \newcommand{\instr}[1]{\mathtt{#1}}
 \newcommand{\pure}[1]{\langle#1\rangle}
 \newcommand{\hd}{\mathit{head}\:}
@@ -1213,6 +1214,8 @@ This condition is critical because, on line \autoref{lst:addfundend},
 before resetting it to zero.
 This way, we guarantee that the buyer can only add the
 funds expected to the contract once.
+Note that \textit{msg.value} is an environment variable
+storing the amount of Ether transfered as part of the transaction.
 \textit{addfund} is annotated with the \textit{payable} keyword,
 which indicates that this function is allowed to be invoked
 by an Ethereum transaction along with a non-zero amount of
@@ -1253,7 +1256,8 @@ to the signature of the function to call.
 The piece of bytecode which compares the first argument
 to function hashes is called the \textit{dispatcher}.
 The dispatcher is also responsible for unpacking function
-arguments.
+arguments and when no hash matches the first argument,
+the dispatcher throws an exception.
 The binary format for computing function hashes and
 packing arguments is standardised so that contracts
 written in various EVM languages
@@ -1267,17 +1271,26 @@ invisible to a Solidity developer and must be verified at bytecode level.
 \begin{figure}[h]
 \begin{lstlisting}[language=Isar]{}
 definition 
-  spec_Escrow :: address \<Rightarrow> address \<Rightarrow> address \<Rightarrow> address \<Rightarrow> 32 word \<Rightarrow> 256 word \<Rightarrow> contract_action
+  spec_Escrow :: [address, address, address, address, 32 word, 256 word] \<Rightarrow> contract_action
 where
-  spec_Escrow sender buyer seller arbiter amount hash v = 
- (if hash = addfund_hash \<and> sender = from \<and>  v = amount \<and> amount > 0 then
+  spec_Escrow sender buyer seller arbiter amount
+              hash value = 
+ (if hash = addfund_hash \<and> sender = buyer \<and>
+     value = amount \<and> amount > 0 then
     ContractReturn []
-  else if hash = refund_hash \<and> sender = owner \<and> v = 0 then
-    ContractSuicide from
-  else if hash = pay_hash \<and> sender = owner \<and> v = 0 then
-    ContractSuicide to
+  else if hash = refund_hash \<and> sender = arbiter \<and>
+          value = 0 \<and> amount = 0 then
+    ContractSuicide buyer
+  else if hash = pay_hash \<and> sender = arbiter \<and>
+          value = 0 \<and> amount = 0 then
+    ContractSuicide seller
   else
     ContractFail [ShouldNotHappen])
+
+definition
+  spec_amount :: [address, address, address, 256 word, 32 word] \<Rightarrow> 256 word
+  spec_amount sender buyer seller amount hash v =
+  (if hash = addfund_hash \<and> sender = buyer \<and> v = amount \<and> amount > 0 then 0 else amount)
 
 theorem verify_escrow:
  \<exists>r. \<models> [pc 0 \<and>* stack_height 0 \<and>*
@@ -1293,45 +1306,69 @@ theorem verify_escrow:
          (build_blocks bytecode_Escrow)
        [action (spec_Escrow sender buyer seller
                        arbiter amount arg v) \<and>*
-        storage 3 (return_amount sender buyer
+        storage 0 (ucast buyer) \<and>*
+        storage 1 (ucast seller) \<and>*
+        storage 2 (ucast arbiter) \<and>*
+        storage 3 (spec_amount sender buyer
                        seller amount arg v) \<and>*
         r]
 \end{lstlisting}
-\caption{Specification and functional correctness theorem of MyContract.}
+\caption{Specification and functional correctness theorem of the Escrow smart contract.}
 \label{spec}
 \end{figure}
 
-\autoref{spec} shows our handwritten specification of \textit{MyContract} in Isabelle/HOL.
-The Solidity compiler can print a contract ABI description which includes the
-signatures of all public functions as well as their hashes.
-We used this feature to obtain \textit{dispatch1\_hash} and \textit{dispatch2\_hash}.
-Once one gets used to the fact that to verify low-level bytecode one also needs to specify  
-many small low-level technical details,  
-the rest of the specification becomes straightforward.
-The argument passed to \textit{spec\_MyContract} corresponds to the first 32-bit
-machine word passed as an argument when the contract gets invoked.
-\textit{ContractReturn} and \textit{ContractFail} specify the action
-resulting from the contract execution.
-Upon successful execution, contracts return a byte array,
-hence we use \textit{word\_rsplit} to convert a word into a list of bytes
-encoded in big-endian format.
-When none of the function hashes match the first contract argument,
-the dispatcher hits an $\instr{INVALID}$\footnote{$\instr{INVALID}$ is the mnemonic
-of an EVM opcode intentionally kept undefined in order to raise an exception.} instruction,
-which corresponds to raising a \textit{ShouldNotHappen} exception
-in our bytecode semantics.
+\autoref{spec} shows our handwritten specification of \textit{Escrow} in Isabelle/HOL
+including the functional correctness theorem we proved.
+\textit{spec\_Escrow} is a definition used in the theorem to specify
+the return value expected by the contract.
+The arguments have the same names as the storage variables or the environment
+variables they carry the value for, except for \textit{hash} which corresponds
+to the first 32-bit word passed as an argument when the contract gets invoked.
 
-The theorem at the bottom of \autoref{spec} states the input/output 
-property we proved. It has the form of Hoare triples introduced in Section~\ref{sec:corr}.
+We obtain the constants \textit{addfund\_hash}, \textit{pay\_hash} and
+\textit{refund\_hash} from the ABI information generated by the Solidity compiler.
+At a high-level, the specification says that the contract can
+terminate in one of these four conditions:
+(1) the contract only return successfully when \textit{addfund}
+is invoked with the right amount by the buyer;
+all the funds will be fully returned via self-destruction of
+the contract to either, (2) the buyer,
+(3) or the seller;
+(4) any other input leads to an exception denoted by \textit{ContractFail}.
+
+Note that the amount transferred via \textit{ContractSuicide} corresponds
+to the balance of the contract stored in the Ethereum global state and
+is unrelated to the value stored in the \textit{amount} storage variable
+when the contract is destroyed.
+
+In addition to specifying the return action of the contract, we want
+to guarantee that \textit{addfund} can only be called once 
+This is done with the \textit{spec\_amount} definition which
+is used in the main theorem to specify the value of the
+\textit{amount} storage variable.
+It says that when the precondition for \textit{addfund} to
+return success is met, \textit{amount} is set to zero,
+thus protecting against further invocations of \textit{addfund}.
+
+
+Finally, the theorem at the bottom of \autoref{spec} states the input/output 
+property we proved.
+It has the form of Hoare triples introduced in Section~\ref{sec:corr}.
 The precondition initialises the machine state, e.g. program counter is $0$,
-stack is empty, etc. Importantly, \textit{arg} is the 32-bit word contract
-argument used by the dispatcher code as well as the specification,
-and $\gaspred$ specifies the gas budget for the execution.
-\textit{bytecode\_MyContract} is a list of deeply embedded EVM
+stack is empty, etc.
+Importantly, \textit{arg} is the 32-bit word contract
+argument used by the dispatcher code as well as the specification.
+We obtain it by converting the byte string of input data into a word
+using \textit{word\_rsplit}.
+$\gaspred$ specifies the gas budget for the execution and $\storage$
+binds storage entries to the free variables \textit{buyer}, \textit{seller},
+\textit{arbiter}, \textit{amount}.
+\textit{bytecode\_Escrow} is a list of deeply embedded EVM
 instructions which we convert into a list of basic blocks with $\bblocks$.
 In the postcondition, we are only interested in the resulting action
-satisfying \textit{spec\_MyContract}, hence we quantify existentially
-on the rest of the state to leave it unspecified.
+satisfying \textit{spec\_Escrow}, storage variables being unchanged
+and \textit{amount} corresponding to \textit{spec\_amount},
+hence we quantify existentially on the rest of the state to leave it unspecified.
 
 \subsection{Verification}
 
