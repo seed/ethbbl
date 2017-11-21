@@ -125,7 +125,7 @@
 \definecolor{purple}{rgb}{0.65, 0.12, 0.82}
 
 \lstdefinelanguage{Solidity}{
-  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, returns, contract, public},
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break, returns, contract, public,payable},
   keywordstyle=\color{blue}\bfseries,
   keywordstyle=[2]\color{black}\bfseries,
   keywordstyle=[3]\color{purple}\bfseries,
@@ -1109,6 +1109,29 @@ Our development provides the ground work for full functional correctness
 of Ethereum smart contracts.
 These contracts are typically implemented in a high-level
 language called Solidity.
+This case study presents our development of an escrow agreement smart contract
+in Solidity.
+Section \ref{sec:design} describes the design and Solidity implementation of
+the contract; Section \ref{sec:spec} its specification; Section \ref{sec:verif}
+its verification; and Section \ref{sec:auto} how we automated
+the proof.
+
+\subsection{Design \& Implementation}
+\label{sec:design}
+
+We designed an escrow agreement smart contract for the Ethereum blockchain.
+In this agreement, a \textit{buyer} wants to purchase a good from a \textit{seller}.
+Since the buyer and the seller do not trust each other, they rely on an
+escrow agent --- an \textit{arbiter} they both trust --- to achieve
+a safe transaction despite their mutual distrust.
+In this scenario, the arbiter creates the contract specifying the
+expected amount, waits for the buyer to transfer the money to
+the contract and decides whether to pay the seller or refund the buyer.
+Apart from the arbiter's decision to pay or refund, the whole process
+is automated by the smart contract.
+
+\autoref{solidity} shows an example of a Solidity smart contract that
+implements an escrow agreement on the Ethereum blockchain.
 In Solidity, the functionality of a smart contract is encapsulated into a
 \textit{contract interface}, which, analogously to a class in object oriented programming
 (OOP), has a well-defined interface with public and private elements.
@@ -1127,30 +1150,30 @@ contract Escrow {
 @\label{lst:constbeg}@    function Escrow(address _buyer,
                     address _seller,
                     uint256 _amount) public {
-            require (amount > 0);
+@\label{lst:constbeg}@            require (amount > 0);
             buyer = _buyer;
             seller = _seller;
             arbiter = msg.sender;
-            amount = _amount;
-@\label{lst:constend}@     }
+@\label{lst:constend}@            amount = _amount;
+    }
 
     function addfund() payable public  {
-        require (amount > 0 &&
+@\label{lst:addfundbeg}@        require (amount > 0 &&
                  msg.value == amount &&
                  msg.sender == buyer);
-        amount = 0;
+@\label{lst:addfundend}@        amount = 0;
     }
 
     function refund() public {
-        require (amount == 0 &&
+@\label{lst:refundbeg}@        require (amount == 0 &&
                  msg.sender == arbiter);
-        selfdestruct(buyer);
+@\label{lst:refundend}@        selfdestruct(buyer);
     }
 
     function pay() public {
-        require (amount == 0 &&
+@\label{lst:paybeg}@        require (amount == 0 &&
                  msg.sender == arbiter);
-        selfdestruct(seller);
+@\label{lst:payend}@        selfdestruct(seller);
     }
 }
 \end{lstlisting}
@@ -1159,18 +1182,6 @@ contract Escrow {
 \label{solidity}
 \end{figure}
 
-\autoref{solidity} shows an example of a Solidity smart contract that
-implements an escrow agreement on the Ethereum blockchain.
-In this agreement, a \textit{buyer} wants to purchase a good from a \textit{seller}.
-Since the buyer and the seller do not trust each other, they rely on an
-escrow agent --- an \textit{arbiter} they both trust --- to achieve
-a safe transaction despite their mutual distrust.
-In this scenario, the arbiter creates the contract specifying the
-expected amount, waits for the buyer to transfer the money to
-the contract and decides whether to pay the seller or refund the buyer.
-Apart from the arbiter's decision to pay or refund, the whole process
-is automated by the smart contract.
-
 Every variables declared as a member of a contract interface is
 a storage variables.
 Lines \autoref{lst:storevarbeg}--\autoref{lst:storevarend} of \autoref{solidity}
@@ -1178,15 +1189,39 @@ declare variables to store the addresses of the three parties
 involved in the agreement, as well as the amount of the purchase.
 The amount is stored in a 256-bit machine word, which is the
 word size of the EVM.
-The constructor on \autoref{lst:constbeg}--\autoref{lst:constend}
-initialises the contract and is run by the Ethereum platform when
-the contract is deployed.
+
+The constructor on lines \autoref{lst:constbeg}--\autoref{lst:constend}
+is run by the Ethereum platform when the contract is deployed
+to initialise the contract.
+\textit{msg} is an environment variable carrying information
+about the Ethereum transaction that lead to the execution 
+of the contract, including the address of the account that
+sent the transaction \textit{msg.sender}.
 Solidity's built-in function \textit{require} throws an exception
-if the condition passed as argument evaluate to false.
-When an exception is thrown, the complete EVM state is rolled back,
+if the condition passed as argument evaluates to false.
+When an exception is thrown, the EVM state is rolled back completely,
 with the exception of the gas consumption.
-We use \textit{require} to ensure that the arbiter creates
+Here, we use \textit{require} to ensure that the arbiter creates
 a escrow agreement with an amount greater than zero.
+
+This condition is critical because, on line \autoref{lst:addfundend},
+\textit{addfund} also expects \textit{amount} to be strictly positive
+and before resetting it to zero.
+This way, we guarantee that the buyer can only add the
+funds expected to the contract once.
+\textit{addfund} is annotated with the \textit{payable} keyword,
+which indicates that this function is allowed to be invoked
+by an Ethereum transaction along with a non-zero amount of
+crypto-currency transfer.
+To prevent accidental loss of crypto-currency, by default
+contract functions are not payable.
+The \textit{public} qualifier indicates that
+the function must be exported in the contract interface
+for contract users to call.
+This involves adding the function to the abstract binary
+interface (ABI) and implementing some dispatch code to jump
+to the appropriate function.
+We describe the dispatcher further at the end of this section.
 
 Each public function of a contract gets assigned a unique hash and
 the Solidity compiler produces EVM bytecode with a single entry point.
@@ -1206,6 +1241,7 @@ dispatcher produced for the code in \autoref{solidity}.
 %
 
 \subsection{Specification}
+\label{sec:spec}
 
 \begin{figure}[h]
 \begin{lstlisting}[language=Isar]{}
@@ -1278,6 +1314,7 @@ on the rest of the state to leave it unspecified.
 
 \subsection{Verification}
 
+\label{sec:verif}
 
 Smart contract bytecode is divided into two sections: the pre-loader and
 runtime code.
