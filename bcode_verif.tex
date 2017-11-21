@@ -702,13 +702,13 @@ will be defined inductively in the following three sections:
 \[
 \begin{array}{l l}
 \ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q} & 
-\mbox{--- at the program level}\\
+\mbox{-- at the program level}\\
 \\
 \ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} &
-\mbox{--- at the block level}\\
+\mbox{-- at the block level}\\
 \\
 \ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} &
-\mbox{--- at the instruction level}
+\mbox{-- at the instruction level}
 \end{array}
 \]
 where $P, Q$ are state predicates, $x$ is an instruction, $\mathit{xs}$ is a list of instructions,
@@ -729,7 +729,7 @@ each block type.
 That is, a $\mathit{Terminal}$-block is simply passed to the level of
 blocks as we do not need to look at any other block after this has been processed.  
 
-The rule for a $\mathit{Next}$-block is different in this sense:
+The rule for a $\mathit{Next}$-block is different in this respect:
 \[
 \begin{array}{l l}
 \mbox{(ii)} & \RuleC{\begin{array}{l} \ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{\pc\;m \sconj R} \\
