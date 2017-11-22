@@ -1184,11 +1184,12 @@ In Solidity, the functionality of a smart contract is encapsulated into a
 \textit{contract interface} which, similarly to a class in object-oriented programming
 (OOP), has a well-defined interface with public and private elements.
 Creating a contract on the blockchain instantiates the contract interface.
-Just like class instantiations in OOP, contracts on the blockchain are
-stateful objects, where the storage is persistent across contract function calls.
+Just like class instantiations in OOP, contracts are stateful objects
+where storage variables are stored on the blockchain.
 
 Every variable declared as a member of a contract interface is
-a storage variable.
+a storage variable, meaning that its value persist across multiple
+invocations of the contract.
 Lines \autoref{lst:storevarbeg}--\autoref{lst:storevarend} in \autoref{solidity}
 declare variables to store the addresses of the three parties
 involved in the agreement, as well as \textit{amount} that serves two purposes.
@@ -1426,7 +1427,7 @@ statement means that we have to provide a witness for the
 unspecified part of the state.
 The witness is automatically constructed by running our
 proof automation tactics, however, for this to work the
-postcondition must remain a unification variable until
+existential variable must remain a unification variable until
 we reach a \textit{Terminal} basic block.
 The \textit{Terminal} block rule replaces the
 unification variable with a concrete value,
