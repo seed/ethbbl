@@ -1137,7 +1137,7 @@ Apart from the arbiter's decision to pay or to refund, the purchase process
 is governed by the smart contract.
 
 \begin{figure}[h!]
-\begin{lstlisting}[language=Solidity,escapeinside={@}{@},numbers=left]{}
+\begin{lstlisting}[language=Solidity,escapeinside={@}{@},numbers=right]{}
 contract Escrow {
 @\label{lst:storevarbeg}@    address buyer;
     address seller;
@@ -1202,7 +1202,7 @@ in which the contract operations must be invoked.
 %are in practice also stored in 256-bit machine words.
 
 The constructor part (lines \autoref{lst:constbeg}--\autoref{lst:constend})
-is run by the Ethereum platform to initialise the contract when it gets deployed.
+is run by the Ether-eum platform to initialise the contract when it gets deployed.
 The environment variable \textit{msg} carries the information
 about the Ethereum transaction that led to a contract deployment, 
 including the address of the account that
@@ -1213,16 +1213,17 @@ In this case the transaction is basically rolled back,
 making only one exception to the amount of gas consumed so far, which
 is retained. 
 
-On line \ref{lst:constbeg}, we use \textit{require} to ensure that the arbiter creates
+We use \textit{require} (line \ref{lst:constbeg}) to ensure that the arbiter creates
 an escrow agreement with \textit{amount} greater than zero.
 This condition is critical because \textit{addfund} (line \autoref{lst:addfundend})
 expects \textit{amount} to be strictly positive,
 before setting it to zero.
 This way we guarantee that the buyer can only add fund to the contract once.
 Note that \textit{msg.value} is an environment variable
-storing the amount of Ether transferred as part of the transaction.
+telling us how much Ether has been transferred as part of the transaction.
+%storing the amount of Ether transferred as part of the transaction.
 
-Further, \textit{addfund} is annotated with the keyword \textit{payable},
+Further, \textit{addfund} is annotated as \textit{payable},
 which indicates that this function is allowed to be invoked
 by an Ethereum transaction along with a non-zero amount of
 Ether.
@@ -1234,20 +1235,22 @@ thus getting accessible for contract users.
 For the Solidity compiler this means adding the function to the abstract binary
 interface (ABI) and generating dispatch code to jump to this function within bytecode.
 %to the appropriate function.
-We describe the dispatcher further at the end of this section.
+We describe the dispatcher in more detail in the paragraph below. %further at the end of this section.
 
 Only the buyer can successfully invoke \textit{addfund} and
-the exact amount, as specified by the arbiter, must be transferred
+the exact amount (specified by the arbiter) must be transferred
 along with the invocation.
 %
-Similarly, only the arbiter has been entitled to invoke the functions \textit{refund} (lines \autoref{lst:refundbeg}--\autoref{lst:refundend})
+Similarly, only the arbiter has been entitled to successfully invoke 
+the functions \textit{refund} (lines \autoref{lst:refundbeg}--\autoref{lst:refundend})
 and \textit{pay} (lines \autoref{lst:paybeg}--\autoref{lst:payend}). 
-Moreover, the \textit{amount} is required to be zero to this end, i.e.
+Moreover, in both cases \textit{amount} is required to be zero, i.e.
 the buyer must already have placed his fund in the contract. 
 %are both protected such that they must be called by the arbiter,
 %and so, after the buyer has placed the funds in the contract.
 %The latter is enforced by checking that \textit{amount} is zero.
-Both functions make use of the \textit{selfdestruct} built-in mechanism,
+Both functions make use of the EVM \textit{selfdestruct} % built-in ?
+mechanism,
 which transfers the totality of the funds held by the contract
 to the address passed as argument, and subsequently destroys the contract.
 %
