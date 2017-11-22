@@ -1289,8 +1289,8 @@ definition
                   256 word]
                  \<Rightarrow> contract_action
 where
-  spec_Escrow sender buyer seller arbiter amount
-              hash value = 
+  spec_Escrow sender buyer seller arbiter
+              amount hash value =
  (if hash = addfund_hash \<and> sender = buyer \<and>
      value = amount \<and> amount > 0 then
     ContractReturn []
@@ -1310,7 +1310,10 @@ definition
   spec_amount sender buyer seller amount
               hash value =
   (if hash = addfund_hash \<and> sender = buyer \<and>
-      value = amount \<and> amount > 0 then 0 else amount)
+      value = amount \<and> amount > 0 then
+     0
+   else
+     amount)
 \end{lstlisting}
 \caption{Specification of a safety property of the Escrow smart contract.}
 \label{spec}
@@ -1365,12 +1368,12 @@ theorem verify_escrow:
         ... ]
          (build_blocks bytecode_Escrow)
        [action (spec_Escrow sender buyer seller
-                       arbiter amount hash v) \<and>*
+                  arbiter amount hash v) \<and>*
         storage 0 (ucast buyer) \<and>*
         storage 1 (ucast seller) \<and>*
         storage 2 (ucast arbiter) \<and>*
         storage 3 (spec_amount sender buyer
-                       seller amount hash v) \<and>*
+                     seller amount hash v) \<and>*
         r]
 \end{lstlisting}
 \caption{The correctness statement in our program logic.}  
