@@ -1351,7 +1351,7 @@ thus protecting against further invocations of \textit{addfund}.
 \begin{lstlisting}[language=Isar]{}
 theorem verify_escrow:
  \<exists>r. \<models> [pc 0 \<and>* stack_height 0 \<and>*
-        sent_data (word_rsplit arg) \<and>*
+        sent_data (word_rsplit hash) \<and>*
         sent_value v \<and>* caller sender \<and>*
         memory_usage 0 \<and>* continuing \<and>*
         gas_pred 100000 \<and>* 
@@ -1362,12 +1362,12 @@ theorem verify_escrow:
         ... ]
          (build_blocks bytecode_Escrow)
        [action (spec_Escrow sender buyer seller
-                       arbiter amount arg v) \<and>*
+                       arbiter amount hash v) \<and>*
         storage 0 (ucast buyer) \<and>*
         storage 1 (ucast seller) \<and>*
         storage 2 (ucast arbiter) \<and>*
         storage 3 (spec_amount sender buyer
-                       seller amount arg v) \<and>*
+                       seller amount hash v) \<and>*
         r]
 \end{lstlisting}
 \caption{Functional correctness theorem of the Escrow smart contract.}
@@ -1380,18 +1380,18 @@ property we proved.
 It has the form of Hoare triples introduced in Section~\ref{sec:corr}.
 The precondition initialises the machine state, e.g. program counter is $0$,
 stack is empty, etc.
-Importantly, \textit{arg} is the 32-bit word contract
-argument used by the dispatcher code as well as the specification
+Importantly, \textit{hash} is the 32-bit word contract
+argument used by the dispatcher code as well as the specification.
 We convert it into a string of bytes to form the input data of the contract
 using \textit{word\_rsplit}.
 $\gaspred$ specifies the gas budget for the execution and $\storage$
 binds storage entries to the free variables \textit{buyer}, \textit{seller},
-\textit{arbiter} and \textit{amount} initialised by the constructor.
+\textit{arbiter} and \textit{amount}, initialised by the constructor.
 \textit{bytecode\_Escrow} is a list of deeply embedded EVM
 instructions which we convert into a list of basic blocks with $\bblocks$.
 In the postcondition, we are only interested in the resulting action
 satisfying \textit{spec\_Escrow}, storage variables being unchanged
-and \textit{amount} corresponding to \textit{spec\_amount},
+and \textit{amount} corresponding to \textit{spec\_amount};
 hence we quantify existentially on the rest of the state \textit{r}
 to leave it unspecified.
 
