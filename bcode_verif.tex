@@ -162,34 +162,36 @@
         theory,end,types,datatype,consts,defs,primrec,
         syntax,translations,apply,definition,fun,function, lemma,theorem,corollary,
         done,sorry,goal,proof,fixed variables, inductive, where, case,of,if,then,else,method},
-        sensitive=true,
-        comment=[s]{(*}{*)},
-        commentstyle=\color{purple}\ttfamily,
-        keywordstyle=\color{blue}\bfseries,
-        literate=
-                {\\<not>}{{$\<not>$}}1 {\\<times>}{{$\<times>$}}1                 
-                {\\<Rightarrow>}{{$\Rightarrow$}}1%
-                {\\<models>}{{$\models$}}1%
-                {\\<equiv>}{{$\equiv$}}1 {~=}{{$\not=$}}1                         
-                {\\<rightleftharpoons>}
-                        {{$\rightleftharpoons$}}1
-                {\\<exists>}{{$\exists$}}1
-                {\\<parallel>}{{$\parallel$}}1
-                {\\<Longrightarrow>}
-                        {{$\Longrightarrow$}}1
-                 {\\<lbrakk>}{{$\lsemantics$}}1
-                {\\<rbrakk>}{{$\rsemantics$}}1
-                {\\<longrightarrow>}
-                        {{$\longrightarrow$}}1
-                {\\<and>}{{$\land$}}1
-                {\\<or>}{{$\lor$}}1
-                {\\<bigwedge>}{{$\bigwedge$}}1
-                {\\<forall>}{{$\forall$}}1
-                {\\<langle>}{{$\langle$}}1
-                {\\<rangle>}{{$\rangle$}}1
-                {\\<union>}{{$\cup$}}1
-                {ü}{"u}1 {ä}{"a}1 {ö}{"o}1
-                {Ü}{"U}1 {Ä}{"A}1 {Ö}{"O}1 {ß}{{ss}}1
+  sensitive=true,
+  basicstyle=\footnotesize\ttfamily,
+  comment=[s]{(*}{*)},
+  commentstyle=\color{purple}\ttfamily,
+  keywordstyle=\color{blue}\bfseries,
+  keywordstyle=[3]\color{black}\sffamily\slshape,
+  literate=
+  	{\\<not>}{{$\<not>$}}1 {\\<times>}{{$\<times>$}}1
+  	{\\<Rightarrow>}{{$\Rightarrow$}}1%
+  	{\\<models>}{{$\models$}}1%
+  	{\\<equiv>}{{$\equiv$}}1 {~=}{{$\not=$}}1
+  	{\\<rightleftharpoons>}
+  		{{$\rightleftharpoons$}}1
+  	{\\<exists>}{{$\exists$}}1
+  	{\\<parallel>}{{$\parallel$}}1
+  	{\\<Longrightarrow>}
+  		{{$\Longrightarrow$}}1
+  	 {\\<lbrakk>}{{$\lsemantics$}}1
+  	{\\<rbrakk>}{{$\rsemantics$}}1
+  	{\\<longrightarrow>}
+  		{{$\longrightarrow$}}1
+  	{\\<and>}{{$\land$}}1
+  	{\\<or>}{{$\lor$}}1
+  	{\\<bigwedge>}{{$\bigwedge$}}1
+  	{\\<forall>}{{$\forall$}}1
+  	{\\<langle>}{{$\langle$}}1
+  	{\\<rangle>}{{$\rangle$}}1
+  	{\\<union>}{{$\cup$}}1
+  	{ü}{"u}1 {ä}{"a}1 {ö}{"o}1
+  	{Ü}{"U}1 {Ä}{"A}1 {Ö}{"O}1 {ß}{{ss}}1
   }
 
 
@@ -1281,7 +1283,7 @@ the bytecode level.
 \label{sec:spec}
 
 \begin{figure}[h]
-\begin{lstlisting}[language=Isar]{}
+\begin{lstlisting}[language=Isar,keywords={[3]{addfund\_hash,pay\_hash,refund\_hash,}}]{} 
 definition 
   spec_Escrow :: [address, address, address,
                   address, 256 word, 32 word,
@@ -1355,7 +1357,7 @@ return successfully is met, \textit{amount} is set to zero,
 thus protecting against further invocations of \textit{addfund}.
 
 \begin{figure}[h]
-\begin{lstlisting}[language=Isar]{}
+\begin{lstlisting}[language=Isar,keywords={[3]{hash,sender,buyer,seller,arbiter,amount,v}}]{}
 theorem verify_escrow:
  \<exists>r. \<models> [pc 0 \<and>* stack_height 0 \<and>*
         sent_data (word_rsplit hash) \<and>*
