@@ -1181,31 +1181,30 @@ contract Escrow {
 
 \autoref{solidity} shows our implementation of the contract.
 In Solidity, the functionality of a smart contract is encapsulated into a
-\textit{contract interface} which, similarly to a class in object-oriented programming
-(OOP), has a well-defined interface with public and private elements.
+\textit{contract interface} which has a well-defined interface with public and private elements, 
+similarly to a class in object-oriented programming (OOP).
 Creating a contract on the blockchain instantiates the contract interface.
 Just like class instantiations in OOP, contracts are stateful objects
-where storage variables are stored on the blockchain.
+where \emph{storage variables} are stored on the blockchain.
 
 Every variable declared as a member of a contract interface is
-a storage variable, meaning that its value is stored on the blockchain 
-and hence persists across multiple invocations of the contract.
+a storage variable, and hence persists across multiple invocations of the contract.
 Lines \autoref{lst:storevarbeg}--\autoref{lst:storevarend} in \autoref{solidity}
-declare variables to store the addresses of the three parties
+declare variables carrying blockchain addresses of the three parties
 involved in the agreement, as well as \textit{amount} that serves two purposes.
 It not only stores
 the amount of Ether for the purchase, but also enforces the order
 in which the contract operations must be invoked.
-It is stored in a 256-bit machine word, which is the
-native word size of the EVM.
 %%%% Is this important somehow?
+%It is stored in a 256-bit machine word, which is the
+%native word size of the EVM.
 %For this reason, Ethereum addresses that are 160-bit long
 %are in practice also stored in 256-bit machine words.
 
-The constructor part on lines \autoref{lst:constbeg}--\autoref{lst:constend}
+The constructor part (lines \autoref{lst:constbeg}--\autoref{lst:constend})
 is run by the Ethereum platform to initialise the contract when it gets deployed.
 The environment variable \textit{msg} carries the information
-about the Ethereum transaction that led to the contract deployment, 
+about the Ethereum transaction that led to a contract deployment, 
 including the address of the account that
 sent the transaction (\textit{msg.sender}).
 Solidity's built-in function \textit{require} throws an exception
