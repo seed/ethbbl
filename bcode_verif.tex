@@ -1308,35 +1308,14 @@ definition
               hash value =
   (if hash = addfund_hash \<and> sender = buyer \<and>
       value = amount \<and> amount > 0 then 0 else amount)
-
-theorem verify_escrow:
- \<exists>r. \<models> [pc 0 \<and>* stack_height 0 \<and>*
-        sent_data (word_rsplit arg) \<and>*
-        sent_value v \<and>* caller sender \<and>*
-        memory_usage 0 \<and>* continuing \<and>*
-        gas_pred 1000 \<and>* 
-        storage 0 (ucast buyer) \<and>*
-        storage 1 (ucast seller) \<and>*
-        storage 2 (ucast arbiter) \<and>*
-        storage 3 (ucast amount) \<and>*
-        ... ]
-         (build_blocks bytecode_Escrow)
-       [action (spec_Escrow sender buyer seller
-                       arbiter amount arg v) \<and>*
-        storage 0 (ucast buyer) \<and>*
-        storage 1 (ucast seller) \<and>*
-        storage 2 (ucast arbiter) \<and>*
-        storage 3 (spec_amount sender buyer
-                       seller amount arg v) \<and>*
-        r]
 \end{lstlisting}
-\caption{Specification and functional correctness theorem of the Escrow smart contract.}
+\caption{Specification of the Escrow smart contract.}
 \label{spec}
 \end{figure}
 
 \autoref{spec} shows our handwritten specification of \textit{Escrow} in Isabelle/HOL,
 including the functional correctness theorem we proved.
-\textit{spec\_Escrow} is a definition used in the main theorem to specify
+\textit{spec\_Escrow} is a definition used in the main theorem in \autoref{theorem} to specify
 the return value expected by the contract.
 The arguments have the same names as the storage variables or the environment
 variables they carry the value for, except for \textit{hash} which corresponds
@@ -1368,19 +1347,46 @@ It says that when the precondition for \textit{addfund} to
 return successfully is met, \textit{amount} is set to zero,
 thus protecting against further invocations of \textit{addfund}.
 
+\begin{figure}[h]
+\begin{lstlisting}[language=Isar]{}
+theorem verify_escrow:
+ \<exists>r. \<models> [pc 0 \<and>* stack_height 0 \<and>*
+        sent_data (word_rsplit arg) \<and>*
+        sent_value v \<and>* caller sender \<and>*
+        memory_usage 0 \<and>* continuing \<and>*
+        gas_pred 100000 \<and>* 
+        storage 0 (ucast buyer) \<and>*
+        storage 1 (ucast seller) \<and>*
+        storage 2 (ucast arbiter) \<and>*
+        storage 3 (ucast amount) \<and>*
+        ... ]
+         (build_blocks bytecode_Escrow)
+       [action (spec_Escrow sender buyer seller
+                       arbiter amount arg v) \<and>*
+        storage 0 (ucast buyer) \<and>*
+        storage 1 (ucast seller) \<and>*
+        storage 2 (ucast arbiter) \<and>*
+        storage 3 (spec_amount sender buyer
+                       seller amount arg v) \<and>*
+        r]
+\end{lstlisting}
+\caption{Functional correctness theorem of the Escrow smart contract.}
+\label{theorem}
+\end{figure}
 
-Finally, the theorem at the bottom of \autoref{spec} states the input/output 
+
+Finally, the main theorem in \autoref{theorem} states the input/output 
 property we proved.
 It has the form of Hoare triples introduced in Section~\ref{sec:corr}.
 The precondition initialises the machine state, e.g. program counter is $0$,
 stack is empty, etc.
 Importantly, \textit{arg} is the 32-bit word contract
-argument used by the dispatcher code as well as the specification.
-We obtain it by converting the byte string of input data into a word
+argument used by the dispatcher code as well as the specification
+We convert it into a string of bytes to form the input data of the contract
 using \textit{word\_rsplit}.
 $\gaspred$ specifies the gas budget for the execution and $\storage$
 binds storage entries to the free variables \textit{buyer}, \textit{seller},
-\textit{arbiter} and \textit{amount}.
+\textit{arbiter} and \textit{amount} initialised by the constructor.
 \textit{bytecode\_Escrow} is a list of deeply embedded EVM
 instructions which we convert into a list of basic blocks with $\bblocks$.
 In the postcondition, we are only interested in the resulting action
