@@ -1210,16 +1210,15 @@ sent the transaction (\textit{msg.sender}).
 Solidity's built-in function \textit{require} throws an exception
 if the specified condition evaluates to false.
 In this case the transaction is basically rolled back, 
-making only one exception with the amount of gas consumed so far, which
+making only one exception to the amount of gas consumed so far, which
 is retained. 
 
 On line \ref{lst:constbeg}, we use \textit{require} to ensure that the arbiter creates
-an escrow agreement with an amount greater than zero.
+an escrow agreement with \textit{amount} greater than zero.
 This condition is critical because \textit{addfund} (line \autoref{lst:addfundend})
 expects \textit{amount} to be strictly positive,
 before setting it to zero.
-This way we guarantee that the buyer can only add the
-funds expected to the contract once.
+This way we guarantee that the buyer can only add fund to the contract once.
 Note that \textit{msg.value} is an environment variable
 storing the amount of Ether transferred as part of the transaction.
 
