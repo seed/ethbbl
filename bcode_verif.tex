@@ -1205,11 +1205,11 @@ is run by the Ethereum platform to initialise the contract when it gets deployed
 The environment variable \textit{msg} carries the information
 about the Ethereum transaction that led to the contract deployment, 
 including the address of the account that
-sent the transaction \textit{msg.sender}.
+sent the transaction (\textit{msg.sender}).
 Solidity's built-in function \textit{require} throws an exception
 if the specified condition evaluates to false.
 In this case the transaction is basically rolled back, 
-making exception only to the amount of gas consumed so far which
+making only one exception with the amount of gas consumed so far which
 is retained. 
 
 On line \ref{lst:constbeg}, we use \textit{require} to ensure that the arbiter creates
