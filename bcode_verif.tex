@@ -1124,13 +1124,13 @@ to maximize proof automation.
 \label{sec:design}
 %
 We designed an escrow agreement smart contract for the Ethereum blockchain.
-In our scenario, a \textit{buyer} wants to purchase a good from a \textit{seller}
+In our scenario, a \textit{buyer} wants to purchase a good from a \textit{seller},
 but there is no particular reason to assume that they trust each other.
 To this end both parties rely on an
 escrow agent: an \textit{arbiter} they both trust. 
 %% not sure what the commented sentence states and if we need it: 
 %--- to achieve a safe transaction despite their potential mutual distrust.
-In this agreement, the arbiter creates the contract specifying the
+In this agreement the arbiter creates the contract specifying the
 expected amount of Ether (the Ethereum crypto-currency), waits for the buyer to transfer the money to
 the contract and decides whether to pay the seller or refund the buyer.
 Apart from the arbiter's decision to pay or to refund, the purchase process
@@ -1254,7 +1254,7 @@ mechanism,
 which transfers the totality of the funds held by the contract
 to the address passed as argument, and subsequently destroys the contract.
 %
-\paragraph{Dispatcher}
+\paragraph{Dispatcher.}
 %
 When we compile a Solidity smart contract to EVM bytecode,
 the compiler generates the contract interface
@@ -1264,7 +1264,7 @@ available for a user of the contract.
 The bytecode has single entry point (the first instruction),
 and is passed a byte string as input, where the
 first 32-bit word corresponds to a function identifier.
-The identifier is a hash of the function signature
+This identifier is a hash of the function signature
 identifying which function of the contract must be invoked.
 The piece of bytecode which compares the function identifier
 to function hashes is called the \textit{dispatcher}.
@@ -1275,10 +1275,9 @@ The binary format for computing function hashes and
 packing arguments is standardised so that contracts
 written in various EVM languages can interoperate without
 trouble.
-Since the dispatcher is produced by the compiler, it is
-invisible to a Solidity developer and must be verified at
-bytecode level.
-
+Since dispatcher code is added by the compiler, it can only be verified at
+the bytecode level.
+%
 \subsection{Specification}
 \label{sec:spec}
 
@@ -1382,8 +1381,7 @@ theorem verify_escrow:
 %\caption{Functional correctness theorem of the Escrow smart contract.}
 \label{theorem}
 \end{figure}
-
-Finally, the main theorem in \autoref{theorem} states the input/output 
+The main theorem, shown in \autoref{theorem}, states the input/output 
 property we proved.
 It has the form of Hoare triples introduced in Section~\ref{sec:corr}.
 The precondition initialises the machine state, e.g. program counter is $0$,
@@ -1394,17 +1392,29 @@ We convert it into a string of bytes to form the input data of the contract
 using \textit{word\_rsplit}.
 $\gaspred$ specifies the gas budget for the execution and $\storage$
 binds storage entries to the free variables \textit{buyer}, \textit{seller},
-\textit{arbiter} and \textit{amount}, initialised by the constructor.
-Using \textit{ucast}, we convert 160-bit words representing Ethereum
-addresses into the storage unit, which is 256-bit word.
-\textit{bytecode\_Escrow} is a list of deeply embedded EVM
-instructions which we convert into a list of basic blocks with $\bblocks$.
-In the postcondition, we are only interested in the resulting action
-satisfying \textit{spec\_Escrow}, storage variables being unchanged
-and \textit{amount} corresponding to \textit{spec\_amount};
-hence we quantify existentially on the rest of the state \textit{r}
-to leave it unspecified.
+\textit{arbiter} and \textit{amount}. %, initialised by the constructor.
+Using \textit{ucast} we convert 160-bit words, representing Ethereum
+addresses, into the storage unit, i.e. 256-bit word.
+The constant \textit{bytecode\_Escrow} denotes
+the actual bytecode of the contract
+ %a list of deeply embedded EVM instructions 
+which we convert into a list of basic blocks with $\bblocks$.
 
+Finally, in the postcondition we specify that 
+\begin{enumerate}
+\item the resulting action satisfies \textit{spec\_Escrow};
+\item the storage variables \textit{buyer}, \textit{seller}, \textit{arbiter}
+      contain the same values as in the input state;
+\item the storage variable \textit{amount} contains a value satisfying \textit{spec\_amount}.
+\end{enumerate}
+%
+%we are only interested in the resulting action
+%satisfying \textit{spec\_Escrow}, storage variables remain unchanged,
+%and \textit{amount} corresponding to \textit{spec\_amount};
+whereas the rest of the output state \textit{r} remains unspecified.
+%hence we quantify existentially on the rest of the state \textit{r}
+%to leave it unspecified.
+%
 \subsection{Verification}
 \label{sec:verif}
 Smart contract bytecode is divided into two sections: the pre-loader and
