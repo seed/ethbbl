@@ -1219,7 +1219,7 @@ before resetting it to zero.
 This way, we guarantee that the buyer can only add the
 funds expected to the contract once.
 Note that \textit{msg.value} is an environment variable
-storing the amount of Ether transfered as part of the transaction.
+storing the amount of Ether transferred as part of the transaction.
 
 \textit{addfund} is annotated with the \textit{payable} keyword,
 which indicates that this function is allowed to be invoked
@@ -1252,23 +1252,27 @@ contract.
 \paragraph{Dispatcher}
 
 When we compile a Solidity smart contract to EVM bytecode,
-the compiler is expected to implement the contract interface
-such that it adheres to the ABI specification.
+the compiler implements the contract interface
+such that it adheres to its ABI specification.
 The ABI specifies the signature of all the functions
 available for a user of the contract.
-The first argument passed to bytecode is the hash corresponding
-to the signature of the function to call.
-The piece of bytecode which compares the first argument
+The bytecode has single entry point (the first instruction),
+and is passed a byte string as input, where the
+first 32-bit word corresponds to a function identifier.
+The identifier is a hash of the function signature
+identifying which function of the contract must be invoked.
+The piece of bytecode which compares the function identifier
 to function hashes is called the \textit{dispatcher}.
 The dispatcher is also responsible for unpacking function
-arguments and when no hash matches the first argument,
-the dispatcher throws an exception.
+arguments, and when no hash matches the function identifier,
+it throws an exception.
 The binary format for computing function hashes and
 packing arguments is standardised so that contracts
-written in various EVM languages
-can interoperate without trouble.
+written in various EVM languages can interoperate without
+trouble.
 Since the dispatcher is produced by the compiler, it is
-invisible to a Solidity developer and must be verified at bytecode level.
+invisible to a Solidity developer and must be verified at
+bytecode level.
 
 \subsection{Specification}
 \label{sec:spec}
