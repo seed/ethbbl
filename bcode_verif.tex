@@ -1408,8 +1408,8 @@ that can be invoked by other blockchain agents.
 Our verification considers only the runtime code of \textit{Escrow},
 thus excluding its constructor.
 
-We obtain the runtime code as a byte string of opcodes from the Solidity
-compiler and convert it into a list of EVM instructions via an
+We obtain the runtime code as a byte string of hexadecimal opcodes
+from the Solidity compiler and convert it into a list of EVM instructions via an
 Isabelle/HOL function.
 In this sense we work directly on the bytecode output of
 the Solidity compiler.
@@ -1417,9 +1417,22 @@ the Solidity compiler.
 \textit{Escrow} bytecode has 191 EVM instructions, that get split into 45 basic
 blocks, including 12 of type \textit{Jumpi} (i.e.\ conditional jumps),
 23 \textit{Terminal}, 6 \textit{Next} and 4 \textit{Jump}.
-Once the automation support, described in the next section reached maturity,
+Once the automation support described in the next section reached maturity,
 proving correctness of the bytecode was rather a routine task. %fairly straightforward
 
+Some creativity was required to handle all the cases where the
+contract ends with an exception.
+The existential variable in the postcondition of our correctness
+statement means that we have to provide a witness for the
+unspecified part of the state.
+The witness is automatically constructed by running our
+proof automation tactics, however, for this to work the
+postcondition must remain a unification variable until
+we reach a \textit{Terminal} basic block.
+The \textit{Terminal} block rule replaces the
+unification variable with a concrete value,
+so to ensure that each path gets a new unification
+variable, we manually distinguish each case in the proof.
 
 A difficult proof arose when parsing the contract input data
 in order to extract the argument passed to the dispatcher.
