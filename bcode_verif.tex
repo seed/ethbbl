@@ -1209,9 +1209,8 @@ including the address of the account that
 sent the transaction (\textit{msg.sender}).
 Solidity's built-in function \textit{require} throws an exception
 if the specified condition evaluates to false.
-In this case the transaction is basically rolled back, 
-making only one exception to the amount of gas consumed so far, which
-is retained. 
+In this case, only the amount of gas consumed so far is retained;
+the rest of the transaction is rolled back.
 
 We use \textit{require} (line \ref{lst:constbeg}) to ensure that the arbiter creates
 an escrow agreement with \textit{amount} greater than zero.
@@ -1245,7 +1244,7 @@ Similarly, only the arbiter is entitled to successfully invoke
 the functions \textit{refund} (lines \autoref{lst:refundbeg}--\autoref{lst:refundend})
 and \textit{pay} (lines \autoref{lst:paybeg}--\autoref{lst:payend}). 
 Moreover, in both cases \textit{amount} is required to be zero, i.e.
-the buyer must already have placed his fund in the contract. 
+the buyer must already have placed the funds in the contract.
 %are both protected such that they must be called by the arbiter,
 %and so, after the buyer has placed the funds in the contract.
 %The latter is enforced by checking that \textit{amount} is zero.
@@ -1320,9 +1319,9 @@ definition
 \label{spec}
 \end{figure}
 
-\autoref{spec} shows our handwritten specification of \textit{Escrow} in Isabelle/HOL,
-including the functional correctness theorem we proved.
-\textit{spec\_Escrow} is a definition used in the main theorem in \autoref{theorem} to specify
+\autoref{spec} and \autoref{theorem} show our handwritten specification of \textit{Escrow}
+and the functional correctness theorem we proved in Isabelle/HOL.
+The \textit{spec\_Escrow} definition is used in the main theorem to specify
 the return values expected by the contract.
 The arguments have the same names as the storage variables or the environment
 variables they carry the value for, except for \textit{hash} which corresponds
@@ -1339,7 +1338,7 @@ is invoked with the right amount by the buyer;
 all the funds will be fully returned via self-destruction of
 the contract to either, (2) the buyer,
 (3) or the seller;
-(4) any other input leads to an exception denoted by \textit{ContractFail [ShouldNotHappen]}.
+(4) any other input leads to an exception denoted by \mbox{\textit{ContractFail [ShouldNotHappen]}}.
 
 Note that the amount transferred via \textit{ContractSuicide} corresponds
 to the balance of the contract stored in the Ethereum global state and
@@ -1657,7 +1656,7 @@ For example, Hirai~\cite{Yoichi} has extended his framework,
 on which ours is based, to formally verify that a smart contract
 throws an exception if it is subject to a re-entrant invocation
 ($B$ attempts to call $A$).
-As a future work, we could imagine an EVM formalisation parameterised by
+As future work, we could imagine an EVM formalisation parameterised by
 a contract environment which directly invokes the target contract
 when a message call occurs.
 
