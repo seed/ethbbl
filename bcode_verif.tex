@@ -1362,7 +1362,7 @@ theorem verify_escrow:
         sent_data (word_rsplit hash) \<and>*
         sent_value v \<and>* caller sender \<and>*
         memory_usage 0 \<and>* continuing \<and>*
-        gas_pred 100000 \<and>* 
+        gas_pred 40000 \<and>*
         storage 0 (ucast buyer) \<and>*
         storage 1 (ucast seller) \<and>*
         storage 2 (ucast arbiter) \<and>*
