@@ -1411,16 +1411,17 @@ can involve long, tedious and repetitive proofs.
 Hence, our program logic was purposefully designed to be
 amenable to proof automation.
 
-The inductively defined inference rules presented in Section~\ref{sec:logic}
-are all designed to be used in a syntactically-driven verification
+The inductively defined inference rules, presented in Section~\ref{sec:logic},
+are designed to be used in a syntax-driven verification
 condition generator (VCG).
-Shaping the rules in a way that only one of them applies at each point in the
-proof makes it trivial to write a VCG that merely tries applying all the rules
+Shaping the rules in a way that the conclusion of at most one of them
+can match the subgoal at each point in the
+proof makes it easy to write a VCG that just tries applying all of the rules
 one after another.
-Such a VCG can be implemented with a few lines of Eisbach~\cite{Matichuk_MW_16} ---
+This tactic can be implemented with a few lines of Eisbach~\cite{Matichuk_MW_16} ---
 Isabelle/HOL's high-level tactic language.
 We developed a VCG for each level of our program logic.
-For instance, the program-level tactic looks like this:
+For instance, the program-level tactic looks as follows:
 \begin{lstlisting}[language=Isar]{}
 method prog_vcg =
  (prog_jumpi_vcg | prog_jump_vcg
@@ -1429,11 +1430,11 @@ method prog_vcg =
 where e.g., \textit{prog\_jumpi\_vcg} is another tactic applying the \textit{Jumpi}-rule (iv) 
 in Section~\ref{sec:prog-rules} and solving its resulting subgoals by
 invoking more specific tactics we designed.
-\textit{prog\_vcg} tries each of the tactics separated by the $|$ symbol,
-while the $+$ sign at the end means that it will apply repetitively until
-none of the tactics can apply on the goal.
+Altogether, \textit{prog\_vcg} tries each of the tactics separated by the $|$ symbol,
+whereas the $+$ sign at the end means that it will apply repetitively until
+none of the tactics is applicable. 
 
-A common source of friction we experienced during the early development
+A common source of friction we experienced during the early development phase
 of our framework was with proving goals of the form:
 $\forall s.\: R\:s \longrightarrow P\:s$ where $P$ and $R$ are separation logic predicates
 comprising the same separation conjunctions but in different orders.
@@ -1452,11 +1453,11 @@ Once the first elements match, we leverage the tactics of the separation
 algebra framework to remove the first element from both $R$ and $P$.
 
 An issue we encountered is that when $R$ contains variables,
-we have to re-order terms in $P$ in such way that the variables in $R$ get instantiated
+we have to reorder terms in $P$ in such way that the variables in $R$ get instantiated
 in the correct order.
 %%%
 When such problem occurs, we resort to manual reordering of terms. % ?? 
-
+%
 \section{Related Work}
 \label{sec:rwork}
 %
@@ -1541,15 +1542,15 @@ complex stack analysis because the EVM provides no support to call
 subroutines and for stack unwinding.
 Thus, heuristics must be used to distinguish call sites and
 stack unwinding from other stack-manipulating instructions.
-However, a proposal~\cite{subroutines} currently being discussed would replace
-dynamic jumps with static ones and add instructions to call and
-return from sub-routines (internal functions).
+However, the proposal~\cite{subroutines} (\emph{EVM1.5}) is currently being discussed and 
+suggests adding static jumps as well as instructions to call and
+return from sub-routines (internal functions) to the EVM instruction set.
 If implemented, it would greatly facilitate
 decompilation and reasoning about EVM bytecode, as most of the aforementioned
 issues would go away.
 
-The current framework leaves inter-contract message call
-reasoning outside the program logic.
+As mentioned in Section~\ref{sec:instr-rules}, our framework currently does not support reasoning about inter-contract message calls.
+%reasoning outside the program logic.
 When a contract $A$ makes a message call to contract $B$,
 the execution of $A$ terminates in our formal model with a \textit{ContractCall} action.
 Hence, within our program logic we can only prove properties
