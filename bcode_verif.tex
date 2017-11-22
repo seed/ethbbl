@@ -1390,6 +1390,8 @@ using \textit{word\_rsplit}.
 $\gaspred$ specifies the gas budget for the execution and $\storage$
 binds storage entries to the free variables \textit{buyer}, \textit{seller},
 \textit{arbiter} and \textit{amount}, initialised by the constructor.
+Using \textit{ucast}, we convert 160-bit words representing Ethereum
+addresses into the storage unit, which is 256-bit word.
 \textit{bytecode\_Escrow} is a list of deeply embedded EVM
 instructions which we convert into a list of basic blocks with $\bblocks$.
 In the postcondition, we are only interested in the resulting action
