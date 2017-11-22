@@ -1174,13 +1174,13 @@ contract Escrow {
 }
 \end{lstlisting}
 \caption{Escrow smart contract allowing an arbiter to clear a
- transaction between two mutually distrusting parties.}
+ transaction between two potentially distrusting parties.}
 \label{solidity}
 \end{figure}
 
-\autoref{solidity} shows the Solidity implementation of the contract.
+\autoref{solidity} shows our implementation of the contract.
 In Solidity, the functionality of a smart contract is encapsulated into a
-\textit{contract interface}, which, analogously to a class in object oriented programming
+\textit{contract interface} which, similarly to a class in object-oriented programming
 (OOP), has a well-defined interface with public and private elements.
 Creating a contract on the blockchain instantiates the contract interface.
 Just like class instantiations in OOP, contracts on the blockchain are
@@ -1188,27 +1188,29 @@ stateful objects, where the storage is persistent across contract function calls
 
 Every variable declared as a member of a contract interface is
 a storage variable.
-Lines \autoref{lst:storevarbeg}--\autoref{lst:storevarend} of \autoref{solidity}
+Lines \autoref{lst:storevarbeg}--\autoref{lst:storevarend} in \autoref{solidity}
 declare variables to store the addresses of the three parties
-involved in the agreement, as well as \textit{amount}.
-\textit{amount} serves two purposes, it stores
-the amount of the purchase and enforces the order
+involved in the agreement, as well as \textit{amount} that serves two purposes.
+It not only stores
+the amount of Ether for the purchase, but also enforces the order
 in which the contract operations must be invoked.
 It is stored in a 256-bit machine word, which is the
 native word size of the EVM.
-For this reason, Ethereum addresses which are 160-bit long
-are in practice also stored in 256-bit machine words.
+%%%% Is this important somehow?
+%For this reason, Ethereum addresses that are 160-bit long
+%are in practice also stored in 256-bit machine words.
 
-The constructor on lines \autoref{lst:constbeg}--\autoref{lst:constend}
+The constructor part on lines \autoref{lst:constbeg}--\autoref{lst:constend}
 is run by the Ethereum platform to initialise the contract when it gets deployed.
-\textit{msg} is an environment variable carrying information
-about the Ethereum transaction that led to the execution 
-of the contract, including the address of the account that
+The environment variable \textit{msg} carries the information
+about the Ethereum transaction that led to the contract deployment, 
+including the address of the account that
 sent the transaction \textit{msg.sender}.
 Solidity's built-in function \textit{require} throws an exception
 if the specified condition evaluates to false.
-When an exception is thrown, the EVM state is rolled back completely,
-with the exception of the gas consumption.
+In this case the transaction is basically rolled back, 
+making exception only to the amount of gas consumed so far which
+is retained. 
 
 On line \ref{lst:constbeg}, we use \textit{require} to ensure that the arbiter creates
 an escrow agreement with an amount greater than zero.
