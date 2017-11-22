@@ -1294,8 +1294,9 @@ where
  (if hash = addfund_hash \<and> sender = buyer \<and>
      value = amount \<and> amount > 0 then
     ContractReturn []
-  else if hash = refund_hash \<and> sender = arbiter \<and>
-          value = 0 \<and> amount = 0 then
+  else if hash = refund_hash \<and>
+          sender = arbiter \<and> value = 0 \<and>
+          amount = 0 then
     ContractSuicide buyer
   else if hash = pay_hash \<and> sender = arbiter \<and>
           value = 0 \<and> amount = 0 then
