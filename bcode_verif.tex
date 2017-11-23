@@ -1257,7 +1257,13 @@ For the compiler this means adding the function to the abstract binary
 interface (ABI) and generating \emph{dispatch} code to jump to this function within bytecode using
 the hash value, obtained from its signature.
 Since dispatcher code is added by the compiler, it is only visible at
-the bytecode level. 
+the bytecode level. Hence, verifying contract's bytecode implicitly means
+verifying the contract's dispatcher as well. 
+As shown in the following section, in order to specify behaviour of our
+contract we compare the input hash to \textit{addfund\_hash}, \textit{refund\_hash} and   \textit{pay\_hash},
+and, in particular, require a safe behaviour in case when the input hash does not
+match any of the contract hash values.   
+%  
 %
 %identifying which function of the contract must be invoked
 %to the appropriate function.
