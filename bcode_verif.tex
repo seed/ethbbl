@@ -1367,10 +1367,12 @@ In addition to specifying the return action of the contract, we also want
 to guarantee that \textit{addfund} can only be called once.
 This is done with the \textit{spec\_amount} definition which
 is used in the main theorem to specify the value of the
-\textit{amount} storage variable.
+\textit{amount} storage variable after an invocation of the contract.
 It says that when the precondition for \textit{addfund} to
 return successfully is met, \textit{amount} is set to zero,
-thus protecting against further invocations of \textit{addfund}.
+thus protecting against further invocations of \textit{addfund} and
+enabling invocations of \textit{pay} and \textit{refund}.
+
 
 \begin{figure}[h]
 \begin{lstlisting}[language=Isar,keywords={[3]{hash,sender,buyer,seller,arbiter,amount,v}}]{}
