@@ -1259,9 +1259,9 @@ the hash value, obtained from its signature.
 Since dispatcher code is added by the compiler, it is only visible at
 the bytecode level. Hence, verifying contract's bytecode implicitly means
 verifying the contract's dispatcher as well. 
-As shown in the following section, in order to specify behaviour of our
-contract we compare the input hash to \textit{addfund\_hash}, \textit{refund\_hash} and   \textit{pay\_hash},
-and, in particular, require a safe behaviour in case when the input hash does not
+As shown in the following section, in order to specify the behaviour of our
+contract we compare the input hash to \textit{addfund\_hash}, \textit{refund\_hash} and \textit{pay\_hash},
+and, in particular, require a safe behaviour when the input hash does not
 match any of the contract hash values.   
 %  
 %
