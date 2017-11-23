@@ -1250,7 +1250,8 @@ which transfers the totality of the funds held by the contract
 to the address passed as argument, and subsequently destroys the contract.
 Note that the amount transferred by \textit{selfdestruct} corresponds
 to the balance of the contract stored in the Ethereum global state, which
-is not necessarily the value stored in the \textit{amount} variable.
+in our case is just the \textit{amount} specified by the arbiter
+during contract construction.
 
 %
 The keyword \textit{public} is used in the contract to indicate that
@@ -1366,11 +1367,11 @@ to ensure that \textit{addfund} can only be called once.
 This is done with the \textit{spec\_amount} definition which
 is used in the main theorem to specify the value of the
 \textit{amount} storage variable after an invocation of the contract.
-It says that when the precondition for \textit{addfund} to
+It states that when the precondition of \textit{addfund} to
 return successfully is met, \textit{amount} is set to zero,
-thus protecting against further invocations of \textit{addfund} and
-enabling invocations of \textit{pay} and \textit{refund}.
-
+thus disabling the required precondition,
+%protecting against further invocations of \textit{addfund} and
+and at the same time enabling invocations of \textit{pay} and \textit{refund}. 
 
 \begin{figure}[h]
 \begin{lstlisting}[language=Isar,keywords={[3]{hash,sender,buyer,seller,arbiter,amount,v}}]{}
@@ -1467,8 +1468,8 @@ proof automation tactics, however, for this to work the
 existential variable must remain a unification variable until
 we reach a \textit{Terminal} basic block.
 The \textit{Terminal} block rule replaces the
-unification variable with a concrete value,
-so to ensure that each path gets a new unification
+unification variable by a concrete value,
+and to ensure that each path gets a new unification
 variable, we manually distinguish each case in the proof.
 
 A difficult proof arose when parsing the contract input data
