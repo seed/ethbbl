@@ -1264,9 +1264,9 @@ Since dispatcher code is added by the compiler, it is only visible at
 the bytecode level. Hence, verifying contract's bytecode implicitly means
 verifying the contract's dispatcher as well. 
 As shown in the following section, in order to specify the behaviour of our
-contract we compare the input hash to \textit{addfund\_hash}, \textit{refund\_hash} and \textit{pay\_hash},
-and, in particular, require a safe behaviour when the input hash does not
-match any of the contract hash values.   
+contract, we compare the input hash to \textit{addfund\_hash}, \textit{refund\_hash} and \textit{pay\_hash},
+and, in particular, require a safe behaviour in cases when the input hash does not
+match any of these hash values.   
 %  
 %
 %identifying which function of the contract must be invoked
@@ -1371,7 +1371,7 @@ It states that when the precondition of \textit{addfund} to
 return successfully is met, \textit{amount} is set to zero,
 thus disabling that precondition.
 %protecting against further invocations of \textit{addfund} and
-As a result invocations of \textit{pay} and \textit{refund} become enabled
+As a result, invocations of \textit{pay} and \textit{refund} become enabled
 and of \textit{addfund} --- disabled.
 
 \begin{figure}[h]
