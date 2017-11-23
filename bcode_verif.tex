@@ -1369,9 +1369,10 @@ is used in the main theorem to specify the value of the
 \textit{amount} storage variable after an invocation of the contract.
 It states that when the precondition of \textit{addfund} to
 return successfully is met, \textit{amount} is set to zero,
-thus disabling the required precondition,
+thus disabling that precondition.
 %protecting against further invocations of \textit{addfund} and
-and at the same time enabling invocations of \textit{pay} and \textit{refund}. 
+As a result invocations of \textit{pay} and \textit{refund} become enabled
+and of \textit{addfund} --- disabled.
 
 \begin{figure}[h]
 \begin{lstlisting}[language=Isar,keywords={[3]{hash,sender,buyer,seller,arbiter,amount,v}}]{}
