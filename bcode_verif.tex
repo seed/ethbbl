@@ -1159,7 +1159,7 @@ contract Escrow {
     function addfund() payable public  {
 @\label{lst:addfundbeg}@        require (amount > 0 &&
                  msg.value == amount &&
-                 msg.sender == buyer);
+@\label{lst:addfundsender}@                 msg.sender == buyer);
 @\label{lst:addfundend}@        amount = 0;
     }
 
@@ -1227,18 +1227,11 @@ telling us how much Ether has been transferred as part of the transaction.
 Further, \textit{addfund} is annotated as \textit{payable},
 which indicates that this function is allowed to be invoked
 by an Ethereum transaction along with a non-zero amount of
-Ether.
-By default, all contract functions are not payable
+Ether. By default, all contract functions are not payable
 in order to prevent accidental loss of Ether.
-The keyword \textit{public} indicates that
-the function must be exported in the contract interface,
-thus getting accessible for contract users.
-For the Solidity compiler this means adding the function to the abstract binary
-interface (ABI) and generating dispatch code to jump to this function within bytecode.
-%to the appropriate function.
-We describe the dispatcher in more detail in the paragraph below. %further at the end of this section.
 
-Only the buyer can successfully invoke \textit{addfund}. To this end,
+According to the \textit{require}-clause on line \autoref{lst:addfundsender}, 
+only the buyer shall be able to successfully invoke \textit{addfund}. To this end,
 the exact amount of Ether (as specified by the arbiter) must be transferred
 along with the invocation.
 %
@@ -1255,29 +1248,42 @@ mechanism,
 which transfers the totality of the funds held by the contract
 to the address passed as argument, and subsequently destroys the contract.
 %
-\paragraph{Dispatcher.}
+
+The keyword \textit{public} is used in the contract to indicate that
+the respective function must be exported in the contract interface,
+thus getting accessible to the users.
+For the compiler this means adding the function to the abstract binary
+interface (ABI) and generating \emph{dispatch} code to jump to this function within bytecode using
+the hash value, obtained from its signature.
+Since dispatcher code is added by the compiler, it is only visible at
+the bytecode level. 
 %
-When we compile a Solidity smart contract to EVM bytecode,
-the compiler generates the contract interface
-such that it adheres to its ABI specification.
-The ABI specifies the signature of all the functions
-available for a user of the contract.
-The bytecode has single entry point (the first instruction),
-and is passed a byte string as input, where the
-first 32-bit word corresponds to a function identifier.
-This identifier is a hash of the function signature
-identifying which function of the contract must be invoked.
-The piece of bytecode which compares the function identifier
-to function hashes is called the \textit{dispatcher}.
-The dispatcher is also responsible for unpacking function
-arguments, and when no hash matches the function identifier,
-it throws an exception.
-The binary format for computing function hashes and
-packing arguments is standardised so that contracts
-written in various EVM languages can interoperate without
-trouble.
-Since dispatcher code is added by the compiler, it can only be verified at
-the bytecode level.
+%identifying which function of the contract must be invoked
+%to the appropriate function.
+%We describe the dispatcher in more detail in the paragraph below. %further at the end of this section.
+%\paragraph{Dispatcher.}
+%
+%When we compile a Solidity smart contract to EVM bytecode,
+%the compiler generates the contract interface
+%such that it adheres to its ABI specification.
+%The ABI specifies the signature of all the functions
+%available for a user of the contract.
+%The bytecode has single entry point (the first instruction),
+%and is passed a byte string as input, where the
+%first 32-bit word corresponds to a function identifier.
+%This identifier is a hash of the function signature
+%identifying which function of the contract must be invoked.
+%The piece of bytecode which compares the function identifier
+%to function hashes is called the \textit{dispatcher}.
+%The dispatcher is also responsible for unpacking function
+%arguments, and when no hash matches the function identifier,
+%it throws an exception.
+%The binary format for computing function hashes and
+%packing arguments is standardised so that contracts
+%written in various EVM languages can interoperate without
+%trouble.
+%Since dispatcher code is added by the compiler, it can only be verified at
+%the bytecode level.
 %
 \subsection{Specification}
 \label{sec:spec}
@@ -1317,7 +1323,7 @@ definition
    else
      amount)
 \end{lstlisting}
-\caption{Specification of a safety property of the Escrow smart contract.}
+\caption{Functional specification of the Escrow smart contract.}
 \label{spec}
 \end{figure}
 
@@ -1639,7 +1645,7 @@ complex stack analysis because the EVM provides no support to call
 subroutines and for stack unwinding.
 Thus, heuristics must be used to distinguish call sites and
 stack unwinding from other stack-manipulating instructions.
-However, the so-called \emph{EVM1.5} proposal~\cite{subroutines} is currently being discussed, and 
+However, the proposal~\cite{subroutines} is currently being discussed, and 
 suggests adding static jumps as well as instructions to call and
 return from sub-routines (internal functions) to the EVM instruction set.
 If implemented, it would greatly facilitate
