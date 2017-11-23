@@ -252,7 +252,7 @@
 \affiliation{
 %  \position{Position1}
 %  \department{Department1}              %% \department is recommended
-  \institution{ENS Paris-Saclay, Universit\'ee Paris-Saclay}            %% \institution is required
+  \institution{ENS Paris-Saclay, Universit\'e Paris-Saclay}            %% \institution is required
 %  \streetaddress{Street1 Address1}
 %  \city{City1}
 %  \state{State1}
@@ -902,14 +902,16 @@ and $Q$ for\\
 \\$
 \begin{array}{l}
 \cont \sconj \gaspred\:(g - 3) \; \sconj \\
-\pc\:(n+1) \; \sconj \stackh\:(h + 1) \sconj \stack\:h\:x \sconj F
+\pc\:(n+2) \; \sconj \stackh\:(h + 1) \sconj \stack\:h\:x \sconj F
 \end{array}
 $\\
 \\
 In particular, we have stated that the height of the stack increases by $1$ 
 ($\stackh\:(h + 1)$)
 and that the top index $h$ of the stack points to the value $x$ ($\stack\:h\:x$)
-among the effects of $\instr{PUSH1}$. It is also worth noting that we incorporate frames
+among the effects of $\instr{PUSH1}$.
+As the size of the instruction including the byte to push is 2 bytes, the program counter increases by 2.
+It is also worth noting that we incorporate frames
 into such instruction-specific rules by carrying a variable $F$ in pre- and
 postconditions, as shown above. This is in contrast to the more common way, which is
 introducing a generic \emph{frame} rule (cf.~\cite{Reynolds_02}) of the form
@@ -1695,7 +1697,7 @@ of smart contracts.
 %  National Science Foundation.
 
 
-We would like to thank Yoichi Hirai, Corey Lewis, Peter H\"ofner
+We would like to thank Yoichi Hirai, Corey Lewis, Peter H\"ofner, Guillaume Vizier
 and Paul Rimba for all comments and suggestions.
 \end{acks}
 
