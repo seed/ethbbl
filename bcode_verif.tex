@@ -1408,7 +1408,8 @@ Importantly, \textit{hash} is the 32-bit word contract
 argument used by the dispatcher code as well as the specification.
 We convert it into a string of bytes to form the input data of the contract
 using \textit{word\_rsplit}.
-Further, $\gaspred$ sets a gas budget sufficient for an invokation, whereas $\storage$
+Further, $\gaspred$ sets a gas budget sufficient for invoking any
+of the functions, whereas $\storage$
 binds storage entries to the free variables \textit{buyer}, \textit{seller},
 \textit{arbiter} and \textit{amount}. %, initialised by the constructor.
 Using \textit{ucast} we convert 160-bit words, representing Ethereum
