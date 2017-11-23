@@ -557,7 +557,7 @@ In the next section we will present our program logic processing EVM bytecode,
 which (based on soundness presented in Section~\ref{sec:sound}) will give us 
 a sound device to derive verification conditions for contract properties of the form $\tvalid{P}{c}{Q}$.   
 %
-Although the program logic does not support general loops yet, factoring out the termination part
+Although the program logic does not support general loops yet, it is worth noting that factoring out the termination part
 means that we would not need to provide any variants to establish loop properties since
 gas consumption is a variant for any EVM-loop. On the other hand, we might then need to augment our triples
 by an exception condition to handle cases when an `out-of-gas' exception is raised during
@@ -1253,7 +1253,7 @@ to the balance of the contract stored in the Ethereum global state, which
 in our case is just the \textit{amount} specified by the arbiter
 during contract construction.
 
-%
+%%
 The keyword \textit{public} is used in the contract to indicate that
 the respective function must be exported in the contract interface,
 thus getting accessible to the users.
@@ -1712,7 +1712,7 @@ of smart contracts.
 %  National Science Foundation.
 
 
-We would like to thank Yoichi Hirai, Corey Lewis, Peter H\"ofner, Guillaume Vizier
+We would like to thank Yoichi Hirai, Peter H\"ofner, Corey Lewis, Guillaume Vizier
 and Paul Rimba for all comments and suggestions.
 \end{acks}
 
