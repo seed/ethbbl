@@ -1248,13 +1248,11 @@ Both functions make use of the EVM \textit{selfdestruct} % built-in ?
 mechanism,
 which transfers the totality of the funds held by the contract
 to the address passed as argument, and subsequently destroys the contract.
-Note that the amount transferred corresponds
-to the balance of the contract stored in the Ethereum global state and
-is unrelated to the value stored in the \textit{amount} variable
-when the contract gets destroyed.
+Note that the amount transferred by \textit{selfdestruct} corresponds
+to the balance of the contract stored in the Ethereum global state, which
+is not necessarily the value stored in the \textit{amount} variable.
 
 %
-
 The keyword \textit{public} is used in the contract to indicate that
 the respective function must be exported in the contract interface,
 thus getting accessible to the users.
@@ -1364,7 +1362,7 @@ the transaction.
 \end{enumerate}
 
 In addition to specifying the return action of the contract, we also want
-to guarantee that \textit{addfund} can only be called once.
+to ensure that \textit{addfund} can only be called once.
 This is done with the \textit{spec\_amount} definition which
 is used in the main theorem to specify the value of the
 \textit{amount} storage variable after an invocation of the contract.
@@ -1410,13 +1408,13 @@ Importantly, \textit{hash} is the 32-bit word contract
 argument used by the dispatcher code as well as the specification.
 We convert it into a string of bytes to form the input data of the contract
 using \textit{word\_rsplit}.
-$\gaspred$ specifies the gas budget for the execution and $\storage$
+Further, $\gaspred$ sets a gas budget sufficient for an invokation, whereas $\storage$
 binds storage entries to the free variables \textit{buyer}, \textit{seller},
 \textit{arbiter} and \textit{amount}. %, initialised by the constructor.
 Using \textit{ucast} we convert 160-bit words, representing Ethereum
 addresses, into the storage unit, i.e. 256-bit word.
 The constant \textit{bytecode\_Escrow} denotes
-the actual bytecode of the contract
+the actual bytecode of the contract,
  %a list of deeply embedded EVM instructions 
 which we convert into a list of basic blocks with $\bblocks$.
 
