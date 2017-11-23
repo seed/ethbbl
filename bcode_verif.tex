@@ -1248,6 +1248,11 @@ Both functions make use of the EVM \textit{selfdestruct} % built-in ?
 mechanism,
 which transfers the totality of the funds held by the contract
 to the address passed as argument, and subsequently destroys the contract.
+Note that the amount transferred corresponds
+to the balance of the contract stored in the Ethereum global state and
+is unrelated to the value stored in the \textit{amount} variable
+when the contract gets destroyed.
+
 %
 
 The keyword \textit{public} is used in the contract to indicate that
@@ -1357,11 +1362,6 @@ the arbiter and \textit{amount} = 0 holds;
 \item[(iv)] any other input leads to a failure of the contract, cancelling
 the transaction.
 \end{enumerate}
-
-Note that the amount transferred via \textit{ContractSuicide} corresponds
-to the balance of the contract stored in the Ethereum global state and
-is unrelated to the value stored in the \textit{amount} storage variable
-when the contract is destroyed.
 
 In addition to specifying the return action of the contract, we also want
 to guarantee that \textit{addfund} can only be called once.
