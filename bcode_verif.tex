@@ -1681,13 +1681,14 @@ As future work, we could imagine an EVM formalisation parameterised by
 a contract environment which directly invokes the target contract
 when a message call occurs.
 
-Another promising avenue for research is certifying compilers.
-We believe that the Ethereum community
-would greatly benefit from an EVM backend for the CakeML~\cite{Owens_NKMT_17}
-verified compiler.
-Since CakeML is a functional programming language, it would
-provide a different approach to specification and verification of high-level properties
-of smart contracts.
+Another promising avenue for research is certifying
+compilers~\cite{Owens_NKMT_17,Leroy_12,Klein_Nipkow_06}.
+We believe that the Ethereum community would greatly benefit
+from a certified compiler for a high-level language, targeting
+EVM bytecode.
+This would provide a structured programming abstraction to
+reason formally about Ethereum smart contracts that is sound
+and convenient.
 % compared to reasoning about bytecode directly.
 %Yet the compiler correctness proof would imply the
 %same level of guarantee as bytecode verification.
