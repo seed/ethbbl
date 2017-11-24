@@ -1158,7 +1158,7 @@ contract Escrow {
 
 @\label{lst:constbeg}@    function Escrow(address _buyer,
                     address _seller,
-                    uint256 _amount) public {
+                    uint256 _amount) {
 @\label{lst:constbeg}@            require (amount > 0);
             buyer = _buyer;
             seller = _seller;
@@ -1166,7 +1166,7 @@ contract Escrow {
 @\label{lst:constend}@            amount = _amount;
     }
 
-    function addfund() payable public  {
+    function addfund() payable public {
 @\label{lst:addfundbeg}@        require (amount > 0 &&
                  msg.value == amount &&
 @\label{lst:addfundsender}@                 msg.sender == buyer);
