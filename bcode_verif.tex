@@ -1685,14 +1685,15 @@ As future work, we could imagine an EVM formalisation parameterised by
 a contract environment which directly invokes the target contract
 when a message call occurs.
 
-Another promising avenue for research is verified
+Another promising avenue for research are verified
 compilers~\cite{Owens_NKMT_17,Leroy_12,Klein_Nipkow_06}.
 We believe that the Ethereum community would greatly benefit
-from a verified compiler for a high-level language, targeting
-EVM bytecode.
-This would provide a structured programming abstraction to
-reason formally about Ethereum smart contracts that is sound
-and convenient.
+from a verified compiler for a high-level language targeting
+EVM bytecode, providing a structured programming abstraction.
+This way we could additionally address many high-level properties of smart contracts 
+in a convenient way. 
+%to reason formally about 
+%Ethereum smart contracts that is sound and convenient.
 % compared to reasoning about bytecode directly.
 %Yet the compiler correctness proof would imply the
 %same level of guarantee as bytecode verification.
