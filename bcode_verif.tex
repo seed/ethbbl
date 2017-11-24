@@ -1550,8 +1550,11 @@ invoking more specific tactics we designed.
 Altogether, \textit{prog\_vcg} tries each of the tactics separated by the $|$ symbol,
 whereas the $+$ sign at the end means that it will do so repetitively until
 none of the tactics is applicable. 
-Clearly, this stage will be eventually reached in absence of loops.
-
+Clearly, this stage will be eventually reached in absence of loops,
+whereas the gas consumption argument could be used to ensure tactic termination otherwise.
+However, as this is not a proper treatment of for general loops, we did not use this argument
+at the tactics level.     
+    
 A common source of friction we experienced during the early development phase
 of our framework was with proving goals of the form:
 $\forall s.\: R\:s \longrightarrow P\:s$ where $P$ and $R$ are separation logic predicates
@@ -1560,7 +1563,7 @@ Such proof obligations arise when we weaken a precondition to be
 able to apply an $\vdash_\mathtt{instr}$ rule.
 Since each $\vdash_\mathtt{instr}$ rule expects a separation logic expression with conjunctions
 in a specific order, we routinely have to reorder these to
-match a given precondition.
+match given precondition.
 
 To ease the pain, we reuse the separation logic algebra framework~\cite{Klein_KB_12},
 which provides a set of generic Isabelle tactics to manipulate separation logic terms.
