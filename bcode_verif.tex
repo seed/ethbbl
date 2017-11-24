@@ -1196,8 +1196,8 @@ Lines \autoref{lst:storevarbeg}--\autoref{lst:storevarend} in \autoref{solidity}
 declare variables carrying blockchain addresses of the three parties
 involved in the agreement, as well as \textit{amount} that serves two purposes.
 It not only stores
-the amount of Ether for the purchase, but also enforces the order
-in which the contract operations must be invoked.
+the amount of Ether for the purchase, but is also used to enforce the order
+in which the contract operations can be invoked.
 %%%% Is this important somehow?
 %It is stored in a 256-bit machine word, which is the
 %native word size of the EVM.
@@ -1266,7 +1266,7 @@ verifying the contract's dispatcher as well.
 As shown in the following section, in order to specify the behaviour of our
 contract, we compare the input hash to \textit{addfund\_hash}, \textit{refund\_hash} and \textit{pay\_hash},
 and, in particular, require a safe behaviour in cases when the input hash does not
-match any of these hash values.   
+match any of these three hash values.   
 %  
 %
 %identifying which function of the contract must be invoked
@@ -1410,7 +1410,7 @@ Importantly, \textit{hash} is the 32-bit word contract
 argument used by the dispatcher code as well as the specification.
 We convert it into a string of bytes to form the input data of the contract
 using \textit{word\_rsplit}.
-Further, $\gaspred$ sets a gas budget sufficient for invoking any
+Further, $\gaspred$ sets a gas budget, sufficient for invoking any
 of the functions, whereas $\storage$
 binds storage entries to the free variables \textit{buyer}, \textit{seller},
 \textit{arbiter} and \textit{amount}. %, initialised by the constructor.
@@ -1548,8 +1548,9 @@ where e.g., \textit{prog\_jumpi\_vcg} is another tactic applying the \textit{Jum
 in Section~\ref{sec:prog-rules} and solving its resulting subgoals by
 invoking more specific tactics we designed.
 Altogether, \textit{prog\_vcg} tries each of the tactics separated by the $|$ symbol,
-whereas the $+$ sign at the end means that it will do that repetitively until
+whereas the $+$ sign at the end means that it will do so repetitively until
 none of the tactics is applicable. 
+Clearly, this stage will be eventually reached in absence of loops.
 
 A common source of friction we experienced during the early development phase
 of our framework was with proving goals of the form:
