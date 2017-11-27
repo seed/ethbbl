@@ -376,12 +376,12 @@ of EVM smart contracts.
 
 \section{Introduction}
 \label{sec:intro}
-Blockchain technology emerged to support %financial 
+Blockchain technology emerged to support financial 
 transactions in the Bitcoin system, but has become
 increasingly important in many industries, with potential use in legal, medical, and
 supply chain industries.
-The Ethereum blockchain provides a general-purpose computational mechanism called \emph{smart contracts}.
-These are programs that run on the Ethereum Virtual Machine (EVM)~\cite{wood2014ethereum}. They and their effects 
+The Ethereum blockchain provides a general-purpose computational mechanism called \emph{smart contracts},
+which are basically programs that run on the Ethereum Virtual Machine (EVM)~\cite{wood2014ethereum}. They and their effects 
 are recorded in the blockchain history.  They can be used to encode or execute agreements between parties.
 For example, a party invoking a smart contract could cause digital currency to be transferred to another
 party, or could record a state change which makes the other party eligible to invoke other transactions.
@@ -684,13 +684,13 @@ will be defined inductively in the following three sections:
 \[
 \begin{array}{l l}
 \!\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q} & 
-\mbox{- at the program level}\\
+\mbox{-- at the program level}\\
 \\
 \!\!\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} &
-\mbox{- at the block level}\\
+\mbox{-- at the block level}\\
 \\
 \!\!\ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} &
-\mbox{- at the instruction level}
+\mbox{-- at the instruction level}
 \end{array}
 \]
 where $P, Q$ are state predicates, $x$ is an instruction, $\mathit{xs}$ is a list of instructions,
@@ -743,7 +743,7 @@ where $R_1$ and $R_2$ abbreviate the conditions \\
 \\$
 \begin{array}{l}
 \pure{h \le 1023 \wedge g \geq 8} \sconj \cont \sconj \gaspred\:g \; \sconj \\
-\pc\:i \; \sconj \stackh\:(h + 1) \sconj \stack\:h\:j \sconj R 
+\pc\:i \; \sconj \stackh\:(h + 1) \; \sconj \stack\:h\:j \; \sconj R 
 \end{array}
 $\\ 
 \\
@@ -784,8 +784,8 @@ jump only if $c \neq 0$:
 where $R_1, R_2, R_3$ abbreviate the conditions \\
 \\$
 \begin{array}{l}
-\pure{h \le 1022 \wedge g \geq 10} \sconj \cont \sconj \gaspred\:g \; \sconj \\
-\pc\:(i - 1)  \sconj \stackh\:(h + 2) \sconj \stack\:(h+1)\:j\; \sconj \\
+\pure{h \le 1022 \wedge g \geq 10} \; \sconj \cont \; \sconj \gaspred\:g \; \sconj \\
+\pc\:(i - 1) \; \sconj \stackh\:(h + 2) \; \sconj \stack\:(h+1)\:j\; \sconj \\
  \stack\;h\:c \;\sconj R 
 \end{array}
 $\\ 
@@ -794,7 +794,7 @@ and\\
 \\$
 \begin{array}{l}
 \cont \sconj \gaspred\:(g - 10) \; \sconj \\
-\pc\:j \; \sconj \stackh\:h \sconj R 
+\pc\:j \; \sconj \stackh\;h \; \sconj R 
 \end{array}
 $\\
 \\
@@ -853,7 +853,7 @@ where $P$ stands for
 \\
 \\$
 \begin{array}{l}
-\pure{h \le 1023 \wedge g \geq 3} \sconj \cont \sconj \gaspred\:g \; \sconj \\
+\pure{h \le 1023 \wedge g \geq 3} \; \sconj \cont \; \sconj \gaspred\:g \; \sconj \\
 \pc\:n \; \sconj \stackh\:h \; \sconj F 
 \end{array}
 $\\ 
@@ -862,7 +862,7 @@ and $Q$ for\\
 \\$
 \begin{array}{l}
 \cont \sconj \gaspred\:(g - 3) \; \sconj \\
-\pc\:(n+2) \; \sconj \stackh\:(h + 1) \sconj \stack\:h\:x \sconj F
+\pc\:(n+2) \; \sconj \stackh\:(h + 1) \; \sconj \stack\:h\:x \; \sconj F
 \end{array}
 $\\
 \\
@@ -1268,9 +1268,7 @@ More precisely, \textit{spec\_Escrow} requires that
 \item[(i)] \textit{addfund} is only successful if it is called by the buyer
 who must simultaneously transfer the amount of Ether specified by the arbiter;
 \item[(ii)] \textit{refund} triggers the self-destruct mechanism, that transfers the totality of the funds 
-%held by the contract 
 to the buyer, 
-%via the self-destruct mechanism 
 only if called by
 the arbiter with \textit{amount} = 0;
 \item[(iii)] \textit{pay} behaves in the same way, except sending the funds to the seller;
@@ -1462,7 +1460,7 @@ Such proof obligations arise when we weaken a precondition to be
 able to apply an $\vdash_\mathtt{instr}$ rule.
 Since each $\vdash_\mathtt{instr}$ rule expects a separation logic expression with conjunctions
 in a specific order, we routinely have to re-order these to
-match given precondition.
+match a given precondition.
 
 To ease the pain, we reuse the separation logic algebra framework~\cite{Klein_KB_12},
 which provides a set of generic Isabelle tactics to manipulate separation logic terms.
@@ -1574,11 +1572,11 @@ when a message call occurs.
 Another promising avenue for research are verified
 compilers~\cite{Owens_NKMT_17,Leroy_12,Klein_Nipkow_06}.
 We believe that the Ethereum community would benefit
-from a provably sound structured programming abstraction.
-%verified compiler for a high-level language targeting
-%EVM bytecode, 
-%providing a provably sound structured programming
-%abstraction.
+from a 
+%provably sound structured programming abstraction.
+verified compiler for a high-level language targeting EVM bytecode, 
+providing a provably sound structured programming
+abstraction.
 Our work may also be used in verification of the final
 phase of such compiler.
 %
