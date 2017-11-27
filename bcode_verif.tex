@@ -13,20 +13,12 @@
 %\documentclass[sigplan,10pt]{acmart}\settopmatter{}
 
 
-%% Conference information
-%% Supplied to authors by publisher for camera-ready submission;
-%% use defaults for review submission.
-\acmConference[CPP'18]{ACM SIGPLAN Conference on Certified Programs and Proofs}{January 08--09, 2018}{Los Angeles, CA, USA}
-\acmYear{2018}
-\acmISBN{} % \acmISBN{978-x-xxxx-xxxx-x/YY/MM}
-\acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
-\startPage{1}
 
 %% Copyright information
 %% Supplied to authors (based on authors' rights management selection;
 %% see authors.acm.org) by publisher for camera-ready submission;
 %% use 'none' for review submission.
-\setcopyright{none}
+%\setcopyright{none}
 %\setcopyright{acmcopyright}
 %\setcopyright{acmlicensed}
 %\setcopyright{rightsretained}
@@ -73,7 +65,6 @@
 
 \newcommand{\defeq}{\mathrel{\stackrel{\mbox{\tiny \it def}}{=}}}
 \newcommand{\subpred}{\Rightarrow}
-%\newcommand{\subpred}{\mathrel{\stackrel{\cdot}{\subseteq}}}
 \newcommand{\sconj}{\wedge^*}
 \newcommand{\coloncolon}{\mathrel{::}}
 \newcommand{\pvalid}[3]{\models\{#1\}\:#2\:\{#3\}}
@@ -99,10 +90,6 @@
 \newcommand{\fblock}{\mathit{first\mbox{-}block}}
 \newcommand{\len}[1]{|#1|}
 \newcommand{\wfblocks}{\mathit{wf\mbox{-}blocks}}
-
-%%%%%%%%%%%%%%%%%%
-\newcommand{\sid}[1]{\textit{\textbf{#1 [sid]}}}
-
 
 
 % define solidity colorscheme
@@ -201,9 +188,36 @@
 
 % end define Isar
 
+%%% If you see 'ACMUNKNOWN' in the 'setcopyright' statement below,
+%%% please first submit your publishing-rights agreement with ACM (follow link on submission page).
+%%% Then please update our instructions page and copy-and-paste the NEW commands into your article.
+%%% Please contact us in case of questions; allow up to 10 min for the system to propagate the information.
+%%%
+%%% The following is specific to CPP'18 and the paper
+%%% 'Towards Verifying Ethereum Smart Contract Bytecode in Isabelle/HOL'
+%%% by Sidney Amani, Myriam Bégel, Maksym Bortin, and Mark Staples.
+%%%
+%\setcopyright{ACMUNKNOWN}
+%\acmPrice{15.00}
+%\acmDOI{10.1145/3167084}
+%\acmYear{2018}
+%\copyrightyear{2018}
+%\acmISBN{978-1-4503-5586-5/18/01}
+%\acmConference[CPP'18]{7th ACM SIGPLAN International Conference on Certified Programs and Proofs}{January 8--9, 2018}{Los Angeles, CA, USA}
+
 
 
 \begin{document}
+
+\copyrightyear{2018}
+\acmYear{2018}
+\setcopyright{acmlicensed}
+\acmConference[CPP '18]{CPP '18: Certified Proofs and Programs }{January 8--9, 2018}{Los Angeles, CA, USA}
+\acmBooktitle{CPP '18: CPP '18: Certified Proofs and Programs , January 8--9, 2018, Los Angeles, CA, USA}
+\acmPrice{15.00}
+\acmDOI{10.1145/3167084}
+\acmISBN{978-1-4503-5586-5/18/01}
+
 
 %% Title information
 \title[Towards Verifying Ethereum Smart Contracts]{Towards Verifying Ethereum Smart Contract Bytecode in Isabelle/HOL}         %% [Short Title] is optional;
@@ -362,7 +376,8 @@ of EVM smart contracts.
 
 \section{Introduction}
 \label{sec:intro}
-Blockchain technology emerged to support financial transactions in the Bitcoin system, but has become
+Blockchain technology emerged to support %financial 
+transactions in the Bitcoin system, but has become
 increasingly important in many industries, with potential use in legal, medical, and
 supply chain industries.
 The Ethereum blockchain provides a general-purpose computational mechanism called \emph{smart contracts}.
@@ -397,7 +412,6 @@ in this form on the blockchain.
 Altogether, this gives us the motivation to focus on reasoning about EVM bytecode, despite the absence of %necessity for us to reconstruct 
 convenient programming constructs like conditionals,
 which we can take for granted in structured languages.
-%We describe our approach for this in the remainder of the paper. 
 
 The main contributions of the paper are:
 \begin{itemize}
@@ -409,14 +423,13 @@ The main contributions of the paper are:
             conditions using the rules of the logic.
 \end{itemize}
 
-Our development is entirely formalised in Isabelle/HOL and has
+Our development is entirely formalised in Isabelle and has
 been accepted in the official EVM
 formalisation repository\footnote{\url{https://github.com/pirapira/eth-isabelle/}} maintained by the Ethereum foundation.
 
 The paper is structured as follows. Section~\ref{sec:bg} describes the background
 for the presented work. Section~\ref{sec:corr} describes how we can capture correctness properties in a pre/postcondition
 style for EVM bytecode programs. Section~\ref{sec:logic} is devoted to our program logic, 
-%i.e. rules for generation of verification conditions out of a contract, 
 and Section~\ref{sec:sound} shows the soundness of the logic
 w.r.t. the correctness property.
 Section~\ref{sec:case} presents a case study, which outlines the 
@@ -429,7 +442,7 @@ Section~\ref{sec:concl} summarises the results and gives an outlook.
 \section{Background} 
 \label{sec:bg}
 The EVM is described in the Ethereum `Yellow Paper'~\cite{wood2014ethereum},
-which provides a %clear 
+which provides a 
 foundation not only for its implementation, but also for formalisations in logic.
 One such formalisation has been done~\cite{Yoichi} using the `meta-tool' \emph{Lem}~\cite{DBLP:conf/icfp/MulliganOGRS14},
 which supports a variety of theorem provers including Isabelle/HOL.
@@ -440,7 +453,6 @@ ensures very high confidence about its soundness as a theorem prover.
  
 However, the EVM model~\cite{Yoichi} needs to be validated to provide confidence that it
 meets the specification~\cite{wood2014ethereum}. 
-%and EVM implementations coincide. 
 To this end, a validation test suite accompanies
 the model in Lem. Using this, the actual EVM, regarded as the reference implementation of~\cite{wood2014ethereum}, 
 and the OCaml code generated by Lem %from the EVM model 
@@ -453,12 +465,12 @@ on the OCaml code generated by Isabelle.
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[height=5.5cm, width=7.5cm]{images/evm_lem}    
+\includegraphics[height=5.5cm, width=7.5cm]{images/evm_lem.pdf}    
         \caption{Validation of EVM models.}
-\label{fig:valid}
+\label{fig-valid}
 \end{figure}
 
-Our `double-validation' process is outlined in Figure~\ref{fig:valid}.
+Our `double-validation' process is outlined in Figure~\ref{fig-valid}.
 The use of the test suite from Isabelle has required some effort, mainly because 
 of different representations of machine words: OCaml code from Lem uses efficient native modules,
 whereas the Isabelle side invokes a formally verified theory of machine words.
@@ -530,23 +542,14 @@ These blockchain specifics give us a termination order. Thus, we
 augment the EVM formalisation~\cite{Yoichi} by the function $\xnext_\mu$ which 
 consequently iterates $\xnext$ on each state as long as possible, i.e. the $\cont$ flag
 is present.
-%assigns to each state the first terminal state reachable via the 
-%reflexive-transitive closure of $\xnext$. 
 Hence, the essential property we show about $\xnext_\mu$ is that for any state $s$ there exists $k \geq 0$ such that
 \begin{itemize}
 \item[(i)] $\xnext_\mu(s) = \xnext^k(s)$ holds;
 \item[(ii)] for any $l$, such that $0 \le l < k$, the state $\xnext^l(s)$ contains $\cont$;
-%
-%$\xnext$ can execute an instruction %continue 
-%                          for any $l$ such that $0 \le l < k$
-\item[(iii)] for any $l$, such that $l \ge k$, the state $\xnext^l(s)$ contains $\ncont$.
-%cannot execute any instruction %continue                            
+\item[(iii)] for any $l$, such that $l \ge k$, the state $\xnext^l(s)$ contains $\ncont$.                 
 \end{itemize}
 In other words, $\xnext_\mu(s) = \xnext^k(s)$ where $k$ is the least number such that
 $\xnext^k(s)$ reaches a state with the $\ncont$ element. 
-% Perhaps say that we proved that every program in EVM bytecode terminates by writing
-% higher-order logic function that executes bytecode (reusing Yoichi's definitions of
-% semantics) and proving termination of that function.
 
 Now, regarding the contract correctness, we strengthen $\pvalid{P}{c}{Q}$ to 
 a total input/output property $\tvalid{P}{c}{Q}$ which is true iff
@@ -589,16 +592,6 @@ appears merely as a jump instruction that transfers the flow of execution
 to another part of the program.
 In this sense, a program logic that treats the entire bytecode program simply as a list of instructions
 would be in principle feasible, but intricate. 
-%cannot solely rely on the structure of the program to
-%guide formal reasoning, because the instruction following
-%a jump is not necessarily next in the flow of execution.
-%
-%Although designing a logic that handles this would be in principle feasible,
-%Since a bytecode program comprises
-%a list of instructions, a rule might handle the head instruction and proceed to the tail of 
-%the list, but would need to make exceptions when the head instruction is a jump, because then
-%the tail does not necessarily correspond to the next instructions in the flow of execution.
-%Although such treatment would be in principle feasible,
 To this end more sophisticated techniques are available, such as decompilation via extraction of 
 \emph{Control Flow Graphs} (CFG), in particular applied to the Java Virtual Machine (JVM) code~\cite{zhao99}.
 The aim of CFG extraction is to split a program into \emph{basic blocks}, i.e. sequences of
@@ -612,8 +605,6 @@ in many aspects.
 In particular, a CFG provides enough structure to add annotations,
 such as loop invariants, enabling complete automation of the verification condition generation process.
 
-%However, the algorithm to compute the edges of a CFG for JVM bytecode
-%cannot be easily adapted to our EVM context.
 However, full CFG extraction poses more advanced challenges in EVM context than for JVM,
 especially from the formal modelling perspective.
 This is because JVM jump instructions
@@ -623,29 +614,6 @@ must be obtained from the stack, i.e. dynamically. For that reason, our bytecode
 currently addresses basic block extraction only, presented in the next section.
 Then, Sections~\ref{sec:prog-rules}, \ref{sec:block-rules} and \ref{sec:instr-rules} 
 present how our logic handles programs, blocks and instructions, respectively. 
-%
-%       
-%The basic blocks program logic we present in this section is organised
-%in three levels of inductively defined inference rules, of the form:
-%\[
-%\begin{array}{l}
-%\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q} \\
-%\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} \\
-%\ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} 
-%\end{array}
-%\]
-%where $P, Q$ are state predicates,
-%$\mathit{blocks}$ is a list of basic blocks,
-%$(n, \mathit{xs}, t)$ is a basic block,
-%$\mathit{xs}$ is a list of instructions,
-%and $x$ is an instruction.
-%
-%The program level allows considering one basic block at a time.
-%The block level, one instruction at a time.
-%And the instruction level provides rules for every instruction defined on the EVM.
-%In the rest of this section we first explain in detail how we
-%split EVM bytecode into basic blocks, then we dedicate a section to
-%each level of the program logic.
 %
 \subsection{Extraction of Basic Blocks}
 \label{sec:extract}
@@ -715,19 +683,19 @@ for reasoning at different levels
 will be defined inductively in the following three sections:
 \[
 \begin{array}{l l}
-\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q} & 
-\mbox{-- at the program level}\\
+\!\ttrip{\mathit{blocks}}{\mathtt{prog}}{P}{(n, \mathit{xs}, t)}{Q} & 
+\mbox{- at the program level}\\
 \\
-\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} &
-\mbox{-- at the block level}\\
+\!\!\ttrip{}{\mathtt{block}}{P}{\mathit{xs}}{Q} &
+\mbox{- at the block level}\\
 \\
-\ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} &
-\mbox{-- at the instruction level}
+\!\!\ttrip{}{\mathtt{instr}}{P}{\mathit{x}}{Q} &
+\mbox{- at the instruction level}
 \end{array}
 \]
 where $P, Q$ are state predicates, $x$ is an instruction, $\mathit{xs}$ is a list of instructions,
 $\mathit{blocks}$ is a list of basic blocks, and
-$(n, \mathit{xs}, t)$ --- a basic block.% are defined inductively in the following three sections.
+$(n, \mathit{xs}, t)$ --- a basic block.
 %
 \subsection{Program Rules}
 \label{sec:prog-rules}
@@ -797,8 +765,6 @@ the stack and a lower bound for the amount of gas, namely $8$ units:
 as much as EVM requires to perform a jump, which is deducted by $\gaspred\:(g - 8)$.   
 Note that here and in the rules below we need to carry the $\cont$ state element because the EVM model~\cite{Yoichi}
 imposes having either $\cont$ or $\ncont$ in a state to process instructions.
-%Although the pure part is quite plain in this case, it generally allows us to express elaborated 
-%conditions on state elements by means of higher-order logic formulae.      
 
 The case of a conditional jump. i.e. a $\mathit{Jumpi}$-block, is similar, except
 that we also need to retrieve from the stack the value $c$ to be compared to $0$ and
@@ -819,8 +785,8 @@ where $R_1, R_2, R_3$ abbreviate the conditions \\
 \\$
 \begin{array}{l}
 \pure{h \le 1022 \wedge g \geq 10} \sconj \cont \sconj \gaspred\:g \; \sconj \\
-\pc\:(i - 1) \; \sconj \stackh\:(h + 2) \; \sconj \stack\:(h+1)\:j\; \sconj \\
- \stack\:h\:c \;\sconj R 
+\pc\:(i - 1)  \sconj \stackh\:(h + 2) \sconj \stack\:(h+1)\:j\; \sconj \\
+ \stack\;h\:c \;\sconj R 
 \end{array}
 $\\ 
 \\
@@ -876,21 +842,6 @@ As a result, in the EVM semantics (and accordingly in our logic) these
 instructions lead to an environment action that must be modelled separately.
 Such modelling is however possible and we discuss it further in Section~\ref{sec:concl}.
 
-%
-%Instructions such as $\instr{CALL}$, for inter-contract message calls, lead
-%to an environment action that requires an appropriate model of the Ethereum global state,
-%whereas the current EVM formalisation treats the global state merely as an unknown external environment.
-%
-%Our logic only allows reasoning about the EVM machine state,
-%the rest of the Ethereum global state is treated as an external environment.
-%Instructions such as $\instr{CALL}$, for inter-contract message calls, lead
-%to an environment action that must be modelled separately.
-%Such modelling is however possible and we discuss it further in Section~\ref{sec:concl}.
-%
-%, we will not
-%present all of them here\footnote{We presently have
-%proved the soundness of 30 commonly used instructions but
-%we expect the missing instructions to follow a similar proof structure.}.
 The following rule for $\instr{PUSH1}$, the operation pushing one byte on the stack, is quite representative
 as it shows how we specify the necessary conditions for 
 the instruction to be performed by the EVM in the precondition, as well as
@@ -930,7 +881,6 @@ introducing a generic \emph{frame} rule (cf.~\cite{Reynolds_02}) of the form
 and removing $F$ from all instruction-specific rules. Although the rule is sound, this treatment leads to 
 a considerable overhead in the verification process, since we would need to apply
 the frame rule each time an instruction-specific rule is applied. 
-%For this practical reason we omit an explicit frame rule. 
 
 Apart from the frame rule we still have two generic rules at the instruction level:
 \[
@@ -961,7 +911,7 @@ together by means of a soundness property and outlines its proof.
 \label{sec:sound}
 As our program logic is separated in three layers, we establish its soundness in three steps.
 
-At the level of instructions, soundness basically amounts to the property
+At the level of instructions, soundness amounts to the property
 \begin{equation}
 \label{prop:sound-instr}
 \RuleC{\begin{array}{l}
@@ -1111,14 +1061,7 @@ making however additional use of the induction hypothesis.
 %
 \section{Case study}
 \label{sec:case}
-
-%To demonstrate the practicality of our program logic, we verify a smart contract.
-
-% We provide the ground work to eventually get fully verified
-% smart contracts. They will require reasoning about bytecode.
-% Our framework could be used to have a formal connection
-% between a  more structured language and bytecode.
-
+%
 Our development provides the ground work for full functional correctness
 of Ethereum smart contracts.
 These contracts are typically implemented in a high-level
@@ -1130,8 +1073,8 @@ Section \ref{sec:design} describes the design and implementation of
 the contract; Section \ref{sec:spec}, its specification;
 Section \ref{sec:verif}, its verification;
 and Section \ref{sec:auto}, the machinery we developed
-to maximize proof automation.
-
+to maximise proof automation.
+%
 \subsection{Design and Implementation}
 \label{sec:design}
 %
@@ -1140,9 +1083,7 @@ In our scenario, a \textit{buyer} wants to purchase a good from a \textit{seller
 but there is no particular reason to assume that they trust each other.
 To this end both parties rely on an
 escrow agent: an \textit{arbiter} they both trust. 
-%% not sure what the commented sentence states and if we need it: 
-%--- to achieve a safe transaction despite their potential mutual distrust.
-In this agreement the arbiter creates the contract specifying the
+In this agreement, the arbiter creates the contract specifying the
 expected amount of Ether (the Ethereum crypto-currency), waits for the buyer to transfer the money to
 the contract and decides whether to pay the seller or refund the buyer.
 Apart from the arbiter's decision to pay or to refund, the purchase process
@@ -1159,7 +1100,7 @@ contract Escrow {
 @\label{lst:constbeg}@    function Escrow(address _buyer,
                     address _seller,
                     uint256 _amount) {
-@\label{lst:constbeg}@            require (amount > 0);
+@\label{lst:constreq}@            require (amount > 0);
             buyer = _buyer;
             seller = _seller;
             arbiter = msg.sender;
@@ -1187,7 +1128,7 @@ contract Escrow {
 }
 \end{lstlisting}
 \caption{Escrow smart contract allowing an arbiter to clear a
- transaction between two potentially distrusting parties.}
+ transaction between two parties.}
 \label{solidity}
 \end{figure}
 
@@ -1207,11 +1148,6 @@ involved in the agreement, as well as \textit{amount} that serves two purposes.
 It not only stores
 the amount of Ether for the purchase, but is also used to enforce the order
 in which the contract operations can be invoked.
-%%%% Is this important somehow?
-%It is stored in a 256-bit machine word, which is the
-%native word size of the EVM.
-%For this reason, Ethereum addresses that are 160-bit long
-%are in practice also stored in 256-bit machine words.
 
 The constructor part (lines \autoref{lst:constbeg}--\autoref{lst:constend})
 is run by the Ether\-eum platform to initialise the contract when it gets deployed.
@@ -1224,15 +1160,14 @@ if the specified condition evaluates to false.
 In this case, only the amount of gas consumed so far is retained;
 the rest of the transaction is rolled back.
 
-We use \textit{require} (line \ref{lst:constbeg}) to ensure that the arbiter creates
+We use \textit{require} (line \ref{lst:constreq}) to ensure that the arbiter creates
 an escrow agreement with \textit{amount} greater than zero.
 This condition is critical because \textit{addfund} (line \autoref{lst:addfundend})
 expects \textit{amount} to be strictly positive,
 before setting it to zero.
 This way we guarantee that the buyer can only add fund to the contract once.
-Note that \textit{msg.value} is an environment variable
+Note that \textit{msg.value} is an environment variable,
 telling us how much Ether has been transferred as part of the transaction.
-%storing the amount of Ether transferred as part of the transaction.
 
 Further, \textit{addfund} is annotated as \textit{payable},
 which indicates that this function is allowed to be invoked
@@ -1250,9 +1185,6 @@ the functions \textit{refund} (lines \autoref{lst:refundbeg}--\autoref{lst:refun
 and \textit{pay} (lines \autoref{lst:paybeg}--\autoref{lst:payend}). 
 Moreover, in both cases \textit{amount} is required to be zero, i.e.
 the buyer must already have placed the funds in the contract.
-%are both protected such that they must be called by the arbiter,
-%and so, after the buyer has placed the funds in the contract.
-%The latter is enforced by checking that \textit{amount} is zero.
 Both functions make use of the EVM \textit{selfdestruct} % built-in ?
 mechanism,
 which transfers the totality of the funds held by the contract
@@ -1276,34 +1208,6 @@ As shown in the following section, in order to specify the behaviour of our
 contract, we compare the input hash to \textit{addfund\_hash}, \textit{refund\_hash} and \textit{pay\_hash},
 and, in particular, require a safe behaviour in cases when the input hash does not
 match any of these three hash values.   
-%  
-%
-%identifying which function of the contract must be invoked
-%to the appropriate function.
-%We describe the dispatcher in more detail in the paragraph below. %further at the end of this section.
-%\paragraph{Dispatcher.}
-%
-%When we compile a Solidity smart contract to EVM bytecode,
-%the compiler generates the contract interface
-%such that it adheres to its ABI specification.
-%The ABI specifies the signature of all the functions
-%available for a user of the contract.
-%The bytecode has single entry point (the first instruction),
-%and is passed a byte string as input, where the
-%first 32-bit word corresponds to a function identifier.
-%This identifier is a hash of the function signature
-%identifying which function of the contract must be invoked.
-%The piece of bytecode which compares the function identifier
-%to function hashes is called the \textit{dispatcher}.
-%The dispatcher is also responsible for unpacking function
-%arguments, and when no hash matches the function identifier,
-%it throws an exception.
-%The binary format for computing function hashes and
-%packing arguments is standardised so that contracts
-%written in various EVM languages can interoperate without
-%trouble.
-%Since dispatcher code is added by the compiler, it can only be verified at
-%the bytecode level.
 %
 \subsection{Specification}
 \label{sec:spec}
@@ -1346,7 +1250,7 @@ definition
 \caption{Functional specification of the Escrow smart contract.}
 \label{spec}
 \end{figure}
-
+%
 \autoref{spec} and \autoref{theorem} show our handwritten specification of \textit{Escrow}
 and the functional correctness theorem we proved in Isabelle/HOL.
 The \textit{spec\_Escrow} definition is used in the main theorem to specify
@@ -1358,14 +1262,17 @@ to the bytecode.
 %
 Note, that the actual hash values, denoted by the constants \textit{addfund\_hash}, \textit{pay\_hash} and
 \textit{refund\_hash}, are obtained from the ABI information generated by the Solidity compiler.
-
-The specification \textit{spec\_Escrow} requires that
+%
+More precisely, \textit{spec\_Escrow} requires that
 \begin{enumerate}
 \item[(i)] \textit{addfund} is only successful if it is called by the buyer
 who must simultaneously transfer the amount of Ether specified by the arbiter;
-\item[(ii)] \textit{refund} triggers a transfer of the totality of the funds held
-by the contract to the buyer via the self-destruct mechanism only if called by
-the arbiter and \textit{amount} = 0 holds;
+\item[(ii)] \textit{refund} triggers the self-destruct mechanism, that transfers the totality of the funds 
+%held by the contract 
+to the buyer, 
+%via the self-destruct mechanism 
+only if called by
+the arbiter with \textit{amount} = 0;
 \item[(iii)] \textit{pay} behaves in the same way, except sending the funds to the seller;
 \item[(iv)] any other input leads to a failure of the contract, cancelling
 the transaction.
@@ -1379,7 +1286,6 @@ is used in the main theorem to specify the value of the
 It states that when the precondition of \textit{addfund} to
 return successfully is met, \textit{amount} is set to zero,
 thus disabling that precondition.
-%protecting against further invocations of \textit{addfund} and
 As a result, invocations of \textit{pay} and \textit{refund} become enabled
 and of \textit{addfund} --- disabled.
 
@@ -1407,7 +1313,6 @@ theorem verify_escrow:
         r]
 \end{lstlisting}
 \caption{The correctness statement in our program logic.}  
-%\caption{Functional correctness theorem of the Escrow smart contract.}
 \label{theorem}
 \end{figure}
 Now, the main theorem, shown in \autoref{theorem}, states the overall input/output 
@@ -1422,12 +1327,11 @@ using \textit{word\_rsplit}.
 Further, $\gaspred$ sets a gas budget, sufficient for invoking any
 of the functions, whereas $\storage$
 binds storage entries to the free variables \textit{buyer}, \textit{seller},
-\textit{arbiter} and \textit{amount}. %, initialised by the constructor.
+\textit{arbiter} and \textit{amount}. 
 Using \textit{ucast} we convert 160-bit words, representing Ethereum
 addresses, into the storage unit, i.e. 256-bit word.
 The constant \textit{bytecode\_Escrow} denotes
 the actual bytecode of the contract,
- %a list of deeply embedded EVM instructions 
 which we convert into a list of basic blocks with $\bblocks$.
 
 Finally, in the postcondition we specify that 
@@ -1438,24 +1342,18 @@ Finally, in the postcondition we specify that
 \item[(iii)] the storage variable \textit{amount} contains the value
              specified by \textit{spec\_amount};
 \end{enumerate}
-%
-%we are only interested in the resulting action
-%satisfying \textit{spec\_Escrow}, storage variables remain unchanged,
-%and \textit{amount} corresponding to \textit{spec\_amount};
 whereas the rest of the output state \textit{r} remains unspecified.
-%hence we quantify existentially on the rest of the state \textit{r}
-%to leave it unspecified.
 %
 \subsection{Verification}
 \label{sec:verif}
 Smart contract bytecode is divided into two sections: the pre-loader and
-runtime code.
+the runtime code.
 The pre-loader bootstraps the contract by deploying it on the
 Ethereum network and running its constructor.
 The runtime code only contains the core functionality of the contract
 that can be invoked by other blockchain agents.
 Our verification considers only the runtime code of \textit{Escrow},
-thus excluding its constructor.
+thus excluding the contract's constructor.
 
 We obtain the runtime code as a byte string of hexadecimal opcodes
 from the Solidity compiler and convert it into a list of EVM instructions via an
@@ -1467,36 +1365,35 @@ In this case, \textit{bytecode\_Escrow} comprises 191 EVM instructions that are 
 blocks, including 12 of type \textit{Jumpi} (i.e.\ conditional jumps),
 23 \textit{Terminal}, 6 \textit{Next} and 4 \textit{Jump}.
 Once the automation support, described in the next section, reached maturity,
-proving correctness of the bytecode was rather a routine task. %fairly straightforward
+proving correctness of the bytecode was rather a routine task. 
 
 Some creativity was required to handle all the cases where the
 contract ends with an exception.
-The existential variable in the postcondition of our correctness
+The existentially bounded variable in the postcondition of our correctness
 statement means that we have to provide a witness for the
 unspecified part of the state.
 The witness is automatically constructed by running our
-proof automation tactics, however, for this to work the
-existential variable must remain a unification variable until
+proof automation tactics. However, for this to work the
+existentially bounded variable must remain unspecified until
 we reach a \textit{Terminal} basic block.
-The \textit{Terminal} block rule replaces the
-unification variable by a concrete value,
-and to ensure that each path gets a new unification
-variable, we manually distinguish each case in the proof.
+Then the rule for a \textit{Terminal} block instantiates the variable by a concrete value.
+In order to ensure that each execution path can make its own instantiation, 
+we manually distinguish each case in the proof.
 
-A difficult proof arose when parsing the contract input data
+Furthermore, a difficult proof arose when parsing the contract input data
 in order to extract the argument passed to the dispatcher.
 This involved dealing with operations on words of different size,
 which is notoriously hard.
 In particular, the instruction $\instr{CALLDATALOAD}$ reads a
 256-bit machine word from the input data array.
 Since the hash value passed in the input data is only a 32-bit word,
-the dispatcher does the following word arithmetic to convert the value:
+the dispatcher does the following word arithmetic to convert the value
 \[
 \mathit{w32}\mbox{-}\mathit{hash} = (\mathit{w256}\mbox{-}\mathit{input}\mbox{-}\mathit{data} \gg 224)\ \text{\&}\ \mathtt{0xffffffff}
 \]
 With the help of Isabelle's machine word library~\cite{Word_Lib-AFP},
 we proved that when the hash is packed in the input data,
-the above bit-wise operations return the same hash value.
+the bit-wise operations above return the same hash value.
 
 %% mole $ wc -l HoareTripleForBasicBlocks.thy SoundnessForBasicBlocks.thy ../example/Dispatcher.thy ../EvmFacts.thy Hoare.thy
 %%    575 HoareTripleForBasicBlocks.thy
@@ -1510,27 +1407,24 @@ The total development of our framework is $\approx$6000 lines of Isabelle/HOL th
 excluding the existing formalisation of EVM model, etc.
 The size of the top-level specification of \textit{Escrow} is $\approx$30 lines
 and the functional correctness proof of the contract is
-$\approx$40 lines of proof specific to this example, which compares
+$\approx$40 lines of proof, specific to this example, which compares
 favourably with the $\approx$500 lines of reusable proof
 automation machinery we developed.
 We describe this automation next.
-
-
-
-% focus on runtime binary, 
-% parse_bytecode 
-% derivation tree for bytecode, 
-% word proofs
-
-% due to hash_in_w256 being padded with zeros,
-% we need to prove hash_in_w32 = (hash_in_w256 >> 224) & 0xffffffff
-% >> 224 removes the padded zeros
-% Word proofs are notorious to be hard and this was one of them.
-
+%
 \subsection{Automation}
 \label{sec:auto}
-% Ideas: show isabelle tactics,
-% number of lines of proofs
+%
+\begin{figure}[h]
+\begin{lstlisting}[language=Isar]{}
+method prog_vcg =
+ (prog_jumpi_vcg | prog_jump_vcg
+ | prog_terminal_vcg | prog_next_vcg)+
+\end{lstlisting}
+\caption{The tactic at the program-level.}  
+\label{fig-vcg}
+\end{figure}
+%
 %
 When reasoning about bytecode, even the verification of small contracts
 can involve long, tedious and repetitive proofs.
@@ -1547,22 +1441,18 @@ one after another.
 This tactic can be implemented with a few lines of Eisbach~\cite{Matichuk_MW_16} ---
 Isabelle/HOL's high-level tactic language.
 We developed a VCG for each level of our program logic.
-For instance, the program-level tactic looks as follows:
-\begin{lstlisting}[language=Isar]{}
-method prog_vcg =
- (prog_jumpi_vcg | prog_jump_vcg
- | prog_terminal_vcg | prog_next_vcg)+
-\end{lstlisting}
-where e.g., \textit{prog\_jumpi\_vcg} is another tactic applying the \textit{Jumpi}-rule (iv) 
+For instance, the program-level tactic is shown in Figure~\ref{fig-vcg},
+where e.g. \textit{prog\_jumpi\_vcg} is another tactic applying the \textit{Jumpi}-rule (iv) 
 in Section~\ref{sec:prog-rules} and solving its resulting subgoals by
-invoking more specific tactics we designed.
-Altogether, \textit{prog\_vcg} tries each of the tactics separated by the $|$ symbol,
+means of more specific tactics we designed.
+
+That is, \textit{prog\_vcg} in Figure~\ref{fig-vcg} tries each of the tactics,
+separated by the $|$ symbol on the right-hand side,
 whereas the $+$ sign at the end means that it will do so repetitively until
-none of the tactics is applicable. 
-Clearly, this stage will be eventually reached in absence of loops,
-whereas the gas consumption argument could also be used to ensure tactic termination otherwise.
-However, as this is not a proper treatment of general loops, we did not use this argument
-at the tactics level.     
+none of these tactics is applicable. 
+Clearly, this stage will eventually be reached in absence of loops,
+whereas the gas consumption argument (cf. Section~\ref{sec:corr}) could be applied 
+to achieve termination of the VCG otherwise. 
     
 A common source of friction we experienced during the early development phase
 of our framework was with proving goals of the form:
@@ -1571,22 +1461,24 @@ comprising the same separation conjunctions but in different orders.
 Such proof obligations arise when we weaken a precondition to be
 able to apply an $\vdash_\mathtt{instr}$ rule.
 Since each $\vdash_\mathtt{instr}$ rule expects a separation logic expression with conjunctions
-in a specific order, we routinely have to reorder these to
+in a specific order, we routinely have to re-order these to
 match given precondition.
 
 To ease the pain, we reuse the separation logic algebra framework~\cite{Klein_KB_12},
 which provides a set of generic Isabelle tactics to manipulate separation logic terms.
 We instantiated the algebra with the EVM machine state and created Isabelle tactics
-which reorder separation conjunctions such that, e.g. %%% why e.g. ? 
+which try to re-order separation conjunctions such that
 the first term in $P$ matches the first one of $R$.
 Once the first elements match, we leverage the tactics of the separation
-algebra framework to remove the first element from both $R$ and $P$.
-
-An issue we encountered is that when $R$ contains variables,
-we have to reorder terms in $P$ in such way that the variables in $R$ get instantiated
+algebra framework to remove these from both $R$ and $P$.
+Thereby we additionally might have to re-order terms in $P$ in such way that the variables in $R$ get instantiated
 in the correct order.
+%
+%An issue we encountered was that when $R$ contains variables,
+%we have to re-order terms in $P$ in such way that the variables in $R$ get instantiated
+%in the correct order.
 %%%
-When such problem occurs, we resort to manual reordering of terms. % ?? 
+%When such problem occurs, we resort to manual re-ordering of terms. 
 %
 \section{Related Work}
 \label{sec:rwork}
@@ -1596,13 +1488,11 @@ a notable amount of approaches and tools have already been proposed (e.g.~\cite{
  
 The major trend is to apply various kinds of static analysis not only at the level of structured contract
 languages (e.g. Solidity's Why3 backend~\cite{filliatre2013why3,Reitwiessner_16}) but also at the bytecode level~\cite{Msuiche_17,securify,Luu_COSH_16}. 
-%However, most tools do not provide a lot of insight into internal details.
-%
 The obvious advantage of static analysis approaches is that full automation can be achieved for 
 contract properties that can be confirmed statically, e.g. certain orders of transactions \cite{securify}.
 The tools Oyente~\cite{Luu_COSH_16} and Porosity~\cite{Msuiche_17} decompile
 bytecode into a control flow graph and perform control flow analysis in order
-to detect common smart contract security defects such as re-entrancy bugs.
+to detect common smart contract security defects such as reentrancy bugs.
 These tools are of great value when added to the development process so
 they can unveil mistakes in early stages, but they do not prove functional correctness.
 
@@ -1630,25 +1520,11 @@ KEVM~\cite{Hildenbrandt_SZRDGR_17} is a formal semantics of the EVM written usin
 Like the Lem semantics~\cite{Yoichi} we use, KEVM is executable and therefore can run the Ethereum foundation's validation test suite.
 Reasoning about KEVM programs involves specifying properties in Reachability Logic and
 verifying them with a separate analysis tool.
-K supports translation for analysis with tools of varying
-power, including symbolic execution, faster concrete execution, or Isabelle.
+%K supports translation for analysis with tools of varying
+%power, including symbolic execution, faster concrete execution, or Isabelle.
 As explained earlier, we preferred the option of working in a single trusted logical framework.
-
-%% Hirai~\cite{Yoichi} developed a Hoare logic for EVM bytecode
-%% in the line of Myreen's work~\cite{DBLP:phd/ethos/Myreen09}.
-%% In some sense, our work extends Hirai's by forcing Hoare triples to
-%% state total correctness and by extracting a more structured representation
-%% of the bytecode with basic blocks.
-%% The restored structure of the bytecode facilitated the design of
-%% a sound program logic and ultimately enabled more proof
-%% automation as explained in Section~\ref{sec:auto}.
-
-% XCAP ?
-
+%
 \section{Conclusions and Future Work}
-% Ideas: inter-contract communication, recovering loops, more structured
-% programs including notion of contract classes etc, CakeML backend, Jinja backend
-% verification contract creation code, as opposed to run-time code.
 \label{sec:concl}
 In this paper we have presented our approach to the verification of Ethereum smart contracts
 at the level of EVM bytecode. Building strictly on the thoroughly validated formal EVM model~\cite{Yoichi} in Isabelle/HOL,
@@ -1678,17 +1554,18 @@ If implemented, it would greatly facilitate
 decompilation and reasoning about EVM bytecode, as most of the aforementioned
 issues would go away.
 
-As mentioned in Section~\ref{sec:instr-rules}, our framework currently does not support reasoning about inter-contract message calls.
-%reasoning outside the program logic.
-When a contract $A$ makes a message call to contract $B$,
+As mentioned in Section~\ref{sec:instr-rules}, our framework currently 
+does not support reasoning about inter-contract message calls, 
+i.e. contracts making use of instructions such as $\instr{CALL}$ or $\instr{DELEGATECALL}$.
+That is, when a contract $A$ makes a message call to another contract $B$ then
 the execution of $A$ terminates in our formal model with a \textit{ContractCall} action.
 Hence, within our program logic we can only prove properties
-about the state of $A$ right before it calls $B$.
-To reason further about such interactions, the Ethereum global state %environment
+about the local state of $A$ right before it calls $B$.
+To reason further about such interactions, the Ethereum global state 
 must be modelled separately to capture the behaviour of $B$.
 For example, Hirai~\cite{Yoichi} has extended his framework,
 on which ours is based, to formally verify that a smart contract
-throws an exception if it is subject to a re-entrant invocation
+throws an exception if it is subject to a reentrant invocation
 ($B$ attempts to call $A$).
 As future work, we could imagine an EVM formalisation parameterised by
 a contract environment which directly invokes the target contract
@@ -1696,23 +1573,15 @@ when a message call occurs.
 
 Another promising avenue for research are verified
 compilers~\cite{Owens_NKMT_17,Leroy_12,Klein_Nipkow_06}.
-We believe that the Ethereum community would greatly benefit
-from a verified compiler for a high-level language targeting
-EVM bytecode, providing a provably sound structured programming
-abstraction.
-Our work may be useful in verification of the final %compilation 
-phase of such compilers.
-
-%to reason formally about 
-%Ethereum smart contracts that is sound and convenient.
-% compared to reasoning about bytecode directly.
-%Yet the compiler correctness proof would imply the
-%same level of guarantee as bytecode verification.
-
-
-%% Acknowledgments
-%% Yoichi Hirai, Corey Lewis, Peter H\"ofner 
-
+We believe that the Ethereum community would benefit
+from a provably sound structured programming abstraction.
+%verified compiler for a high-level language targeting
+%EVM bytecode, 
+%providing a provably sound structured programming
+%abstraction.
+Our work may also be used in verification of the final
+phase of such compiler.
+%
 \begin{acks}                            %% acks environment is optional
                                         %% contents suppressed with 'anonymous'
   %% Commands \grantsponsor{<sponsorID>}{<name>}{<url>} and
@@ -1731,7 +1600,6 @@ phase of such compilers.
 We would like to thank Yoichi Hirai, Peter H\"ofner, Corey Lewis, Guillaume Vizier
 and Paul Rimba for all comments and suggestions.
 \end{acks}
-
 
 %% Bibliography
 \bibliography{evm}
