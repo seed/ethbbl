@@ -385,7 +385,7 @@ supply chain industries.
 The Ethereum blockchain provides a general-purpose computational mechanism called \emph{smart contracts},
 which are basically programs that run on the Ethereum Virtual Machine (EVM)~\cite{wood2014ethereum}. They and their effects 
 are recorded in the blockchain history.  They can be used to encode or execute agreements between parties.
-For example, a party invoking a smart contract could cause digital currency to be transferred to another
+For example, a party invoking a smart contract could cause cryptocurrency to be transferred to another
 party, or could record a state change which makes the other party eligible to invoke other transactions.
 Smart contracts provide new ways to implement multi-party relationships within blockchain-based applications.
 In addition to the direct financial value in these applications, blockchains are increasingly being
@@ -404,7 +404,7 @@ reason about properties of smart contracts.
 \end{itemize}
 In our setting, we use the logical framework Isabelle/HOL, and an existing EVM formal
 model~\cite{Yoichi}.
-Thus, our remaining goal is a sound program logic.  In this paper we propose such a logic for EVM bytecode. 
+Thus, our remaining goal is a sound program logic. In this paper we propose such a logic for EVM bytecode. 
 We target unstructured bytecode rather than a high-level programming language for the following reasons.
 First, our approach is independent of any high-level language (e.g.\ Solidity~\cite{solidity}) compiler, 
 making our work more general and significantly less reliant
@@ -753,7 +753,7 @@ and\\
 \\$
 \begin{array}{l}
 \cont \sconj \gaspred\:(g - 8) \; \sconj \\
-\pc\:j \; \sconj \stackh\:h \sconj R 
+\pc\:j \; \sconj \stackh\:h \; \sconj R 
 \end{array}
 $\\
 \\respectively. 
@@ -804,7 +804,7 @@ and\\
 \\$
 \begin{array}{l}
 \cont \sconj \gaspred\:(g - 10) \; \sconj \\
-\pc\:i \; \sconj \stackh\:h \sconj R 
+\pc\:i \; \sconj \stackh\:h \; \sconj R 
 \end{array}
 $\\
 \\respectively. 
@@ -1086,7 +1086,7 @@ but there is no particular reason to assume that they trust each other.
 To this end both parties rely on an
 escrow agent: an \textit{arbiter} they both trust. 
 In this agreement, the arbiter creates the contract specifying the
-expected amount of Ether (the Ethereum crypto-currency), waits for the buyer to transfer the money to
+expected amount of Ether (the Ethereum cryptocurrency), waits for the buyer to transfer the money to
 the contract and decides whether to pay the seller or refund the buyer.
 Apart from the arbiter's decision to pay or to refund, the purchase process
 is governed by the smart contract.
@@ -1480,7 +1480,7 @@ in the correct order.
 %%%
 %When such problem occurs, we resort to manual re-ordering of terms. 
 %
-\vspace{-0.40em}
+\vspace{-0.19em}
 \section{Related Work}
 \label{sec:rwork}
 %
